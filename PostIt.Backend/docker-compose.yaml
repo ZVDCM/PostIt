@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+    mssql:
+        container_name: development-mssql
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        environment:
+            ACCEPT_EULA: Y
+            SA_PASSWORD: "TestTest!23"
+        ports:
+            - 1433:1433
+        volumes:
+            - mssql:/var/opt/mssql
+        cpus: 2
+        mem_limit: 3.25G
+    rabbitmq:
+        image: rabbitmq:3-management
+        container_name: rabbitmq
+        ports:
+            - 5672:5672
+            - 15672:15672
+        volumes:
+            - rabbitmqdata:/var/lib/rabbitmq
+        hostname: rabbitmq
+        cpus: 2
+        mem_limit: 2g
+
+volumes:
+    mssql:
+    rabbitmqdata:

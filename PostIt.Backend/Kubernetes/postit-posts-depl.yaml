@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: postit-posts-depl
+spec:
+    selector:
+        matchLabels:
+            app: postit-posts-service
+    template:
+        metadata:
+            labels:
+                app: postit-posts-service
+        spec:
+            containers:
+                - name: postit-posts-service
+                  image: zvdcm/postit-posts-service:latest
+                  resources:
+                      requests:
+                          cpu: "100m"
+                          memory: "128Mi"
+                      limits:
+                          cpu: "500m"
+                          memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: postit-posts-clusterip-srv
+spec:
+    type: ClusterIP
+    selector:
+        app: postit-posts-service
+    ports:
+        - name: postsservice
+          protocol: TCP
+          port: 80
+          targetPort: 80

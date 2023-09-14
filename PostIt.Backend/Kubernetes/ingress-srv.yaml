@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: ingress-srv
+    annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+    rules:
+        - host: acme.com
+          http:
+              paths:
+                  - path: /api/users
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: postit-users-clusterip-srv
+                            port:
+                                number: 80
+                  - path: /api/account
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: postit-users-clusterip-srv
+                            port:
+                                number: 80
+                  - path: /api/posts
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: postit-posts-clusterip-srv
+                            port:
+                                number: 80
+                  - path: /api/comments
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: postit-posts-clusterip-srv
+                            port:
+                                number: 80
+                  - path: /api/likes
+                    pathType: Prefix
+                    backend:
+                        service:
+                            name: postit-posts-clusterip-srv
+                            port:
+                                number: 80

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: postit-users-depl
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: postit-users-service
+    template:
+        metadata:
+            labels:
+                app: postit-users-service
+        spec:
+            containers:
+                - name: postit-users-service
+                  image: zvdcm/postit-users-service:latest
+                  resources:
+                      requests:
+                          cpu: "100m"
+                          memory: "128Mi"
+                      limits:
+                          cpu: "500m"
+                          memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: postit-users-clusterip-srv
+spec:
+    type: ClusterIP
+    selector:
+        app: postit-users-service
+    ports:
+        - name: usersservice
+          protocol: TCP
+          port: 80
+          targetPort: 80
