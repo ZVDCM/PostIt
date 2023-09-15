@@ -1,17 +1,27 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    Input,
+    forwardRef,
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'form-input',
     template: `
-        <label [htmlFor]="Label">{{ Label }}</label>
+        <label [htmlFor]="label">{{ label }}</label>
         <input
             pInputText
-            [type]="Type"
-            [id]="Label"
-            [attr.aria-describedby]="Label + '-help'"
-            [autocomplete]="HasAutocomplete"
+            [value]="value"
+            [type]="type"
+            [id]="label"
+            [attr.aria-describedby]="label + '-help'"
+            [autocomplete]="hasAutocomplete"
+            #inputElement
+            (input)="onChange(inputElement.value)"
+            (blur)="onTouched()"
         />
-        <small *ngIf="Hint !== null" id="{{ Label }}-help">{{ Hint }}</small>
+        <small *ngIf="hint !== null" id="{{ label }}-help">{{ hint }}</small>
     `,
     styles: [
         `
@@ -21,17 +31,38 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => FormInputComponent),
+            multi: true,
+        },
+    ],
 })
-export class FormInputComponent {
+export class FormInputComponent implements ControlValueAccessor {
     @Input()
-    public Label: string = '';
+    public label: string = '';
 
     @Input()
-    public Hint: string | null = null;
+    public hint: string | null = null;
 
     @Input()
-    public HasAutocomplete: boolean = true;
+    public hasAutocomplete: boolean = true;
 
     @Input()
-    public Type: string = 'text';
+    public type: string = 'text';
+
+    public value: string = '';
+    public onChange: any = () => {};
+    public onTouched: any = () => {};
+
+    public writeValue(obj: any): void {
+        this.value = obj;
+    }
+    public registerOnChange(fn: any): void {
+        this.onChange = fn;
+    }
+    public registerOnTouched(fn: any): void {
+        this.onTouched = fn;
+    }
 }

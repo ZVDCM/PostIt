@@ -4,28 +4,34 @@ import {
     EventEmitter,
     Input,
     Output,
+    forwardRef,
 } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
     selector: 'form-input-group',
     template: `
-        <label [htmlFor]="Label">{{ Label }}</label>
+        <label [htmlFor]="label">{{ label }}</label>
         <div class="p-inputgroup">
             <input
                 pInputText
-                [type]="Type"
-                [id]="Label"
-                [attr.aria-describedby]="Label + '-help'"
-                [autocomplete]="HasAutocomplete"
+                [value]="value"
+                [type]="type"
+                [id]="label"
+                [attr.aria-describedby]="label + '-help'"
+                [autocomplete]="hasAutocomplete"
+                #inputElement
+                (input)="onChange(inputElement.value)"
+                (blur)="onTouched()"
             />
             <button
                 type="button"
                 pButton
-                icon="pi {{ Icon }}"
+                icon="pi {{ icon }}"
                 (click)="onClick($event)"
             ></button>
         </div>
-        <small *ngIf="Hint !== null" id="{{ Label }}-help">{{ Hint }}</small>
+        <small *ngIf="hint !== null" id="{{ label }}-help">{{ hint }}</small>
     `,
     styles: [
         `
@@ -35,27 +41,48 @@ import {
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => FormInputGroupComponent),
+            multi: true,
+        },
+    ],
 })
-export class FormInputGroupComponent {
+export class FormInputGroupComponent implements ControlValueAccessor {
     @Input()
-    public Label: string = '';
+    public label: string = '';
 
     @Input()
-    public Hint: string | null = null;
+    public hint: string | null = null;
 
     @Input()
-    public HasAutocomplete: boolean = true;
+    public hasAutocomplete: boolean = true;
 
     @Input()
-    public Icon: string = '';
+    public icon: string = '';
 
     @Input()
-    public Type: string = 'text';
+    public type: string = 'text';
 
     @Output()
-    public Do: EventEmitter<any> = new EventEmitter<any>();
+    public onButtonClick: EventEmitter<any> = new EventEmitter<any>();
+
+    public value: string = '';
+    public onChange: any = () => {};
+    public onTouched: any = () => {};
 
     public onClick(event: any): void {
-        this.Do.emit(event);
+        this.onButtonClick.emit(event);
+    }
+
+    public writeValue(obj: any): void {
+        this.value = obj;
+    }
+    public registerOnChange(fn: any): void {
+        this.onChange = fn;
+    }
+    public registerOnTouched(fn: any): void {
+        this.onTouched = fn;
     }
 }
