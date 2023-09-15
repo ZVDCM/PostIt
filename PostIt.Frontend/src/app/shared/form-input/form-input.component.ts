@@ -6,6 +6,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
         <label [htmlFor]="Label">{{ Label }}</label>
         <input
             pInputText
+            [type]="Type"
             [id]="Label"
             [attr.aria-describedby]="Label + '-help'"
             [autocomplete]="HasAutocomplete"
@@ -30,4 +31,7 @@ export class FormInputComponent {
 
     @Input()
     public HasAutocomplete: boolean = true;
+
+    @Input()
+    public Type: string = 'text';
 }
