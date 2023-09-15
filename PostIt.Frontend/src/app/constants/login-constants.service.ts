@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class LoginConstantsService {
     loginEndpoint = '/account/login';
     registerEndpoint = '/account/register';
