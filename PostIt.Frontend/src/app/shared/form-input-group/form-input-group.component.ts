@@ -13,6 +13,7 @@ import {
         <div class="p-inputgroup">
             <input
                 pInputText
+                [type]="Type"
                 [id]="Label"
                 [attr.aria-describedby]="Label + '-help'"
                 [autocomplete]="HasAutocomplete"
@@ -47,6 +48,9 @@ export class FormInputGroupComponent {
 
     @Input()
     public Icon: string = '';
+
+    @Input()
+    public Type: string = 'text';
 
     @Output()
     public Do: EventEmitter<any> = new EventEmitter<any>();

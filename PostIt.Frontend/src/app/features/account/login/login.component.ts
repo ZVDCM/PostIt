@@ -25,8 +25,10 @@ import { LoginConstantsService } from 'src/app/constants/login-constants.service
                     />
                     <form-input-group
                         [Label]="loginConstants.LoginForm.Password.Label"
-                        Icon="pi-eye"
+                        [Icon]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
+                        [Type]="showPassword ? 'text' : 'password'"
                         [HasAutocomplete]="false"
+                        (Do)="togglePasswordType()"
                     />
                 </div>
                 <div class="flex justify-between">
@@ -61,8 +63,14 @@ import { LoginConstantsService } from 'src/app/constants/login-constants.service
     providers: [HttpConstantsService, LoginConstantsService],
 })
 export class LoginComponent {
+    public showPassword: boolean = false;
+
     constructor(
         public httpConstants: HttpConstantsService,
         public loginConstants: LoginConstantsService
     ) {}
+
+    public togglePasswordType(): void {
+        this.showPassword = !this.showPassword;
+    }
 }
