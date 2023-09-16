@@ -2,5 +2,5 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class ServerConstantsService {
-    server = 'https://acme.com';
+    public readonly server = 'http://acme.com/api';
 }
