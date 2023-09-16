@@ -5,6 +5,7 @@ import { ILogin, ILoginPayload } from './loginTypes';
 import { LoginConstantsService } from 'src/app/constants/login-constants.service';
 import { Observable, Subject, catchError, map, switchMap, tap } from 'rxjs';
 import { UserService } from 'src/app/shared/services/user.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -18,12 +19,12 @@ export class LoginHttpService {
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
-        private _user: UserService
+        private _user: UserService,
+        private _loading: LoadingService
     ) {}
 
     public watchLogin$(): Observable<void> {
         return this._login$$.asObservable().pipe(
-            tap((_) => (this.isLoading = true)),
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
                     map((data: ILoginPayload) => {
@@ -38,7 +39,7 @@ export class LoginHttpService {
                     console.log('unauthorized');
                 return new Observable<void>();
             }),
-            tap((_) => (this.isLoading = false))
+            tap((_) => (this.isLoading = this._loading.endLoading()))
         );
     }
 

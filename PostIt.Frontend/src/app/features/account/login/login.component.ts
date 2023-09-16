@@ -5,6 +5,7 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoginHttpService } from './login-http.service';
 import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/shared/types/formType';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-login',
@@ -73,7 +74,7 @@ import { IFormItem } from 'src/app/shared/types/formType';
     styles: [
         `
             :host {
-                @apply block h-full max-w-lg mx-auto;
+                @apply flex flex-col h-full max-w-lg mx-auto;
             }
         `,
     ],
@@ -81,7 +82,7 @@ import { IFormItem } from 'src/app/shared/types/formType';
     providers: [LoginConstantsService, FormHelperService, LoginHttpService],
 })
 export class LoginComponent {
-    public login$: Observable<void> = new Observable();
+    public login$: Observable<void> = new Observable<void>();
     public loginForm: FormGroup = new FormGroup({});
     public showPassword: boolean = false;
 
@@ -92,9 +93,10 @@ export class LoginComponent {
     constructor(
         public loginConstants: LoginConstantsService,
         public loginHttp: LoginHttpService,
-        private _formHelper: FormHelperService
+        private _formHelper: FormHelperService,
+        private _loading: LoadingService
     ) {
-        console.log(localStorage.getItem(this.emailField.label));
+        this.login$ = this.loginHttp.watchLogin$();
         this.loginForm = this._formHelper.setFormGroup({
             [this.emailField.label]: new FormControl('JuanDelaCruz@gmail.com'),
             [this.passwordField.label]: new FormControl('TestTest!23'),
@@ -102,11 +104,10 @@ export class LoginComponent {
                 localStorage.getItem(this.emailField.label) ? true : false
             ),
         });
-
-        this.login$ = this.loginHttp.watchLogin$();
     }
 
     public onSubmit(): void {
+        this.loginHttp.isLoading = this._loading.showLoading();
         this.loginHttp.login(this.loginForm.value);
     }
 

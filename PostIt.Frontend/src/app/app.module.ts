@@ -5,11 +5,13 @@ import { FeaturesModule } from './features/features.module';
 
 import { AppComponent } from './app.component';
 import { UserService } from './shared/services/user.service';
+import { SharedModule } from './shared/shared.module';
+import { LoadingService } from './shared/services/loading.service';
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [BrowserModule, AppRoutingModule, FeaturesModule],
+    imports: [BrowserModule, AppRoutingModule, SharedModule, FeaturesModule],
     bootstrap: [AppComponent],
-    providers: [UserService],
+    providers: [UserService, LoadingService],
 })
 export class AppModule {}
