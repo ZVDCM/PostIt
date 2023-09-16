@@ -3,7 +3,6 @@ import {
     Observable,
     Subject,
     concat,
-    finalize,
     interval,
     of,
     scan,
@@ -52,7 +51,6 @@ export class LoadingService {
                 startWith(0),
                 tap((sum) => this.checkProgress(sum)),
                 scan((sum, _) => sum + this.randomValue(sum), this._start),
-                tap((sum) => console.log(sum)),
                 takeUntil(this._stopInterval$$)
             ),
             of(this._end),
