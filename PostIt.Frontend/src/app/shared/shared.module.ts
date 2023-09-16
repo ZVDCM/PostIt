@@ -5,11 +5,16 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { FormInputComponent } from './components/form-input/form-input.component';
-import { FormInputGroupComponent } from './components/form-input-group/form-input-group.component';
+import { FormInputComponent } from './components/form-input.component';
+import { FormInputGroupComponent } from './components/form-input-group.component';
+import { LoadingComponent } from './components/loading.component';
 
 @NgModule({
-    declarations: [FormInputComponent, FormInputGroupComponent],
+    declarations: [
+        FormInputComponent,
+        FormInputGroupComponent,
+        LoadingComponent,
+    ],
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -18,6 +23,7 @@ import { FormInputGroupComponent } from './components/form-input-group/form-inpu
         CheckboxModule,
     ],
     exports: [
+        LoadingComponent,
         FormInputComponent,
         FormInputGroupComponent,
         InputTextModule,
