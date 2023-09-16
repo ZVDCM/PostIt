@@ -9,19 +9,19 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 @Component({
     selector: 'form-input',
     template: `
-        <label [htmlFor]="label">{{ label }}</label>
+        <label [htmlFor]="id">{{ label }}</label>
         <input
+            [id]="id"
             pInputText
             [value]="value"
             [type]="type"
-            [id]="label"
-            [attr.aria-describedby]="label + '-help'"
+            [attr.aria-describedby]="id + '-help'"
             [autocomplete]="hasAutocomplete"
             #inputElement
             (input)="onChange(inputElement.value)"
             (blur)="onTouched()"
         />
-        <small *ngIf="hint !== null" id="{{ label }}-help">{{ hint }}</small>
+        <small *ngIf="hint !== null" id="{{ id }}-help">{{ hint }}</small>
     `,
     styles: [
         `
@@ -40,6 +40,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     ],
 })
 export class FormInputComponent implements ControlValueAccessor {
+    @Input()
+    public id: string = '';
+
     @Input()
     public label: string = '';
 

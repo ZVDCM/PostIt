@@ -4,6 +4,7 @@ import { LoginConstantsService } from 'src/app/constants/login-constants.service
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoginHttpService } from './login-http.service';
 import { Observable } from 'rxjs';
+import { IFormItem } from 'src/app/shared/types/formType';
 
 @Component({
     selector: 'app-login',
@@ -29,16 +30,14 @@ import { Observable } from 'rxjs';
             >
                 <div class="flex flex-col gap-4">
                     <form-input
-                        [label]="loginConstants.loginForm.username.label"
-                        [formControlName]="
-                            loginConstants.loginForm.username.label
-                        "
+                        [id]="emailField.id"
+                        [label]="emailField.label"
+                        [formControlName]="emailField.label"
                     />
                     <form-input-group
-                        [label]="loginConstants.loginForm.password.label"
-                        [formControlName]="
-                            loginConstants.loginForm.password.label
-                        "
+                        [id]="passwordField.id"
+                        [label]="passwordField.label"
+                        [formControlName]="passwordField.label"
                         [icon]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
                         [type]="showPassword ? 'text' : 'password'"
                         [hasAutocomplete]="false"
@@ -47,10 +46,11 @@ import { Observable } from 'rxjs';
                 </div>
                 <div class="flex justify-between">
                     <p-checkbox
-                        inputId="remember-me"
+                        [formControlName]="rememberField.label"
+                        [inputId]="rememberField.id"
                         [binary]="true"
                         (onChange)="onChanged($event)"
-                        label="Remember my username"
+                        [label]="rememberField.label"
                     ></p-checkbox>
                     <a
                         class="hover:underline"
@@ -85,17 +85,21 @@ export class LoginComponent {
     public loginForm: FormGroup = new FormGroup({});
     public showPassword: boolean = false;
 
+    public emailField: IFormItem = this.loginConstants.loginForm['email'];
+    public passwordField: IFormItem = this.loginConstants.loginForm['password'];
+    public rememberField: IFormItem = this.loginConstants.loginForm['remember'];
+
     constructor(
         public loginConstants: LoginConstantsService,
         public loginHttp: LoginHttpService,
         private _formHelper: FormHelperService
     ) {
+        console.log(localStorage.getItem(this.emailField.label));
         this.loginForm = this._formHelper.setFormGroup({
-            [this.loginConstants.loginForm.username.label]: new FormControl(
-                'JuanDelaCruz@gmail.com'
-            ),
-            [this.loginConstants.loginForm.password.label]: new FormControl(
-                'TestTest!23'
+            [this.emailField.label]: new FormControl('JuanDelaCruz@gmail.com'),
+            [this.passwordField.label]: new FormControl('TestTest!23'),
+            [this.rememberField.label]: new FormControl(
+                localStorage.getItem(this.emailField.label) ? true : false
             ),
         });
 
@@ -114,9 +118,8 @@ export class LoginComponent {
         localStorage.clear();
         if (checked) {
             localStorage.setItem(
-                this.loginConstants.loginForm.username.label,
-                this.loginForm.get(this.loginConstants.loginForm.username.label)
-                    ?.value
+                this.emailField.label,
+                this.loginForm.get(this.emailField.label)?.value
             );
         }
     }

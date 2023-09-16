@@ -4,6 +4,7 @@ import { ServerConstantsService } from 'src/app/constants/server-constants.servi
 import { ILogin, ILoginPayload } from './loginTypes';
 import { LoginConstantsService } from 'src/app/constants/login-constants.service';
 import { Observable, Subject, catchError, map, switchMap, tap } from 'rxjs';
+import { UserService } from 'src/app/shared/services/user.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -13,12 +14,11 @@ export class LoginHttpService {
 
     public isLoading: boolean = false;
 
-    public userData: ILoginPayload = {} as ILoginPayload;
-
     constructor(
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _loginConstants: LoginConstantsService
+        private _loginConstants: LoginConstantsService,
+        private _user: UserService
     ) {}
 
     public watchLogin$(): Observable<void> {
@@ -27,9 +27,9 @@ export class LoginHttpService {
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
                     map((data: ILoginPayload) => {
-                        this.userData = data;
+                        this._user.setCredentials(data);
                         console.log(data);
-                        return undefined;
+                        return void 0;
                     })
                 )
             ),
