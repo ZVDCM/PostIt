@@ -7,11 +7,19 @@ import { AppComponent } from './app.component';
 import { UserService } from './shared/services/user.service';
 import { SharedModule } from './shared/shared.module';
 import { LoadingService } from './shared/services/loading.service';
+import { MessageService } from 'primeng/api';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
     declarations: [AppComponent],
-    imports: [BrowserModule, AppRoutingModule, SharedModule, FeaturesModule],
+    imports: [
+        BrowserAnimationsModule,
+        BrowserModule,
+        AppRoutingModule,
+        SharedModule,
+        FeaturesModule,
+    ],
     bootstrap: [AppComponent],
-    providers: [UserService, LoadingService],
+    providers: [UserService, LoadingService, MessageService],
 })
 export class AppModule {}

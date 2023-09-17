@@ -1,8 +1,18 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
+import {
+    AbstractControl,
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    ValidatorFn,
+    Validators,
+} from '@angular/forms';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { IFormItem } from 'src/app/shared/types/formType';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
+import { RegisterHttpService } from './register-http.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-register',
@@ -29,13 +39,14 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                             [id]="usernameField.id"
                             [attr.aria-describedby]="usernameField.id + '-help'"
                             [formControlName]="usernameField.label"
+                            [readOnly]="registerHttp.isLoading"
+                            [autocomplete]="true"
                             (blur)="
                                 formHelper
                                     .getFormControl(usernameField.label)!
                                     .markAsDirty()
                             "
                             pInputText
-                            autocomplete
                         />
                         <small
                             *ngIf="usernameField.hint !== null"
@@ -58,13 +69,14 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                             [id]="emailField.id"
                             [attr.aria-describedby]="emailField.id + '-help'"
                             [formControlName]="emailField.label"
+                            [readonly]="registerHttp.isLoading"
+                            [autocomplete]="true"
                             (blur)="
                                 formHelper
                                     .getFormControl(emailField.label)!
                                     .markAsDirty()
                             "
                             pInputText
-                            autocomplete
                         />
                         <small
                             *ngIf="emailField.hint !== null"
@@ -92,6 +104,7 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
                                 [formControlName]="passwordField.label"
+                                [readOnly]="registerHttp.isLoading"
                                 (blur)="
                                     formHelper
                                         .getFormControl(passwordField.label)!
@@ -122,8 +135,8 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                     </div>
                     <!-- CONFIRM PASSWORD -->
                     <div class="flex flex-col gap-2">
-                        <label [htmlFor]="passwordField.id">{{
-                            passwordField.label
+                        <label [htmlFor]="confirmPasswordField.id">{{
+                            confirmPasswordField.label
                         }}</label>
                         <div class="p-inputgroup">
                             <input
@@ -136,6 +149,7 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                                 "
                                 [autocomplete]="false"
                                 [formControlName]="confirmPasswordField.label"
+                                [readOnly]="registerHttp.isLoading"
                                 (blur)="
                                     formHelper
                                         .getFormControl(
@@ -171,19 +185,22 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
                 </div>
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
+                        [loading]="registerHttp.isLoading"
                         type="submit"
                         styleClass="w-full"
                         label="Register"
                     ></p-button>
                     <p-button
+                        [disabled]="registerHttp.isLoading"
+                        [routerLink]="accountConstants.loginEndpoint"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-secondary"
-                        label="Cancel"
-                        [routerLink]="accountConstants.loginEndpoint"
+                        label="Go back"
                     ></p-button>
                 </div>
             </form>
         </section>
+        <ng-container *ngIf="register$ | async"></ng-container>
     `,
     styles: [
         `
@@ -193,9 +210,14 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [AccountConstantsService, FormHelperService],
+    providers: [
+        AccountConstantsService,
+        FormHelperService,
+        RegisterHttpService,
+    ],
 })
 export class RegisterComponent {
+    public register$: Observable<void> = new Observable<void>();
     public showPassword: boolean = false;
     public showConfirmPassword: boolean = false;
 
@@ -210,23 +232,37 @@ export class RegisterComponent {
 
     constructor(
         public accountConstants: AccountConstantsService,
-        public formHelper: FormHelperService
+        public formHelper: FormHelperService,
+        public registerHttp: RegisterHttpService,
+        private _loading: LoadingService
     ) {
-        formHelper.setFormGroup({
-            [this.usernameField.label]: new FormControl('', [
-                Validators.required,
-            ]),
-            [this.emailField.label]: new FormControl('', [
-                Validators.required,
-                Validators.email,
-            ]),
-            [this.passwordField.label]: new FormControl('', [
-                Validators.required,
-            ]),
-            [this.confirmPasswordField.label]: new FormControl('', [
-                Validators.required,
-            ]),
-        });
+        this.register$ = this.registerHttp.watchRegister$();
+        formHelper.setFormGroup(
+            new FormGroup(
+                {
+                    [this.usernameField.label]: new FormControl('', [
+                        Validators.required,
+                    ]),
+                    [this.emailField.label]: new FormControl('', [
+                        Validators.required,
+                        Validators.email,
+                    ]),
+                    [this.passwordField.label]: new FormControl('', [
+                        Validators.required,
+                    ]),
+                    [this.confirmPasswordField.label]: new FormControl('', [
+                        Validators.required,
+                        this.passwordsMustMatch(
+                            this.passwordField.label,
+                            this.confirmPasswordField.label
+                        ),
+                    ]),
+                },
+                {
+                    updateOn: 'blur',
+                }
+            )
+        );
     }
 
     public togglePasswordType(): void {
@@ -238,11 +274,32 @@ export class RegisterComponent {
     }
 
     public onSubmit(): void {
+        console.log(this.formHelper.formGroup);
         if (this.formHelper.formGroup.invalid) {
             this.formHelper.validateAllFormInputs();
-            console.log(this.formHelper.formGroup);
+            return;
         }
-        console.log(this.formHelper.formGroup.invalid);
-        console.log(this.formHelper.formGroup.value);
+        this.registerHttp.isLoading = this._loading.showLoading();
+        this.registerHttp.register(this.formHelper.formGroup.value);
+    }
+
+    public passwordsMustMatch(
+        formControl1: string,
+        formControl2: string
+    ): () => ValidationErrors | null {
+        return (): ValidationErrors | null => {
+            const control1 = this.formHelper.getFormControl(formControl1);
+            const control2 = this.formHelper.getFormControl(formControl2);
+
+            if (
+                control1 !== null &&
+                control2 !== null &&
+                control1.value !== control2.value
+            ) {
+                return { matchError: true };
+            }
+
+            return null;
+        };
     }
 }

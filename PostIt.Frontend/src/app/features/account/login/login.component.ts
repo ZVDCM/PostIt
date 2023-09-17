@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoginHttpService } from './login-http.service';
-import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/shared/types/formType';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-login',
@@ -15,9 +15,9 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
             <div class="flex flex-col items-end">
                 <span>Not a member?</span>
                 <a
+                    [routerLink]="accountConstants.registerEndpoint"
                     class="hover:underline"
                     style="color: var(--primary-color)"
-                    [routerLink]="accountConstants.registerEndpoint"
                     >Create an account</a
                 >
             </div>
@@ -39,8 +39,9 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
                             [id]="emailField.id"
                             [attr.aria-describedby]="emailField.id + '-help'"
                             [formControlName]="emailField.label"
+                            [readonly]="loginHttp.isLoading"
+                            [autocomplete]="true"
                             pInputText
-                            autocomplete
                         />
                         <small
                             *ngIf="emailField.hint !== null"
@@ -68,6 +69,7 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
                                 [formControlName]="passwordField.label"
+                                [readonly]="loginHttp.isLoading"
                                 pInputText
                             />
                             <button
@@ -97,13 +99,13 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
                         [formControlName]="rememberField.label"
                         [inputId]="rememberField.id"
                         [binary]="true"
-                        (onChange)="onChanged($event)"
                         [label]="rememberField.label"
+                        (onChange)="onChanged($event)"
                     ></p-checkbox>
                     <a
+                        [routerLink]="accountConstants.forgotPasswordEndpoint"
                         class="hover:underline"
                         style="color: var(--primary-color)"
-                        [routerLink]="accountConstants.forgotPasswordEndpoint"
                         >Forgot your password?</a
                     >
                 </div>
@@ -145,14 +147,19 @@ export class LoginComponent {
         public formHelper: FormHelperService,
         private _loading: LoadingService
     ) {
+        this._loading.endLoading();
         this.login$ = loginHttp.watchLogin$();
-        formHelper.setFormGroup({
-            [this.emailField.label]: new FormControl('JuanDelaCruz@gmail.com'),
-            [this.passwordField.label]: new FormControl('TestTest!23'),
-            [this.rememberField.label]: new FormControl(
-                localStorage.getItem(this.emailField.label) ? true : false
-            ),
-        });
+        formHelper.setFormGroup(
+            new FormGroup({
+                [this.emailField.label]: new FormControl(
+                    'JuanDelaCruz@gmail.com'
+                ),
+                [this.passwordField.label]: new FormControl('TestTest!23'),
+                [this.rememberField.label]: new FormControl(
+                    localStorage.getItem(this.emailField.label) ? true : false
+                ),
+            })
+        );
     }
 
     public togglePasswordType(): void {

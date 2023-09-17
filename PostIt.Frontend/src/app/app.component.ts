@@ -7,6 +7,7 @@ import { Component } from '@angular/core';
             <router-outlet />
         </main>
         <loading />
+        <p-toast [preventOpenDuplicates]="true" />
     `,
     styles: [
         `

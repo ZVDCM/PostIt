@@ -21,7 +21,7 @@ export class LoadingService {
     private readonly _min: number = 3;
     private readonly _max: number = 9;
     private readonly _millisecondsPerTick = 500;
-    private readonly _millisecondsDelay = 1000;
+    private readonly _millisecondsDelay = 500;
     private _stopInterval$$: Subject<void> = new Subject<void>();
     private _isLoading$$: Subject<boolean> = new Subject<boolean>();
 
@@ -69,8 +69,8 @@ export class LoadingService {
     private randomValue(progress: number): number {
         let value: number = 0;
         if (progress > this._end - this._max) {
-            let diff: number = this._end - progress;
-            let half: number = Math.floor(diff / 2);
+            const diff: number = this._end - progress;
+            const half: number = Math.floor(diff / 2);
             value = Math.floor(Math.random() * (diff - half + 1)) + half;
         } else {
             value =

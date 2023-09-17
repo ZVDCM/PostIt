@@ -1,11 +1,22 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ILogin, ILoginPayload } from './loginTypes';
-import { Observable, Subject, catchError, map, switchMap, tap } from 'rxjs';
+import {
+    Observable,
+    Subject,
+    catchError,
+    concat,
+    filter,
+    map,
+    of,
+    switchMap,
+    tap,
+} from 'rxjs';
 import { UserService } from 'src/app/shared/services/user.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
+import { MessageService } from 'primeng/api';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -20,26 +31,34 @@ export class LoginHttpService {
         private _serverConstants: ServerConstantsService,
         private _accountConstants: AccountConstantsService,
         private _user: UserService,
-        private _loading: LoadingService
+        private _loading: LoadingService,
+        private _messageService: MessageService
     ) {}
 
     public watchLogin$(): Observable<void> {
         return this._login$$.asObservable().pipe(
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
-                    map((data: ILoginPayload) => {
+                    tap((data: ILoginPayload) => {
+                        this.isLoading = false;
                         this._user.setCredentials(data);
                         console.log(data);
-                        return void 0;
                     })
                 )
             ),
-            catchError((err) => {
-                if (err instanceof HttpErrorResponse)
-                    console.log('unauthorized');
-                return new Observable<void>();
-            }),
-            tap((_) => (this.isLoading = this._loading.endLoading()))
+            catchError((err) =>
+                of(err).pipe(
+                    filter((err) => err instanceof HttpErrorResponse),
+                    tap((_) => (this.isLoading = this._loading.endLoading())),
+                    tap((err) => {
+                        this._messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: 'Error in registration',
+                        });
+                    })
+                )
+            )
         );
     }
 

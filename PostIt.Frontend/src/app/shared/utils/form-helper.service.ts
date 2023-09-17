@@ -9,10 +9,8 @@ export class FormHelperService {
         return this._formGroup;
     }
 
-    public setFormGroup(formControls: {
-        [key: string]: FormControl;
-    }): FormGroup {
-        this._formGroup = new FormGroup(formControls);
+    public setFormGroup(formGroup: FormGroup): FormGroup {
+        this._formGroup = formGroup;
         return this._formGroup;
     }
 
@@ -33,13 +31,11 @@ export class FormHelperService {
     }
 
     public validateAllFormInputs() {
-        Object.keys(this._formGroup.controls).forEach(
-            (field) => {
-                const control = this._formGroup.get(field);
-                if (control instanceof FormControl) {
-                    control.markAsDirty({ onlySelf: true });
-                }
+        Object.keys(this._formGroup.controls).forEach((field) => {
+            const control = this._formGroup.get(field);
+            if (control instanceof FormControl) {
+                control.markAsDirty({ onlySelf: true });
             }
-        );
+        });
     }
 }
