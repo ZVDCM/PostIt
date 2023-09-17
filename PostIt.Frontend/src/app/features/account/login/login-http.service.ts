@@ -1,16 +1,16 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ServerConstantsService } from 'src/app/constants/server-constants.service';
 import { ILogin, ILoginPayload } from './loginTypes';
-import { LoginConstantsService } from 'src/app/constants/login-constants.service';
 import { Observable, Subject, catchError, map, switchMap, tap } from 'rxjs';
 import { UserService } from 'src/app/shared/services/user.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
     private readonly _url: string =
-        this._serverConstants.server + this._loginConstants.loginEndpoint;
+        this._serverConstants.server + this._accountConstants.loginEndpoint;
     private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
     public isLoading: boolean = false;
@@ -18,7 +18,7 @@ export class LoginHttpService {
     constructor(
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _loginConstants: LoginConstantsService,
+        private _accountConstants: AccountConstantsService,
         private _user: UserService,
         private _loading: LoadingService
     ) {}

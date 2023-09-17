@@ -2,19 +2,19 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AccountRoutingModule } from './account-routing.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AccountComponent } from './account.component';
 import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
-    declarations: [AccountComponent, LoginComponent],
+    declarations: [AccountComponent, LoginComponent, RegisterComponent],
     imports: [
         CommonModule,
         SharedModule,
         AccountRoutingModule,
-        ReactiveFormsModule,
         HttpClientModule,
         FormsModule,
     ],

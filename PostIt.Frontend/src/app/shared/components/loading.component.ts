@@ -13,7 +13,7 @@ import { Observable } from 'rxjs';
         >
             <div
                 id="loading-background"
-                class="block h-1"
+                class="h-1"
                 style="background-color: gray"
             ></div>
             <div

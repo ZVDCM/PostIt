@@ -1,23 +1,23 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import { LoginConstantsService } from 'src/app/constants/login-constants.service';
+import { FormControl } from '@angular/forms';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoginHttpService } from './login-http.service';
 import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/shared/types/formType';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 
 @Component({
     selector: 'app-login',
     template: `
-        <header class="flex justify-between items-end pt-36 pb-10">
+        <header class="flex justify-between items-end pt-40 pb-10">
             <h1 class="text-6xl font-extrabold tracking-widest">LOGIN</h1>
             <div class="flex flex-col items-end">
                 <span>Not a member?</span>
                 <a
                     class="hover:underline"
                     style="color: var(--primary-color)"
-                    [routerLink]="loginConstants.registerEndpoint"
+                    [routerLink]="accountConstants.registerEndpoint"
                     >Create an account</a
                 >
             </div>
@@ -26,24 +26,71 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
             <form
                 class="flex flex-col gap-4"
                 method="POST"
-                [formGroup]="loginForm"
+                [formGroup]="formHelper.formGroup"
                 (submit)="onSubmit()"
             >
                 <div class="flex flex-col gap-4">
-                    <form-input
-                        [id]="emailField.id"
-                        [label]="emailField.label"
-                        [formControlName]="emailField.label"
-                    />
-                    <form-input-group
-                        [id]="passwordField.id"
-                        [label]="passwordField.label"
-                        [formControlName]="passwordField.label"
-                        [icon]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
-                        [type]="showPassword ? 'text' : 'password'"
-                        [hasAutocomplete]="false"
-                        (onButtonClick)="togglePasswordType()"
-                    />
+                    <!-- EMAIL -->
+                    <div class="flex flex-col gap-2">
+                        <label [htmlFor]="emailField.id">{{
+                            emailField.label
+                        }}</label>
+                        <input
+                            [id]="emailField.id"
+                            [attr.aria-describedby]="emailField.id + '-help'"
+                            [formControlName]="emailField.label"
+                            pInputText
+                            autocomplete
+                        />
+                        <small
+                            *ngIf="emailField.hint !== null"
+                            id="{{ emailField.id }}-help"
+                            [ngClass]="{
+                                hidden: !formHelper.isInputInvalid(
+                                    emailField.label
+                                )
+                            }"
+                            class="p-error"
+                            >{{ emailField.hint }}
+                        </small>
+                    </div>
+                    <!-- PASSWORD -->
+                    <div class="flex flex-col gap-2">
+                        <label [htmlFor]="passwordField.id">{{
+                            passwordField.label
+                        }}</label>
+                        <div class="p-inputgroup">
+                            <input
+                                [id]="passwordField.id"
+                                [attr.aria-describedby]="
+                                    passwordField.id + '-help'
+                                "
+                                [type]="showPassword ? 'text' : 'password'"
+                                [autocomplete]="false"
+                                [formControlName]="passwordField.label"
+                                pInputText
+                            />
+                            <button
+                                type="button"
+                                pButton
+                                icon="pi {{
+                                    showPassword ? 'pi-eye-slash' : 'pi-eye'
+                                }}"
+                                (click)="togglePasswordType()"
+                            ></button>
+                        </div>
+                        <small
+                            *ngIf="passwordField.hint !== null"
+                            id="{{ passwordField.id }}-help"
+                            [ngClass]="{
+                                hidden: !formHelper.isInputInvalid(
+                                    passwordField.label
+                                )
+                            }"
+                            class="p-error"
+                            >{{ passwordField.hint }}</small
+                        >
+                    </div>
                 </div>
                 <div class="flex justify-between">
                     <p-checkbox
@@ -56,7 +103,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                     <a
                         class="hover:underline"
                         style="color: var(--primary-color)"
-                        [routerLink]="loginConstants.forgotPasswordEndpoint"
+                        [routerLink]="accountConstants.forgotPasswordEndpoint"
                         >Forgot your password?</a
                     >
                 </div>
@@ -74,41 +121,38 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     styles: [
         `
             :host {
-                @apply flex flex-col h-full max-w-lg mx-auto;
+                @apply w-full max-w-lg;
             }
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LoginConstantsService, FormHelperService, LoginHttpService],
+    providers: [AccountConstantsService, FormHelperService, LoginHttpService],
 })
 export class LoginComponent {
     public login$: Observable<void> = new Observable<void>();
-    public loginForm: FormGroup = new FormGroup({});
     public showPassword: boolean = false;
 
-    public emailField: IFormItem = this.loginConstants.loginForm['email'];
-    public passwordField: IFormItem = this.loginConstants.loginForm['password'];
-    public rememberField: IFormItem = this.loginConstants.loginForm['remember'];
+    public readonly emailField: IFormItem =
+        this.accountConstants.loginForm['email'];
+    public readonly passwordField: IFormItem =
+        this.accountConstants.loginForm['password'];
+    public readonly rememberField: IFormItem =
+        this.accountConstants.loginForm['remember'];
 
     constructor(
-        public loginConstants: LoginConstantsService,
+        public accountConstants: AccountConstantsService,
         public loginHttp: LoginHttpService,
-        private _formHelper: FormHelperService,
+        public formHelper: FormHelperService,
         private _loading: LoadingService
     ) {
-        this.login$ = this.loginHttp.watchLogin$();
-        this.loginForm = this._formHelper.setFormGroup({
+        this.login$ = loginHttp.watchLogin$();
+        formHelper.setFormGroup({
             [this.emailField.label]: new FormControl('JuanDelaCruz@gmail.com'),
             [this.passwordField.label]: new FormControl('TestTest!23'),
             [this.rememberField.label]: new FormControl(
                 localStorage.getItem(this.emailField.label) ? true : false
             ),
         });
-    }
-
-    public onSubmit(): void {
-        this.loginHttp.isLoading = this._loading.showLoading();
-        this.loginHttp.login(this.loginForm.value);
     }
 
     public togglePasswordType(): void {
@@ -120,8 +164,13 @@ export class LoginComponent {
         if (checked) {
             localStorage.setItem(
                 this.emailField.label,
-                this.loginForm.get(this.emailField.label)?.value
+                this.formHelper.formGroup.get(this.emailField.label)?.value
             );
         }
+    }
+
+    public onSubmit(): void {
+        this.loginHttp.isLoading = this._loading.showLoading();
+        this.loginHttp.login(this.formHelper.formGroup.value);
     }
 }
