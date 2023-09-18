@@ -21,13 +21,13 @@ public sealed class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<Result<CreateUserRequest>, CreateUserCommand>()
-            .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Password, HashType.SHA512, 13))));
+            .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value!.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value!.Password, HashType.SHA512, 13))));
         CreateMap<Result<Guid>, GetUserByIdQuery>()
-            .ConvertUsing(r => new GetUserByIdQuery(new UserId(r.Value)));
+            .ConvertUsing(r => new GetUserByIdQuery(new UserId(r.Value!)));
         CreateMap<Result<Tuple<Guid, UpdateUserRequest>>, UpdateUserCommand>()
-            .ConvertUsing(r => new UpdateUserCommand(new UserId(r.Value!.Item1), r.Value.Item2.Username, r.Value.Item2.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.Password, HashType.SHA512, 13)));
+            .ConvertUsing(r => new UpdateUserCommand(new UserId(r.Value!.Item1), r.Value!.Item2.Username, r.Value!.Item2.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value!.Item2.Password, HashType.SHA512, 13)));
         CreateMap<Result<Guid>, DeleteUserCommand>()
-            .ConvertUsing(r => new DeleteUserCommand(new UserId(r.Value)));
+            .ConvertUsing(r => new DeleteUserCommand(new UserId(r.Value!)));
         CreateMap<Result<PageList<User>>, PageList<UserResponse>>()
             .ConvertUsing(r => new PageList<UserResponse>(
                 r.Value!.Page,

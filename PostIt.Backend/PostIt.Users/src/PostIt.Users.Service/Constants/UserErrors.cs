@@ -5,6 +5,10 @@ namespace PostIt.Users.Service.Constants;
 
 public static class UserErrors
 {
+    public static Error UserAlreadyExists => new(
+        "UserAPI.UserAlreadyExists",
+        "The user already exists.",
+        (int)HttpStatusCode.Conflict);
     public static Error UserNotCreated => new(
         "UserAPI.UserNotCreated",
         "The user was not created.",

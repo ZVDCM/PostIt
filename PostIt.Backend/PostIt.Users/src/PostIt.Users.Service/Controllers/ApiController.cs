@@ -46,6 +46,7 @@ public class ApiController : ControllerBase
     private IActionResult MatchError(Error error)
         => error.Status switch
         {
+            (int)HttpStatusCode.Conflict => Conflict(),
             (int)HttpStatusCode.NotFound => NotFound(),
             (int)HttpStatusCode.BadRequest => BadRequest(),
             (int)HttpStatusCode.Unauthorized => Unauthorized(),

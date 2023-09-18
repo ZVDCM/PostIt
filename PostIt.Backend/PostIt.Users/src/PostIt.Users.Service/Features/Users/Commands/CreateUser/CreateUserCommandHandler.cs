@@ -24,9 +24,12 @@ public sealed class CreateUserCommandHandler : ICommandHandler<CreateUserCommand
 
     public async Task<Result<User>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        User user = request.User;
         var role = await _roleRepository.GetRoleAsync(r => r.Value == RoleConstants.User, cancellationToken);
         if (role is null) return Result.Failure<User>(RoleErrors.RoleNotFound);
+
+        User? user = await _userRepository.GetUserAsync(u => u.Email == request.User.Email, cancellationToken);
+        if (user is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
+        user = request.User;
 
         user.UpdateRole(role);
 
