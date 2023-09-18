@@ -26,9 +26,11 @@ export class LoadingService {
     private _isLoading$$: Subject<boolean> = new Subject<boolean>();
 
     public progress$: Observable<number> = this.start();
+    public isCancelled: boolean = false;
 
     public showLoading(): boolean {
         this._isLoading$$.next(true);
+        this.isCancelled = false;
         return true;
     }
 
@@ -55,7 +57,7 @@ export class LoadingService {
             ),
             of(this._end),
             timer(this._millisecondsDelay).pipe(
-                tap(() => this._isLoading$$.next(false))
+                tap((_) => this._isLoading$$.next(false))
             )
         );
     }

@@ -6,6 +6,10 @@
 @import "primeng/resources/themes/lara-dark-purple/theme.css";
 @import "primeng/resources/primeng.css";
 
+:root {
+    --error-color: #fca5a5;
+}
+
 *,
 *::after,
 *::before {

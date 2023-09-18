@@ -4,8 +4,8 @@ import {
     Observable,
     Subject,
     catchError,
-    concat,
     filter,
+    finalize,
     of,
     switchMap,
     tap,
@@ -26,6 +26,7 @@ export class RegisterHttpService {
     private _register$$: Subject<IRegister> = new Subject<IRegister>();
 
     public isLoading: boolean = false;
+    public isCancelled: boolean = false;
 
     constructor(
         private _router: Router,
@@ -38,20 +39,33 @@ export class RegisterHttpService {
 
     public watchRegister$(): Observable<void> {
         return this._register$$.asObservable().pipe(
-            switchMap((user: IRegister) => this.registerUser(user)),
             tap((_) => {
-                this.isLoading = false;
-                this._router.navigate([this._accountConstants.loginEndpoint]);
-                this._messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Registration was successful',
-                });
+                this.isLoading = true;
+                this.isCancelled = true;
             }),
+            switchMap((user: IRegister) =>
+                this.registerUser(user).pipe(
+                    tap((_) => {
+                        this.isLoading = false;
+                        this.isCancelled = false;
+                        this._router.navigate([
+                            this._accountConstants.loginEndpoint,
+                        ]);
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Registration was successful',
+                        });
+                    })
+                )
+            ),
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => (this.isLoading = this._loading.endLoading())),
+                    tap((_) => {
+                        this.isLoading = this._loading.endLoading();
+                        this.isCancelled = false;
+                    }),
                     tap((err) => {
                         this._messageService.add({
                             severity: 'error',
@@ -60,7 +74,12 @@ export class RegisterHttpService {
                         });
                     })
                 )
-            )
+            ),
+            finalize(() => {
+                if (this.isCancelled) {
+                    this._loading.isCancelled = true;
+                }
+            })
         );
     }
 

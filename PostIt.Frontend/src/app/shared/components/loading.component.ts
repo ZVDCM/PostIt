@@ -20,7 +20,11 @@ import { Observable } from 'rxjs';
                 id="loading-foreground"
                 class="absolute top-0 left-0 h-1 transition-all"
                 [style.width]="progress + '%'"
-                style="background-color: var(--primary-color)"
+                [ngStyle]="{
+                    backgroundColor: loading.isCancelled
+                        ? 'var(--error-color)'
+                        : 'var(--primary-color)'
+                }"
             ></div>
         </div>
     `,

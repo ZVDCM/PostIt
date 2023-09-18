@@ -177,7 +177,7 @@ export class LoginComponent {
     }
 
     public onSubmit(): void {
-        this.loginHttp.isLoading = this._loading.showLoading();
+        this._loading.showLoading();
         this.loginHttp.login(this.formHelper.formGroup.value);
     }
 }

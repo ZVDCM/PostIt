@@ -5,9 +5,8 @@ import {
     Observable,
     Subject,
     catchError,
-    concat,
     filter,
-    map,
+    finalize,
     of,
     switchMap,
     tap,
@@ -25,6 +24,7 @@ export class LoginHttpService {
     private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
     public isLoading: boolean = false;
+    public isCancelled: boolean = false;
 
     constructor(
         private _http: HttpClient,
@@ -37,28 +37,40 @@ export class LoginHttpService {
 
     public watchLogin$(): Observable<void> {
         return this._login$$.asObservable().pipe(
+            tap(() => {
+                this.isLoading = true;
+                this.isCancelled = true;
+            }),
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
                     tap((data: ILoginPayload) => {
                         this.isLoading = false;
+                        this.isCancelled = false;
                         this._user.setCredentials(data);
-                        console.log(data);
                     })
                 )
             ),
             catchError((err) =>
                 of(err).pipe(
+                    tap((_) => {
+                        this.isLoading = this._loading.endLoading();
+                        this.isCancelled = false;
+                    }),
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => (this.isLoading = this._loading.endLoading())),
                     tap((err) => {
                         this._messageService.add({
                             severity: 'error',
                             summary: 'Error',
-                            detail: 'Error in registration',
+                            detail: 'Unauthorized',
                         });
                     })
                 )
-            )
+            ),
+            finalize(() => {
+                if (this.isCancelled) {
+                    this._loading.isCancelled = true;
+                }
+            })
         );
     }
 

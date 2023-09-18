@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import {
-    AbstractControl,
     FormControl,
     FormGroup,
     ValidationErrors,
-    ValidatorFn,
     Validators,
 } from '@angular/forms';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
@@ -236,32 +234,28 @@ export class RegisterComponent {
         public registerHttp: RegisterHttpService,
         private _loading: LoadingService
     ) {
+        this._loading.endLoading();
         this.register$ = this.registerHttp.watchRegister$();
         formHelper.setFormGroup(
-            new FormGroup(
-                {
-                    [this.usernameField.label]: new FormControl('', [
-                        Validators.required,
-                    ]),
-                    [this.emailField.label]: new FormControl('', [
-                        Validators.required,
-                        Validators.email,
-                    ]),
-                    [this.passwordField.label]: new FormControl('', [
-                        Validators.required,
-                    ]),
-                    [this.confirmPasswordField.label]: new FormControl('', [
-                        Validators.required,
-                        this.passwordsMustMatch(
-                            this.passwordField.label,
-                            this.confirmPasswordField.label
-                        ),
-                    ]),
-                },
-                {
-                    updateOn: 'blur',
-                }
-            )
+            new FormGroup({
+                [this.usernameField.label]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.emailField.label]: new FormControl('', [
+                    Validators.required,
+                    Validators.email,
+                ]),
+                [this.passwordField.label]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.confirmPasswordField.label]: new FormControl('', [
+                    Validators.required,
+                    this.passwordsMustMatch(
+                        this.passwordField.label,
+                        this.confirmPasswordField.label
+                    ),
+                ]),
+            })
         );
     }
 
@@ -279,7 +273,7 @@ export class RegisterComponent {
             this.formHelper.validateAllFormInputs();
             return;
         }
-        this.registerHttp.isLoading = this._loading.showLoading();
+        this._loading.showLoading();
         this.registerHttp.register(this.formHelper.formGroup.value);
     }
 
