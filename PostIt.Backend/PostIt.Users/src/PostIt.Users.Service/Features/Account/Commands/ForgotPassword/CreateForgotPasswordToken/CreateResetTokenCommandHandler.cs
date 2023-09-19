@@ -11,13 +11,13 @@ using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
 namespace PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 
-public sealed class CreateForgotPasswordTokenCommandHandler : ICommandHandler<CreateForgotPasswordTokenCommand, Result<Tuple<User, Token>>>
+public sealed class CreateResetTokenCommandHandler : ICommandHandler<CreateResetTokenCommand, Result<Tuple<User, Token>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly TokenOptions _tokenOptions;
 
-    public CreateForgotPasswordTokenCommandHandler(
+    public CreateResetTokenCommandHandler(
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IOptions<TokenOptions> tokenOptions)
@@ -27,7 +27,7 @@ public sealed class CreateForgotPasswordTokenCommandHandler : ICommandHandler<Cr
         _tokenOptions = tokenOptions.Value;
     }
 
-    public async Task<Result<Tuple<User, Token>>> Handle(CreateForgotPasswordTokenCommand request, CancellationToken cancellationToken)
+    public async Task<Result<Tuple<User, Token>>> Handle(CreateResetTokenCommand request, CancellationToken cancellationToken)
     {
         User? user = await _userRepository.GetUserAsync(u => u.Email == request.UserEmail, cancellationToken);
         if (user is null) return Result.Success<Tuple<User, Token>>();

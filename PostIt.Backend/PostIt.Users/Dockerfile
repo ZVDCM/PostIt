@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
 WORKDIR /app
 
 COPY ./PostIt.Users/NuGet.Config ./
-COPY Packages ./packages
+COPY Packages ./Packages
 
 COPY PostIt.Users/src/PostIt.Users.Service/*.csproj ./
 RUN dotnet restore

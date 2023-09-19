@@ -6,4 +6,4 @@ using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 
-public readonly record struct CreateForgotPasswordTokenCommand(string UserEmail) : ICommand<Result<Tuple<User, Token>>>;
+public readonly record struct CreateResetTokenCommand(string UserEmail) : ICommand<Result<Tuple<User, Token>>>;

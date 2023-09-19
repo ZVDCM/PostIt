@@ -2,9 +2,9 @@ using FluentValidation;
 
 namespace PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 
-public sealed class CreateForgotPasswordTokenCommandValidator : AbstractValidator<CreateForgotPasswordTokenCommand>
+public sealed class CreateResetTokenCommandValidator : AbstractValidator<CreateResetTokenCommand>
 {
-    public CreateForgotPasswordTokenCommandValidator()
+    public CreateResetTokenCommandValidator()
     {
         RuleFor(x => x.UserEmail).EmailAddress();
     }

@@ -14,7 +14,7 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="PostIt.Contracts.Posts" Version="1.0.30" />
-    <PackageReference Include="PostIt.Contracts.Users" Version="1.0.26" />
+    <PackageReference Include="PostIt.Contracts.Users" Version="1.0.28" />
   </ItemGroup>
 
 </Project>

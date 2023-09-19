@@ -8,14 +8,14 @@ using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
-namespace PostIt.Users.Service.Features.Account.Commands.Verify.VerifyEmail;
+namespace PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
 
-public sealed class VerifyEmailCommandHandler : ICommandHandler<VerifyEmailCommand, Result>
+public sealed class VerifyVerificationTokenCommandHandler : ICommandHandler<VerifyVerificationTokenCommand, Result>
 {
     private readonly IJwtService _jwtService;
     private readonly IUnitOfWork _unitOfWork;
 
-    public VerifyEmailCommandHandler(
+    public VerifyVerificationTokenCommandHandler(
         IJwtService jwtService,
         IUnitOfWork unitOfWork)
     {
@@ -23,7 +23,7 @@ public sealed class VerifyEmailCommandHandler : ICommandHandler<VerifyEmailComma
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(VerifyVerificationTokenCommand request, CancellationToken cancellationToken)
     {
         Result<User> result = await _jwtService.GetUserAsync(request.AccessToken, cancellationToken);
         if (result.IsFailure) return Result.Failure(result.Error);

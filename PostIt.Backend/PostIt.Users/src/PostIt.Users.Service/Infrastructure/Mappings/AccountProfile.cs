@@ -9,7 +9,7 @@ using PostIt.Contracts.Posts.Requests.Comments;
 using PostIt.Contracts.Posts.Requests.Posts;
 using PostIt.Contracts.Users.Requests.Account;
 using PostIt.Contracts.Users.Requests.Account.ForgotPassword;
-using PostIt.Contracts.Users.Requests.Account.VerifyEmail;
+using PostIt.Contracts.Users.Requests.Account.Verification;
 using PostIt.Contracts.Users.Responses;
 using PostIt.Users.Service.Domain.Tokens;
 using PostIt.Users.Service.Domain.Users;
@@ -20,7 +20,7 @@ using PostIt.Users.Service.Features.Account.Commands.Follow.FollowUser;
 using PostIt.Users.Service.Features.Account.Commands.Follow.UnfollowUser;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
-using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyForgotPasswordToken;
+using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
 using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
 using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
 using PostIt.Users.Service.Features.Account.Commands.Login;
@@ -31,10 +31,10 @@ using PostIt.Users.Service.Features.Account.Commands.Profile.UpdatePassword;
 using PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
-using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyEmail;
+using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
 using PostIt.Users.Service.Features.Account.Queries.GetProfile;
 using PostIt.Users.Service.Features.Account.Queries.GetUserProfile;
-using PostIt.Users.Service.Features.Email.Command.EmailForgotPasswordToken;
+using PostIt.Users.Service.Features.Email.Command.EmailResetToken;
 using PostIt.Users.Service.Features.Email.Command.EmailVerificationToken;
 using PostIt.Users.Service.Features.Users.Commands.CreateUser;
 
@@ -135,18 +135,18 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new CreateVerificationTokenCommand(r.Value!));
         CreateMap<Result<Tuple<User, Token>>, EmailVerificationTokenCommand>()
             .ConvertUsing(r => new EmailVerificationTokenCommand(r.Value!.Item1, r.Value.Item2));
-        CreateMap<Result<(string, VerifyEmailRequest)>, VerifyEmailCommand>()
-            .ConvertUsing(r => new VerifyEmailCommand(r.Value.Item1, r.Value.Item2.Token));
+        CreateMap<Result<(string, VerifyVerificationTokenRequest)>, VerifyVerificationTokenCommand>()
+            .ConvertUsing(r => new VerifyVerificationTokenCommand(r.Value.Item1, r.Value.Item2.Token));
     }
 
     private void AddForgotPasswordMappings()
     {
-        CreateMap<Result<CreateForgotPasswordTokenRequest>, CreateForgotPasswordTokenCommand>()
-            .ConvertUsing(r => new CreateForgotPasswordTokenCommand(r.Value!.Email));
-        CreateMap<Result<Tuple<User, Token>>, EmailForgotPasswordTokenCommand>()
-            .ConvertUsing(r => new EmailForgotPasswordTokenCommand(r.Value!.Item1, r.Value.Item2));
-        CreateMap<Result<VerifyForgotPasswordTokenRequest>, VerifyForgotPasswordTokenCommand>()
-            .ConvertUsing(r => new VerifyForgotPasswordTokenCommand(r.Value!.Email, r.Value!.Token));
+        CreateMap<Result<CreateResetTokenRequest>, CreateResetTokenCommand>()
+            .ConvertUsing(r => new CreateResetTokenCommand(r.Value!.Email));
+        CreateMap<Result<Tuple<User, Token>>, EmailResetTokenCommand>()
+            .ConvertUsing(r => new EmailResetTokenCommand(r.Value!.Item1, r.Value.Item2));
+        CreateMap<Result<VerifyResetTokenRequest>, VerifyResetTokenCommand>()
+            .ConvertUsing(r => new VerifyResetTokenCommand(r.Value!.Email, r.Value!.Token));
         CreateMap<Result<(string, ResetPasswordRequest)>, ResetPasswordCommand>()
            .ConvertUsing(r => new ResetPasswordCommand(r.Value.Item1, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
     }

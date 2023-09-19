@@ -12,7 +12,7 @@ using PostIt.Contracts.Posts.Requests.Comments;
 using PostIt.Contracts.Posts.Requests.Posts;
 using PostIt.Contracts.Users.Requests.Account;
 using PostIt.Contracts.Users.Requests.Account.ForgotPassword;
-using PostIt.Contracts.Users.Requests.Account.VerifyEmail;
+using PostIt.Contracts.Users.Requests.Account.Verification;
 using PostIt.Contracts.Users.Responses;
 using PostIt.Users.Service.Attributes;
 using PostIt.Users.Service.Domain.Roles;
@@ -25,7 +25,7 @@ using PostIt.Users.Service.Features.Account.Commands.Follow.FollowUser;
 using PostIt.Users.Service.Features.Account.Commands.Follow.UnfollowUser;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
-using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyForgotPasswordToken;
+using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
 using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
 using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
 using PostIt.Users.Service.Features.Account.Commands.Login;
@@ -37,10 +37,10 @@ using PostIt.Users.Service.Features.Account.Commands.Profile.UpdatePassword;
 using PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
-using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyEmail;
+using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
 using PostIt.Users.Service.Features.Account.Queries.GetProfile;
 using PostIt.Users.Service.Features.Account.Queries.GetUserProfile;
-using PostIt.Users.Service.Features.Email.Command.EmailForgotPasswordToken;
+using PostIt.Users.Service.Features.Email.Command.EmailResetToken;
 using PostIt.Users.Service.Features.Email.Command.EmailVerificationToken;
 using PostIt.Users.Service.Features.Users.Commands.CreateUser;
 using PostIt.Users.Service.Infrastructure.Authentication.Configurations.Options.Jwt;
@@ -142,35 +142,35 @@ public sealed class AccountController : ApiController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> VerifyEmailAsync(VerifyEmailRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> VerifyVerificationTokenAsync(VerifyVerificationTokenRequest request, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Map(Mapper.Map<VerifyEmailCommand>)
+        .Map(Mapper.Map<VerifyVerificationTokenCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Ok, HandleFailure);
 
     [HttpPost("forgotpassword")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateForgotPasswordTokenAsync(
-        CreateForgotPasswordTokenRequest request,
+    public async Task<IActionResult> CreateResetTokenAsync(
+        CreateResetTokenRequest request,
         CancellationToken cancellationToken)
         => await Result.Create(request, Errors.BadRequest)
-        .Map(Mapper.Map<CreateForgotPasswordTokenCommand>)
+        .Map(Mapper.Map<CreateResetTokenCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
-        .Map(Mapper.Map<EmailForgotPasswordTokenCommand>)
+        .Map(Mapper.Map<EmailResetTokenCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
 
     [HttpPost("forgotpassword/verify")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> VerifyForgotPasswordTokenAsync(
-        VerifyForgotPasswordTokenRequest request,
+    public async Task<IActionResult> VerifyResetTokenAsync(
+        VerifyResetTokenRequest request,
         CancellationToken cancellationToken)
         => await Result.Create(request, Errors.BadRequest)
-        .Map(Mapper.Map<VerifyForgotPasswordTokenCommand>)
+        .Map(Mapper.Map<VerifyResetTokenCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Tap(DeleteCookies)
         .Tap(SendCookie)
