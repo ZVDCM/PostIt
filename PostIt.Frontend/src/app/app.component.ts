@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'app-root',
     template: `
-        <main class="h-full">
+        <main class="h-full relative z-[2]">
             <router-outlet />
         </main>
         <loading />
@@ -12,7 +12,17 @@ import { Component } from '@angular/core';
     styles: [
         `
             :host {
-                position: relative;
+                @apply h-full relative;
+
+                main::after {
+                    @apply fixed top-[-8rem] left-0 text-[20rem] font-extrabold tracking-widest whitespace-nowrap text-slate-900 select-none pointer-events-none z-[-1];
+                    content: 'POST IT';
+                }
+
+                main::before {
+                    @apply fixed bottom-[-5rem] right-0 text-[20rem] font-extrabold tracking-widest whitespace-nowrap text-slate-900 select-none pointer-events-none z-[-1];
+                    content: 'POST IT';
+                }
 
                 footer > span {
                     color: var(--surface-border);

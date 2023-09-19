@@ -48,15 +48,19 @@ export class RegisterHttpService {
                     tap((_) => {
                         this.isLoading = false;
                         this.isCancelled = false;
-                        this._router.navigate([
-                            this._accountConstants.loginEndpoint,
-                        ]);
+                    }),
+                    tap((_) => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
                             detail: 'Registration was successful',
                         });
-                    })
+                    }),
+                    tap((_) => {
+                        this._router.navigate([
+                            this._accountConstants.loginEndpoint,
+                        ]);
+                    }),
                 )
             ),
             catchError((err) =>

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { AccountRoutingModule } from './account-routing.module';
-import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AccountComponent } from './account.component';
@@ -23,10 +22,9 @@ import { ResetPasswordComponent } from './forgot-password/reset-password.compone
     ],
     imports: [
         CommonModule,
-        SharedModule,
         AccountRoutingModule,
         HttpClientModule,
-        FormsModule,
+        SharedModule,
     ],
     exports: [AccountComponent, AccountRoutingModule],
 })

@@ -140,7 +140,7 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
     styles: [
         `
             :host {
-                @apply w-full max-w-lg z-[1];
+                @apply w-full;
             }
         `,
     ],
@@ -164,8 +164,8 @@ export class ResetPasswordComponent {
         public accountConstants: AccountConstantsService,
         public formHelper: FormHelperService,
         public resetPasswordHttp: ResetPasswordHttpService,
-        private _loading: LoadingService,
-        public passwordHelper: PasswordHelperService
+        public passwordHelper: PasswordHelperService,
+        private _loading: LoadingService
     ) {
         _loading.endLoading();
         formHelper.setFormGroup(

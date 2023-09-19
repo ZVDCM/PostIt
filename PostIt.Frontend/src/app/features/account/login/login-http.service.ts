@@ -16,6 +16,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -32,7 +33,8 @@ export class LoginHttpService {
         private _accountConstants: AccountConstantsService,
         private _user: UserService,
         private _loading: LoadingService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
+        private _router: Router
     ) {}
 
     public watchLogin$(): Observable<void> {
@@ -43,10 +45,17 @@ export class LoginHttpService {
             }),
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
-                    tap((data: ILoginPayload) => {
+                    tap((_) => {
                         this.isLoading = false;
                         this.isCancelled = false;
+                    }),
+                    tap((data: ILoginPayload) => {
                         this._user.setCredentials(data);
+                    }),
+                    tap((_) => {
+                        this._router.navigate([
+                            this._accountConstants.postsEndpoint,
+                        ]);
                     })
                 )
             ),

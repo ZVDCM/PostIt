@@ -24,8 +24,8 @@
 
 html,
 body {
-    height: 100dvh;
-    background-color: var(--surface-ground);
+    @apply bg-slate-950;
+    height: 100%;
 }
 
 .p-checkbox-label {

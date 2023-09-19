@@ -3,19 +3,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 @Component({
     selector: 'app-account',
     template: `
-        <span
-            class="fixed top-[-8rem] left-0 text-[20rem] font-extrabold tracking-widest whitespace-nowrap text-slate-900 select-none"
-        >
-            POST IT
-        </span>
-        <span
-            class="fixed bottom-[-5rem] right-0 text-[20rem] font-extrabold tracking-widest whitespace-nowrap text-slate-900 select-none"
-        >
-            POST IT
-        </span>
-        <router-outlet />
+        <div class="w-full">
+            <router-outlet />
+        </div>
         <footer
-            class="flex flex-col items-center mt-auto h-[15%] font-extrabold text-slate-600 z-[1]"
+            class="flex flex-col items-center mt-auto h-[15%] font-extrabold text-slate-600"
         >
             <div class="space-x-2">
                 <span>Z</span>
@@ -35,7 +27,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styles: [
         `
             :host {
-                @apply h-full flex flex-col justify-center items-center;
+                @apply h-full max-w-2xl flex flex-col justify-center items-center mx-auto px-20;
+                border-left: 1px solid var(--surface-border);
+                border-right: 1px solid var(--surface-border);
+                background-color: var(--surface-ground);
             }
         `,
     ],

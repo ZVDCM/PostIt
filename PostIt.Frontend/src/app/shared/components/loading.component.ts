@@ -31,7 +31,7 @@ import { Observable } from 'rxjs';
     styles: [
         `
             :host {
-                @apply fixed top-0 left-0 w-full;
+                @apply fixed top-0 left-0 w-full z-[9999];
             }
         `,
     ],

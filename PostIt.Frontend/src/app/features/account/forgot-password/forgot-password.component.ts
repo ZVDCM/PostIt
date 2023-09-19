@@ -69,7 +69,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     styles: [
         `
             :host {
-                @apply w-full max-w-lg z-[1];
+                @apply w-full;
             }
         `,
     ],

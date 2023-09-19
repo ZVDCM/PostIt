@@ -236,8 +236,8 @@ export class RegisterComponent {
         public accountConstants: AccountConstantsService,
         public formHelper: FormHelperService,
         public registerHttp: RegisterHttpService,
-        private _loading: LoadingService,
-        public passwordHelper: PasswordHelperService
+        public passwordHelper: PasswordHelperService,
+        private _loading: LoadingService
     ) {
         _loading.endLoading();
         this.register$ = this.registerHttp.watchRegister$();
