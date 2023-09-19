@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccountRoutingModule } from './features/account/account-routing.module';
+import { PostsRoutingModule } from './features/posts/posts-routing.module';
 
 import { NotfoundComponent } from './features/not-found/not-found.component';
 
@@ -10,7 +11,11 @@ const routes: Routes = [
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes), AccountRoutingModule],
+    imports: [
+        RouterModule.forRoot(routes),
+        AccountRoutingModule,
+        PostsRoutingModule,
+    ],
     exports: [RouterModule],
 })
 export class AppRoutingModule {}

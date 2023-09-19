@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 
 import { LoadingComponent } from './components/loading.component';
@@ -13,6 +13,7 @@ import { LoadingComponent } from './components/loading.component';
     imports: [
         CommonModule,
         ReactiveFormsModule,
+        FormsModule,
         InputTextModule,
         ButtonModule,
         CheckboxModule,
@@ -24,6 +25,7 @@ import { LoadingComponent } from './components/loading.component';
         CheckboxModule,
         ButtonModule,
         ReactiveFormsModule,
+        FormsModule,
         ToastModule,
     ],
 })

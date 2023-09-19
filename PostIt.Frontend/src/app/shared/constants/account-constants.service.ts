@@ -8,6 +8,7 @@ export class AccountConstantsService {
     public readonly forgotPasswordEndpoint = '/account/forgotpassword';
     public readonly verifyResetTokenEndpoint = '/account/forgotpassword/verify';
     public readonly resetPasswordEndpoint = '/account/password/reset';
+    public readonly postsEndpoint = '/posts';
 
     public readonly loginForm: IForm = {
         email: { id: 'txt-login-email', label: 'Email', hint: null },
