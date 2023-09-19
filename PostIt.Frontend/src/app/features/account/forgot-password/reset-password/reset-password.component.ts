@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
-import { ForgotPasswordHttpService } from './forgot-password-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/shared/types/formType';
 import { LoadingService } from 'src/app/shared/services/loading.service';

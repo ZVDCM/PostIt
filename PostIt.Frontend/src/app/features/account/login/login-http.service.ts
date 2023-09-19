@@ -54,7 +54,7 @@ export class LoginHttpService {
                     }),
                     tap((_) => {
                         this._router.navigate([
-                            this._accountConstants.postsEndpoint,
+                            this._accountConstants.homeEndpoint,
                         ]);
                     })
                 )

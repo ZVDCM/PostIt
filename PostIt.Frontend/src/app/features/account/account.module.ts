@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from 'src/app/shared/shared.module';
-import { AccountRoutingModule } from './account-routing.module';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AccountComponent } from './account.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { VerifyResetTokenComponent } from './forgot-password/verify-reset-token.component';
-import { ResetPasswordComponent } from './forgot-password/reset-password.component';
+import { LoginComponent } from '../../features/account/login/login.component';
+import { RegisterComponent } from '../../features/account/register/register.component';
+import { ForgotPasswordComponent } from '../../features/account/forgot-password/forgot-password.component';
+import { AccountRoutingModule } from './account-routing.module';
+import { VerifyResetTokenComponent } from './forgot-password/verify-reset-password/verify-reset-token.component';
+import { ResetPasswordComponent } from './forgot-password/reset-password/reset-password.component';
 
 @NgModule({
     declarations: [
@@ -26,6 +26,6 @@ import { ResetPasswordComponent } from './forgot-password/reset-password.compone
         HttpClientModule,
         SharedModule,
     ],
-    exports: [AccountComponent, AccountRoutingModule],
+    exports: [AccountRoutingModule],
 })
 export class AccountModule {}

@@ -5,8 +5,8 @@ import { LoginComponent } from './login/login.component';
 import { AccountComponent } from './account.component';
 import { RegisterComponent } from './register/register.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
-import { VerifyResetTokenComponent } from './forgot-password/verify-reset-token.component';
-import { ResetPasswordComponent } from './forgot-password/reset-password.component';
+import { VerifyResetTokenComponent } from './forgot-password/verify-reset-password/verify-reset-token.component';
+import { ResetPasswordComponent } from './forgot-password/reset-password/reset-password.component';
 
 const routes: Routes = [
     { path: 'account', redirectTo: 'account/login', pathMatch: 'full' },

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-    selector: 'app-posts',
+    selector: 'app-home',
     template: `
         <aside
             class="h-full flex-1 sticky top-0"
@@ -35,10 +35,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styles: [
         `
             :host {
-                @apply h-[10000px] relative flex;
+                @apply h-full relative flex;
             }
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PostsComponent {}
+export class HomeComponent {}
