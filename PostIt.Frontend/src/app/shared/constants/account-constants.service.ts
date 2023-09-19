@@ -6,6 +6,8 @@ export class AccountConstantsService {
     public readonly loginEndpoint = '/account/login';
     public readonly registerEndpoint = '/account/register';
     public readonly forgotPasswordEndpoint = '/account/forgotpassword';
+    public readonly verifyResetTokenEndpoint = '/account/forgotpassword/verify';
+    public readonly resetPasswordEndpoint = '/account/password/reset';
 
     public readonly loginForm: IForm = {
         email: { id: 'txt-login-email', label: 'Email', hint: null },
@@ -35,6 +37,35 @@ export class AccountConstantsService {
         },
         confirmPassword: {
             id: 'txt-register-confirm-password',
+            label: 'Confirm Password',
+            hint: 'Both passwords must match',
+        },
+    };
+
+    public readonly forgotPasswordForm: IForm = {
+        email: {
+            id: 'txt-forgot-password-email',
+            label: 'Email',
+            hint: 'Email must follow valid email format',
+        },
+    };
+
+    public readonly resetTokenForm: IForm = {
+        token: {
+            id: 'txt-reset-token',
+            label: 'Token',
+            hint: 'Token must not be empty',
+        },
+    };
+
+    public readonly resetPasswordForm: IForm = {
+        resetNewPassword: {
+            id: 'txt-reset-new-password',
+            label: 'New Password',
+            hint: 'Password must not be empty',
+        },
+        resetConfirmPassword: {
+            id: 'txt-reset-confirm-password',
             label: 'Confirm Password',
             hint: 'Both passwords must match',
         },

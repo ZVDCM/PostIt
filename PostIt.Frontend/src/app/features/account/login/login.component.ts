@@ -123,7 +123,7 @@ import { Observable } from 'rxjs';
     styles: [
         `
             :host {
-                @apply w-full max-w-lg;
+                @apply w-full max-w-lg z-[1];
             }
         `,
     ],
@@ -147,7 +147,7 @@ export class LoginComponent {
         public formHelper: FormHelperService,
         private _loading: LoadingService
     ) {
-        this._loading.endLoading();
+        _loading.endLoading();
         this.login$ = loginHttp.watchLogin$();
         formHelper.setFormGroup(
             new FormGroup({
