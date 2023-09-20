@@ -1,4 +1,4 @@
-import { IUser } from 'src/app/shared/types/userType';
+import { IUser } from "src/app/core/state/user/user.model";
 
 export interface ILogin {
     email: string;

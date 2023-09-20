@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IForm } from '../types/formType';
+import { IForm } from '../../core/models/form.model';
 
 @Injectable({ providedIn: 'root' })
 export class AccountConstantsService {

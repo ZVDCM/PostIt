@@ -3,7 +3,6 @@ import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
 import { selectAccessToken } from 'src/app/core/state/access-token/access-token.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { IUser } from 'src/app/shared/types/userType';
 
 @Component({
     selector: 'app-home',
@@ -132,7 +131,6 @@ import { IUser } from 'src/app/shared/types/userType';
 })
 export class HomeComponent {
     public items: MenuItem[] = [];
-    public user: IUser = {} as IUser;
     public isPostsActive: boolean = true;
     public isProfileActive: boolean = false;
 

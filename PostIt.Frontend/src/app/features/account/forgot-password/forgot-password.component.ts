@@ -3,7 +3,7 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { ForgotPasswordHttpService } from './forgot-password-http.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IFormItem } from 'src/app/shared/types/formType';
+import { IFormItem } from 'src/app/core/models/form.model';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({

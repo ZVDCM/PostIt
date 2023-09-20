@@ -6,7 +6,7 @@ import {
     Validators,
 } from '@angular/forms';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
-import { IFormItem } from 'src/app/shared/types/formType';
+import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { RegisterHttpService } from './register-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';

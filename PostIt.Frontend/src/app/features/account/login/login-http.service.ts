@@ -54,7 +54,7 @@ export class LoginHttpService {
                     }),
                     tap((data: ILoginPayload) => {
                         this._store.dispatch(
-                            AccessTokenApiActions.gotAccessToken({
+                            AccessTokenApiActions.setAccessToken({
                                 accessToken: data.accessToken,
                             })
                         );

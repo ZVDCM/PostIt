@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { IFormItem } from 'src/app/shared/types/formType';
+import { IFormItem } from 'src/app/core/models/form.model';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
