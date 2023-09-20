@@ -5,11 +5,13 @@ import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
+import { TabMenuModule } from 'primeng/tabmenu';
 
 import { LoadingComponent } from './components/loading.component';
+import { NotfoundComponent } from './components/not-found.component';
 
 @NgModule({
-    declarations: [LoadingComponent],
+    declarations: [NotfoundComponent, LoadingComponent],
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -18,8 +20,10 @@ import { LoadingComponent } from './components/loading.component';
         ButtonModule,
         CheckboxModule,
         ToastModule,
+        TabMenuModule,
     ],
     exports: [
+        NotfoundComponent,
         LoadingComponent,
         InputTextModule,
         CheckboxModule,
@@ -27,6 +31,7 @@ import { LoadingComponent } from './components/loading.component';
         ReactiveFormsModule,
         FormsModule,
         ToastModule,
+        TabMenuModule,
     ],
 })
 export class SharedModule {}

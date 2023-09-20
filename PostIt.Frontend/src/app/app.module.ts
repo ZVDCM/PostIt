@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
-import { NotFoundModule } from './features/not-found/not-found.module';
 import { AccountModule } from './features/account/account.module';
 import { HomeModule } from './features/home/home.module';
 import { UserService } from './shared/services/user.service';
@@ -20,7 +19,6 @@ import { AppComponent } from './app.component';
         AppRoutingModule,
         SharedModule,
         AccountModule,
-        NotFoundModule,
         HomeModule,
     ],
     bootstrap: [AppComponent],
