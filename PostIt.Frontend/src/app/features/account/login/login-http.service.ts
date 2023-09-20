@@ -17,6 +17,7 @@ import { ServerConstantsService } from 'src/app/shared/constants/server-constant
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -31,6 +32,7 @@ export class LoginHttpService {
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _accountConstants: AccountConstantsService,
+        private _homeConstants: HomeConstantsService,
         private _user: UserService,
         private _loading: LoadingService,
         private _messageService: MessageService,
@@ -54,7 +56,7 @@ export class LoginHttpService {
                     }),
                     tap((_) => {
                         this._router.navigate([
-                            this._accountConstants.homeEndpoint,
+                            this._homeConstants.homeEndpoint,
                         ]);
                     })
                 )

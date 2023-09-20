@@ -27,7 +27,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styles: [
         `
             :host {
-                @apply h-full max-w-2xl flex flex-col justify-center items-center mx-auto px-20;
+                @apply h-full max-w-3xl flex flex-col justify-center items-center mx-auto px-20;
                 border-left: 1px solid var(--surface-border);
                 border-right: 1px solid var(--surface-border);
                 background-color: var(--surface-ground);
