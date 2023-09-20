@@ -13,6 +13,7 @@ import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { accessTokenReducer } from './core/state/access-token/access-token.reducer';
+import { userReducer } from './core/state/user/user.reducer';
 
 @NgModule({
     declarations: [AppComponent],
@@ -23,7 +24,10 @@ import { accessTokenReducer } from './core/state/access-token/access-token.reduc
         SharedModule,
         AccountModule,
         HomeModule,
-        StoreModule.forRoot({ accessToken: accessTokenReducer }, {}),
+        StoreModule.forRoot({
+            accessToken: accessTokenReducer,
+            user: userReducer,
+        }),
         EffectsModule.forRoot([]),
         StoreRouterConnectingModule.forRoot(),
     ],

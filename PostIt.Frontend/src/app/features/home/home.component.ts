@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
 import { selectAccessToken } from 'src/app/core/state/access-token/access-token.selectors';
+import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 
 @Component({
@@ -65,7 +66,7 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
         <aside class="h-screen sticky top-0 flex-1">
             <div class="flex flex-col p-10">
                 <div class="p-inputgroup">
-                    <input pInputText placeholder="Search" />
+                    <input id="txt-search" pInputText placeholder="Search" />
                     <button type="button" pButton icon="pi pi-search"></button>
                 </div>
             </div>
@@ -140,6 +141,9 @@ export class HomeComponent {
     ) {
         this._store.select(selectAccessToken).subscribe((accessToken) => {
             console.log(accessToken);
+        });
+        this._store.select(selectUser).subscribe((user) => {
+            console.log(user);
         });
         this.items = [
             {

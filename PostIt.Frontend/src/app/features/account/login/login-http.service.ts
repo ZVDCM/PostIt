@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { Store } from '@ngrx/store';
 import { AccessTokenApiActions } from 'src/app/core/state/access-token/access-token.actions';
+import { UserApiActions } from 'src/app/core/state/user/user.actions';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -56,6 +57,11 @@ export class LoginHttpService {
                         this._store.dispatch(
                             AccessTokenApiActions.setAccessToken({
                                 accessToken: data.accessToken,
+                            })
+                        );
+                        this._store.dispatch(
+                            UserApiActions.setUser({
+                                user: data.user,
                             })
                         );
                     }),
