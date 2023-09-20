@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
+import { selectAccessToken } from 'src/app/core/state/access-token/access-token.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { UserService } from 'src/app/shared/services/user.service';
 import { IUser } from 'src/app/shared/types/userType';
 
 @Component({
@@ -127,7 +128,7 @@ import { IUser } from 'src/app/shared/types/userType';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [HomeConstantsService, UserService],
+    providers: [HomeConstantsService],
 })
 export class HomeComponent {
     public items: MenuItem[] = [];
@@ -137,9 +138,11 @@ export class HomeComponent {
 
     constructor(
         public homeConstants: HomeConstantsService,
-        private _userService: UserService
+        private _store: Store
     ) {
-        this.user = _userService.user ?? ({} as IUser);
+        this._store.select(selectAccessToken).subscribe((accessToken) => {
+            console.log(accessToken);
+        });
         this.items = [
             {
                 label: 'Update Profile',

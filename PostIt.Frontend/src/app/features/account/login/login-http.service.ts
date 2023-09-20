@@ -11,13 +11,14 @@ import {
     switchMap,
     tap,
 } from 'rxjs';
-import { UserService } from 'src/app/shared/services/user.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { Store } from '@ngrx/store';
+import { AccessTokenApiActions } from 'src/app/core/state/access-token/access-token.actions';
 
 @Injectable({ providedIn: 'root' })
 export class LoginHttpService {
@@ -33,10 +34,10 @@ export class LoginHttpService {
         private _serverConstants: ServerConstantsService,
         private _accountConstants: AccountConstantsService,
         private _homeConstants: HomeConstantsService,
-        private _user: UserService,
         private _loading: LoadingService,
         private _messageService: MessageService,
-        private _router: Router
+        private _router: Router,
+        private _store: Store
     ) {}
 
     public watchLogin$(): Observable<void> {
@@ -52,7 +53,11 @@ export class LoginHttpService {
                         this.isCancelled = false;
                     }),
                     tap((data: ILoginPayload) => {
-                        this._user.setCredentials(data);
+                        this._store.dispatch(
+                            AccessTokenApiActions.gotAccessToken({
+                                accessToken: data.accessToken,
+                            })
+                        );
                     }),
                     tap((_) => {
                         this._router.navigate([
