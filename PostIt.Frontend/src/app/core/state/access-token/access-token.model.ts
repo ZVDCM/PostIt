@@ -1,3 +1,3 @@
-export interface IAccessToken {
-    value: string | null;
+export interface IAccessTokenState {
+    value: string;
 }

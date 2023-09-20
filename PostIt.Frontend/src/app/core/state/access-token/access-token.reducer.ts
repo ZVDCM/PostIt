@@ -1,12 +1,12 @@
 import { createReducer, on } from '@ngrx/store';
-import { IAccessToken } from './access-token.model';
+import { IAccessTokenState } from './access-token.model';
 import { AccessTokenApiActions } from './access-token.actions';
 
-export const initialState: IAccessToken = {} as IAccessToken;
+const initialState: IAccessTokenState = {} as IAccessTokenState;
 
 export const accessTokenReducer = createReducer(
     initialState,
-    on(AccessTokenApiActions.gotAccessToken, (_, action) => ({
+    on(AccessTokenApiActions.setAccessToken, (_, action) => ({
         value: action.accessToken,
     }))
 );
