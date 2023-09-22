@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { SplitButtonModule } from 'primeng/splitbutton';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
 import { LoadingComponent } from './components/loading.component';
 import { NotfoundComponent } from './components/not-found.component';
@@ -25,6 +26,7 @@ import { NotfoundComponent } from './components/not-found.component';
         TabMenuModule,
         ToggleButtonModule,
         SplitButtonModule,
+        DynamicDialogModule,
     ],
     exports: [
         NotfoundComponent,
@@ -38,6 +40,7 @@ import { NotfoundComponent } from './components/not-found.component';
         TabMenuModule,
         ToggleButtonModule,
         SplitButtonModule,
+        DynamicDialogModule,
     ],
 })
 export class SharedModule {}

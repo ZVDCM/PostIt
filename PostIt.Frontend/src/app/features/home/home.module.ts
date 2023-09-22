@@ -5,11 +5,11 @@ import { HomeComponent } from './home.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { RouterModule } from '@angular/router';
-import { PostsComponent } from './posts/posts.component';
+import { ForYouComponent } from './for-you/for-you.component';
 import { HomeRoutingModule } from './home-routing.module';
 
 @NgModule({
-    declarations: [HomeComponent, PostsComponent],
+    declarations: [HomeComponent, ForYouComponent],
     imports: [CommonModule, HttpClientModule, RouterModule, SharedModule],
     exports: [HomeRoutingModule],
 })

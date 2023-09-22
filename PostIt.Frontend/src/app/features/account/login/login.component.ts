@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+} from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoginHttpService } from './login-http.service';
@@ -130,7 +134,7 @@ import { Observable } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [AccountConstantsService, FormHelperService, LoginHttpService],
 })
-export class LoginComponent {
+export class LoginComponent implements AfterViewInit {
     public login$: Observable<void> = new Observable<void>();
     public showPassword: boolean = false;
 
@@ -147,7 +151,6 @@ export class LoginComponent {
         public formHelper: FormHelperService,
         private _loading: LoadingService
     ) {
-        _loading.endLoading();
         this.login$ = loginHttp.watchLogin$();
         formHelper.setFormGroup(
             new FormGroup({
@@ -160,6 +163,10 @@ export class LoginComponent {
                 ),
             })
         );
+    }
+    
+    public ngAfterViewInit(): void {
+        this._loading.endLoading();
     }
 
     public togglePasswordType(): void {

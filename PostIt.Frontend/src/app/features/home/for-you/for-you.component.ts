@@ -3,7 +3,7 @@ import { MenuItem } from 'primeng/api';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
-    selector: 'app-posts',
+    selector: 'app-for-you',
     template: `
         <section>
             <p-tabMenu
@@ -31,7 +31,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PostsComponent {
+export class ForYouComponent {
     public items: MenuItem[] = [];
 
     constructor(private _loading: LoadingService) {

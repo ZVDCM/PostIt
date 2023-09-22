@@ -1,12 +1,16 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
 import { Observable } from 'rxjs';
-import { selectAccessToken } from 'src/app/core/state/access-token/access-token.selectors';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-home',
@@ -151,7 +155,7 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [HomeConstantsService, AccountConstantsService],
 })
-export class HomeComponent {
+export class HomeComponent implements AfterViewInit {
     public user$: Observable<IUser> = new Observable<IUser>();
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
@@ -160,11 +164,9 @@ export class HomeComponent {
     constructor(
         public accountConstants: AccountConstantsService,
         public homeConstants: HomeConstantsService,
-        private _store: Store
+        private _store: Store,
+        private _loading: LoadingService
     ) {
-        this._store.select(selectAccessToken).subscribe((accessToken) => {
-            console.log(accessToken);
-        });
         this.user$ = this._store.select(selectUser);
         this.items = [
             {
@@ -186,14 +188,17 @@ export class HomeComponent {
         ];
     }
 
+    public ngAfterViewInit(): void {
+        this._loading.endLoading();
+    }
+
     public onClickPosts() {
         this.isPostsActive = true;
         this.isProfileActive = false;
-        console.log(this.isPostsActive);
     }
+
     public onClickProfile() {
         this.isPostsActive = false;
         this.isProfileActive = true;
-        console.log(this.isProfileActive);
     }
 }

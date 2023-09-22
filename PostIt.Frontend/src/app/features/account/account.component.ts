@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    Component,
+} from '@angular/core';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-account',
@@ -36,4 +41,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountComponent {}
+export class AccountComponent implements AfterViewInit {
+    constructor(private _loading: LoadingService) {}
+
+    public ngAfterViewInit(): void {
+        this._loading.endLoading();
+    }
+}
