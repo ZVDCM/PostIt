@@ -2,11 +2,20 @@ import { Injectable } from '@angular/core';
 import { IForm } from '../../core/models/form.model';
 
 @Injectable({ providedIn: 'root' })
-export class AccountConstantsService {
+export class LoginConstantsService {
+    public readonly loginRoute = '/login';
     public readonly loginEndpoint = '/account/login';
+
+    public readonly registerRoute = '/login/register';
     public readonly registerEndpoint = '/account/register';
+
+    public readonly forgotPasswordRoute = '/login/forgotpassword';
     public readonly forgotPasswordEndpoint = '/account/forgotpassword';
+
+    public readonly verifyResetTokenRoute = '/login/forgotpassword/verify';
     public readonly verifyResetTokenEndpoint = '/account/forgotpassword/verify';
+
+    public readonly resetPasswordRoute = '/login/password/reset';
     public readonly resetPasswordEndpoint = '/account/password/reset';
 
     public readonly loginForm: IForm = {

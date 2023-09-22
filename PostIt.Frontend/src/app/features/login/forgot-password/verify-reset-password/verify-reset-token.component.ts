@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Component({
     selector: 'app-verify-reset-token',
@@ -52,14 +52,14 @@ import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
                         [loading]="verifyResetTokenHttp.isLoading"
-                        [routerLink]="accountConstants.resetPasswordEndpoint"
+                        [routerLink]="loginConstants.resetPasswordRoute"
                         type="submit"
                         styleClass="w-full"
                         label="Verify reset token"
                     ></p-button>
                     <p-button
                         [disabled]="verifyResetTokenHttp.isLoading"
-                        [routerLink]="accountConstants.loginEndpoint"
+                        [routerLink]="loginConstants.loginRoute"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-danger"
                         label="Cancel"
@@ -77,17 +77,17 @@ import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        AccountConstantsService,
+        LoginConstantsService,
         VerifyResetTokenHttpService,
         FormHelperService,
     ],
 })
 export class VerifyResetTokenComponent {
     public resetTokenField: IFormItem =
-        this.accountConstants.resetTokenForm['token'];
+        this.loginConstants.resetTokenForm['token'];
 
     constructor(
-        public accountConstants: AccountConstantsService,
+        public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public verifyResetTokenHttp: VerifyResetTokenHttpService,
         private _loading: LoadingService

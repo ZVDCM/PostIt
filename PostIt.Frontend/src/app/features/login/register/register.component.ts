@@ -1,27 +1,94 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
-import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
+import {
+    FormControl,
+    FormGroup,
+    ValidationErrors,
+    Validators,
+} from '@angular/forms';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
+import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
+import { RegisterHttpService } from './register-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
-import { ResetPasswordHttpService } from './reset-password-http.service';
 
 @Component({
-    selector: 'app-reset-password',
+    selector: 'app-register',
     template: `
-        <header class="pt-40 pb-10">
+        <header class="pt-10 pb-10">
             <h1 class="text-6xl font-extrabold tracking-widest text-center">
-                RESET PASSWORD
+                REGISTER
             </h1>
         </header>
         <section>
             <form
                 [formGroup]="formHelper.formGroup"
+                (submit)="onSubmit()"
                 class="flex flex-col"
                 method="POST"
             >
                 <div class="flex flex-col gap-4">
+                    <!-- USERNAME -->
+                    <div class="flex flex-col gap-2">
+                        <label [htmlFor]="usernameField.id">{{
+                            usernameField.label
+                        }}</label>
+                        <input
+                            [id]="usernameField.id"
+                            [attr.aria-describedby]="usernameField.id + '-help'"
+                            [formControlName]="usernameField.label"
+                            [readOnly]="registerHttp.isLoading"
+                            [autocomplete]="true"
+                            (blur)="
+                                formHelper
+                                    .getFormControl(usernameField.label)!
+                                    .markAsDirty()
+                            "
+                            pInputText
+                        />
+                        <small
+                            *ngIf="usernameField.hint !== null"
+                            id="{{ usernameField.id }}-help"
+                            [ngClass]="{
+                                hidden: !formHelper.isInputInvalid(
+                                    usernameField.label
+                                )
+                            }"
+                            class="p-error"
+                            >{{ usernameField.hint }}
+                        </small>
+                    </div>
+                    <!-- EMAIL -->
+                    <div class="flex flex-col gap-2">
+                        <label [htmlFor]="emailField.id">{{
+                            emailField.label
+                        }}</label>
+                        <input
+                            [id]="emailField.id"
+                            [attr.aria-describedby]="emailField.id + '-help'"
+                            [formControlName]="emailField.label"
+                            [readonly]="registerHttp.isLoading"
+                            [autocomplete]="true"
+                            (blur)="
+                                formHelper
+                                    .getFormControl(emailField.label)!
+                                    .markAsDirty()
+                            "
+                            pInputText
+                        />
+                        <small
+                            *ngIf="emailField.hint !== null"
+                            id="{{ emailField.id }}-help"
+                            [ngClass]="{
+                                hidden: !formHelper.isInputInvalid(
+                                    emailField.label
+                                )
+                            }"
+                            class="p-error"
+                            >{{ emailField.hint }}
+                        </small>
+                    </div>
                     <!-- PASSWORD -->
                     <div class="flex flex-col gap-2">
                         <label [htmlFor]="passwordField.id">{{
@@ -36,7 +103,7 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
                                 [formControlName]="passwordField.label"
-                                [readOnly]="resetPasswordHttp.isLoading"
+                                [readOnly]="registerHttp.isLoading"
                                 (blur)="
                                     formHelper
                                         .getFormControl(passwordField.label)!
@@ -81,7 +148,7 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
                                 "
                                 [autocomplete]="false"
                                 [formControlName]="confirmPasswordField.label"
-                                [readOnly]="resetPasswordHttp.isLoading"
+                                [readOnly]="registerHttp.isLoading"
                                 (blur)="
                                     formHelper
                                         .getFormControl(
@@ -119,56 +186,70 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
                 </div>
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
-                        [loading]="resetPasswordHttp.isLoading"
-                        [routerLink]="accountConstants.resetPasswordEndpoint"
+                        [loading]="registerHttp.isLoading"
                         type="submit"
                         styleClass="w-full"
-                        label="Reset Password"
+                        label="Register"
                     ></p-button>
                     <p-button
-                        [disabled]="resetPasswordHttp.isLoading"
-                        [routerLink]="accountConstants.loginEndpoint"
+                        [disabled]="registerHttp.isLoading"
+                        [routerLink]="loginConstants.loginRoute"
                         type="button"
-                        styleClass="w-full p-button-outlined p-button-danger"
-                        label="Cancel"
+                        styleClass="w-full p-button-outlined p-button-secondary"
+                        label="Go back"
                     ></p-button>
                 </div>
             </form>
         </section>
+        <ng-container *ngIf="register$ | async"></ng-container>
     `,
     styles: [
         `
             :host {
-                @apply w-full;
+                @apply w-full max-w-lg z-[1];
             }
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        AccountConstantsService,
-        ResetPasswordHttpService,
+        LoginConstantsService,
         FormHelperService,
+        RegisterHttpService,
         PasswordHelperService,
     ],
 })
-export class ResetPasswordComponent {
-    public passwordField: IFormItem =
-        this.accountConstants.resetPasswordForm['resetNewPassword'];
-    public confirmPasswordField: IFormItem =
-        this.accountConstants.resetPasswordForm['resetConfirmPassword'];
+export class RegisterComponent {
+    public register$: Observable<void> = new Observable<void>();
     public showPassword: boolean = false;
     public showConfirmPassword: boolean = false;
 
+    public readonly usernameField: IFormItem =
+        this.loginConstants.registerForm['username'];
+    public readonly emailField: IFormItem =
+        this.loginConstants.registerForm['email'];
+    public readonly passwordField: IFormItem =
+        this.loginConstants.registerForm['password'];
+    public readonly confirmPasswordField: IFormItem =
+        this.loginConstants.registerForm['confirmPassword'];
+
     constructor(
-        public accountConstants: AccountConstantsService,
+        public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
-        public resetPasswordHttp: ResetPasswordHttpService,
+        public registerHttp: RegisterHttpService,
         private _passwordHelper: PasswordHelperService,
         private _loading: LoadingService
     ) {
         _loading.endLoading();
+        this.register$ = this.registerHttp.watchRegister$();
         formHelper.setFormGroup(
             new FormGroup({
+                [this.usernameField.label]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.emailField.label]: new FormControl('', [
+                    Validators.required,
+                    Validators.email,
+                ]),
                 [this.passwordField.label]: new FormControl('', [
                     Validators.required,
                 ]),
@@ -183,5 +264,15 @@ export class ResetPasswordComponent {
                 ]),
             })
         );
+    }
+
+    public onSubmit(): void {
+        console.log(this.formHelper.formGroup);
+        if (this.formHelper.formGroup.invalid) {
+            this.formHelper.validateAllFormInputs();
+            return;
+        }
+        this._loading.showLoading();
+        this.registerHttp.register(this.formHelper.formGroup.value);
     }
 }

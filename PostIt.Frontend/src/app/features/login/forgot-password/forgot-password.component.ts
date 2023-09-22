@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { ForgotPasswordHttpService } from './forgot-password-http.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -50,14 +50,14 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
                         [loading]="forgotPasswordHttp.isLoading"
-                        [routerLink]="accountConstants.verifyResetTokenEndpoint"
+                        [routerLink]="loginConstants.verifyResetTokenRoute"
                         type="submit"
                         styleClass="w-full"
                         label="Send reset token"
                     ></p-button>
                     <p-button
                         [disabled]="forgotPasswordHttp.isLoading"
-                        [routerLink]="accountConstants.loginEndpoint"
+                        [routerLink]="loginConstants.loginRoute"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-secondary"
                         label="Go back"
@@ -75,17 +75,17 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        AccountConstantsService,
+        LoginConstantsService,
         ForgotPasswordHttpService,
         FormHelperService,
     ],
 })
 export class ForgotPasswordComponent {
     public emailField: IFormItem =
-        this.accountConstants.forgotPasswordForm['email'];
+        this.loginConstants.forgotPasswordForm['email'];
 
     constructor(
-        public accountConstants: AccountConstantsService,
+        public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public forgotPasswordHttp: ForgotPasswordHttpService,
         private _loading: LoadingService

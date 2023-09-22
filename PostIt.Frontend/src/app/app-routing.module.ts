@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { AccountRoutingModule } from './features/account/account-routing.module';
 import { HomeRoutingModule } from './features/home/home-routing.module';
 import { NotfoundComponent } from './shared/components/not-found.component';
+import { LoginRoutingModule } from './features/login/login-routing.module';
 
 const routes: Routes = [
     { path: '', redirectTo: 'account/login', pathMatch: 'full' },
@@ -13,7 +13,7 @@ const routes: Routes = [
 @NgModule({
     imports: [
         RouterModule.forRoot(routes),
-        AccountRoutingModule,
+        LoginRoutingModule,
         HomeRoutingModule,
     ],
     exports: [RouterModule],

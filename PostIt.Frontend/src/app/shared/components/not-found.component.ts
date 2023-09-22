@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Component({
     selector: 'app-notfound',
@@ -10,7 +10,7 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
         >
             <h1 class="text-7xl tracking-widest">ROUTE NOT FOUND</h1>
             <h3
-                (click)="router.navigate([accountConstants.loginEndpoint])"
+                (click)="router.navigate([loginConstants.loginEndpoint])"
                 class="text-5xl tracking-widest text-slate-800 cursor-pointer"
             >
                 POST <span> IT </span>
@@ -34,11 +34,11 @@ import { AccountConstantsService } from 'src/app/shared/constants/account-consta
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [AccountConstantsService],
+    providers: [LoginConstantsService],
 })
 export class NotfoundComponent {
     constructor(
-        public accountConstants: AccountConstantsService,
+        public loginConstants: LoginConstantsService,
         public router: Router
     ) {}
 }

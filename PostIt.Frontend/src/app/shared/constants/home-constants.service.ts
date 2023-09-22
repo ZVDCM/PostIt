@@ -5,7 +5,8 @@ import { IForm } from 'src/app/core/models/form.model';
     providedIn: 'root',
 })
 export class HomeConstantsService {
-    public readonly homeEndpoint = '/home';
+    public readonly homeRoute = '/home';
+
 
     public readonly profileForm: IForm = {
         username: {

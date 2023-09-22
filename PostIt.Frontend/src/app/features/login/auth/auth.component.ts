@@ -5,21 +5,21 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { LoginHttpService } from './login-http.service';
+import { AuthHttpService } from './auth-http.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { Observable } from 'rxjs';
 
 @Component({
-    selector: 'app-login',
+    selector: 'app-auth',
     template: `
         <header class="flex justify-between items-end pt-40 pb-10">
             <h1 class="text-6xl font-extrabold tracking-widest">LOGIN</h1>
             <div class="flex flex-col items-end">
                 <span>Not a member?</span>
                 <a
-                    [routerLink]="accountConstants.registerEndpoint"
+                    [routerLink]="loginConstants.registerRoute"
                     class="hover:underline"
                     style="color: var(--primary-color)"
                     >Create an account</a
@@ -43,7 +43,7 @@ import { Observable } from 'rxjs';
                             [id]="emailField.id"
                             [attr.aria-describedby]="emailField.id + '-help'"
                             [formControlName]="emailField.label"
-                            [readonly]="loginHttp.isLoading"
+                            [readonly]="authHttp.isLoading"
                             [autocomplete]="true"
                             pInputText
                         />
@@ -73,7 +73,7 @@ import { Observable } from 'rxjs';
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
                                 [formControlName]="passwordField.label"
-                                [readonly]="loginHttp.isLoading"
+                                [readonly]="authHttp.isLoading"
                                 pInputText
                             />
                             <button
@@ -107,14 +107,14 @@ import { Observable } from 'rxjs';
                         (onChange)="onChanged($event)"
                     ></p-checkbox>
                     <a
-                        [routerLink]="accountConstants.forgotPasswordEndpoint"
+                        [routerLink]="loginConstants.forgotPasswordRoute"
                         class="hover:underline"
                         style="color: var(--primary-color)"
                         >Forgot your password?</a
                     >
                 </div>
                 <p-button
-                    [loading]="loginHttp.isLoading"
+                    [loading]="authHttp.isLoading"
                     type="submit"
                     class="mt-10"
                     styleClass="w-full"
@@ -132,26 +132,26 @@ import { Observable } from 'rxjs';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [AccountConstantsService, FormHelperService, LoginHttpService],
+    providers: [LoginConstantsService, FormHelperService, AuthHttpService],
 })
-export class LoginComponent implements AfterViewInit {
+export class AuthComponent implements AfterViewInit {
     public login$: Observable<void> = new Observable<void>();
     public showPassword: boolean = false;
 
     public readonly emailField: IFormItem =
-        this.accountConstants.loginForm['email'];
+        this.loginConstants.loginForm['email'];
     public readonly passwordField: IFormItem =
-        this.accountConstants.loginForm['password'];
+        this.loginConstants.loginForm['password'];
     public readonly rememberField: IFormItem =
-        this.accountConstants.loginForm['remember'];
+        this.loginConstants.loginForm['remember'];
 
     constructor(
-        public accountConstants: AccountConstantsService,
-        public loginHttp: LoginHttpService,
+        public loginConstants: LoginConstantsService,
+        public authHttp: AuthHttpService,
         public formHelper: FormHelperService,
         private _loading: LoadingService
     ) {
-        this.login$ = loginHttp.watchLogin$();
+        this.login$ = authHttp.watchLogin$();
         formHelper.setFormGroup(
             new FormGroup({
                 [this.emailField.label]: new FormControl(
@@ -185,6 +185,6 @@ export class LoginComponent implements AfterViewInit {
 
     public onSubmit(): void {
         this._loading.showLoading();
-        this.loginHttp.login(this.formHelper.formGroup.value);
+        this.authHttp.login(this.formHelper.formGroup.value);
     }
 }

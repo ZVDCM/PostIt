@@ -11,13 +11,13 @@ import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
 import { UpdateProfileHttpService } from './update-profile-http.service';
 import { UpdatePasswordHttpService } from './update-password-http.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Component({
     selector: 'app-home',
@@ -29,7 +29,7 @@ import { UpdatePasswordHttpService } from './update-password-http.service';
             >
                 <nav class="h-full flex flex-col gap-5 py-10 pl-10">
                     <header
-                        [routerLink]="homeConstants.homeEndpoint"
+                        [routerLink]="homeConstants.homeRoute"
                         class="cursor-pointer mb-14 pr-10 focus:outline-none"
                     >
                         <h1
@@ -388,7 +388,7 @@ import { UpdatePasswordHttpService } from './update-password-http.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
         HomeConstantsService,
-        AccountConstantsService,
+        LoginConstantsService,
         { provide: 'profileFormHelper', useClass: FormHelperService },
         UpdateProfileHttpService,
         { provide: 'passwordFormHelper', useClass: FormHelperService },
@@ -417,7 +417,7 @@ export class HomeComponent implements AfterViewInit {
         this.homeConstants.passwordForm['confirmPassword'];
 
     constructor(
-        public accountConstants: AccountConstantsService,
+        public loginConstants: LoginConstantsService,
         public homeConstants: HomeConstantsService,
         @Inject('profileFormHelper')
         public profileFormHelper: FormHelperService,
@@ -451,7 +451,7 @@ export class HomeComponent implements AfterViewInit {
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
-                routerLink: [accountConstants.loginEndpoint],
+                routerLink: [loginConstants.loginRoute],
             },
         ];
 
@@ -477,6 +477,7 @@ export class HomeComponent implements AfterViewInit {
         if (this.profileFormHelper.formGroup.invalid) {
             this.profileFormHelper.validateAllFormInputs();
         }
+        this._loading.showLoading();
     }
 
     public onPasswordSubmit(): void {

@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { LoginComponent } from './login/login.component';
-import { AccountComponent } from './account.component';
 import { RegisterComponent } from './register/register.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
 import { VerifyResetTokenComponent } from './forgot-password/verify-reset-password/verify-reset-token.component';
 import { ResetPasswordComponent } from './forgot-password/reset-password/reset-password.component';
+import { LoginComponent } from './login.component';
+import { AuthComponent } from './auth/auth.component';
 
 const routes: Routes = [
-    { path: 'account', redirectTo: 'account/login', pathMatch: 'full' },
+    { path: 'login', redirectTo: 'login/auth', pathMatch: 'full' },
     {
-        path: 'account',
-        component: AccountComponent,
+        path: 'login',
+        component: LoginComponent,
         children: [
             {
-                path: 'login',
-                component: LoginComponent,
+                path: 'auth',
+                component: AuthComponent,
             },
             {
                 path: 'register',
@@ -52,4 +52,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule],
 })
-export class AccountRoutingModule {}
+export class LoginRoutingModule {}

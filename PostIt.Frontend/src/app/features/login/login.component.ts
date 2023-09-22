@@ -41,7 +41,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountComponent implements AfterViewInit {
+export class LoginComponent implements AfterViewInit {
     constructor(private _loading: LoadingService) {}
 
     public ngAfterViewInit(): void {

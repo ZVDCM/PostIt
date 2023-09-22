@@ -10,19 +10,19 @@ import {
     switchMap,
     tap,
 } from 'rxjs';
-import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { IRegister } from './registerTypes';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class RegisterHttpService {
     private readonly _url: string =
-        this._serverConstants.server + this._accountConstants.registerEndpoint;
+        this._serverConstants.server + this._loginConstants.registerEndpoint;
     private _register$$: Subject<IRegister> = new Subject<IRegister>();
 
     public isLoading: boolean = false;
@@ -32,7 +32,7 @@ export class RegisterHttpService {
         private _router: Router,
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _accountConstants: AccountConstantsService,
+        private _loginConstants: LoginConstantsService,
         private _messageService: MessageService,
         private _loading: LoadingService
     ) {}
@@ -58,7 +58,7 @@ export class RegisterHttpService {
                     }),
                     tap((_) => {
                         this._router.navigate([
-                            this._accountConstants.loginEndpoint,
+                            this._loginConstants.loginEndpoint,
                         ]);
                     }),
                 )
