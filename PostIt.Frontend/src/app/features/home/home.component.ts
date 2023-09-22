@@ -16,6 +16,8 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
+import { UpdateProfileHttpService } from './update-profile-http.service';
+import { UpdatePasswordHttpService } from './update-password-http.service';
 
 @Component({
     selector: 'app-home',
@@ -146,7 +148,7 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                                     usernameField.id + '-help'
                                 "
                                 [formControlName]="usernameField.label"
-                                [readOnly]="false"
+                                [readOnly]="updateProfileHttp.isLoading"
                                 [autocomplete]="true"
                                 (blur)="
                                     profileFormHelper
@@ -178,7 +180,7 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                                     emailField.id + '-help'
                                 "
                                 [formControlName]="emailField.label"
-                                [readonly]="false"
+                                [readonly]="updateProfileHttp.isLoading"
                                 [autocomplete]="true"
                                 (blur)="
                                     profileFormHelper
@@ -202,13 +204,13 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                     </div>
                     <div class="flex flex-col gap-5 mt-10">
                         <p-button
-                            [loading]="false"
+                            [loading]="updateProfileHttp.isLoading"
                             type="submit"
                             styleClass="w-full"
                             label="Register"
                         ></p-button>
                         <p-button
-                            [disabled]="false"
+                            [disabled]="updateProfileHttp.isLoading"
                             (click)="showModal = false"
                             type="button"
                             styleClass="w-full p-button-outlined p-button-danger"
@@ -238,7 +240,7 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                                     [type]="showPassword ? 'text' : 'password'"
                                     [autocomplete]="false"
                                     [formControlName]="passwordField.label"
-                                    [readOnly]="false"
+                                    [readOnly]="updatePasswordHttp.isLoading"
                                     (blur)="
                                         passwordFormHelper
                                             .getFormControl(
@@ -289,7 +291,7 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                                     [formControlName]="
                                         confirmPasswordField.label
                                     "
-                                    [readOnly]="true"
+                                    [readOnly]="updatePasswordHttp.isLoading"
                                     (blur)="
                                         passwordFormHelper
                                             .getFormControl(
@@ -328,13 +330,13 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
                     </div>
                     <div class="flex flex-col gap-5 mt-10">
                         <p-button
-                            [loading]="false"
+                            [loading]="updatePasswordHttp.isLoading"
                             type="submit"
                             styleClass="w-full"
                             label="Register"
                         ></p-button>
                         <p-button
-                            [disabled]="false"
+                            [disabled]="updatePasswordHttp.isLoading"
                             (click)="showModal = false"
                             type="button"
                             styleClass="w-full p-button-outlined p-button-danger"
@@ -388,7 +390,9 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
         HomeConstantsService,
         AccountConstantsService,
         { provide: 'profileFormHelper', useClass: FormHelperService },
+        UpdateProfileHttpService,
         { provide: 'passwordFormHelper', useClass: FormHelperService },
+        UpdatePasswordHttpService,
         FormHelperService,
         PasswordHelperService,
     ],
@@ -417,8 +421,10 @@ export class HomeComponent implements AfterViewInit {
         public homeConstants: HomeConstantsService,
         @Inject('profileFormHelper')
         public profileFormHelper: FormHelperService,
+        public updateProfileHttp: UpdateProfileHttpService,
         @Inject('passwordFormHelper')
         public passwordFormHelper: FormHelperService,
+        public updatePasswordHttp: UpdatePasswordHttpService,
         private _passwordHelper: PasswordHelperService,
         private _store: Store,
         private _loading: LoadingService
