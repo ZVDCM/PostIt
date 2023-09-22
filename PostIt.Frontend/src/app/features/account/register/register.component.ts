@@ -23,10 +23,10 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
         </header>
         <section>
             <form
-                class="flex flex-col"
-                method="POST"
                 [formGroup]="formHelper.formGroup"
                 (submit)="onSubmit()"
+                class="flex flex-col"
+                method="POST"
             >
                 <div class="flex flex-col gap-4">
                     <!-- USERNAME -->
@@ -236,7 +236,7 @@ export class RegisterComponent {
         public accountConstants: AccountConstantsService,
         public formHelper: FormHelperService,
         public registerHttp: RegisterHttpService,
-        public passwordHelper: PasswordHelperService,
+        private _passwordHelper: PasswordHelperService,
         private _loading: LoadingService
     ) {
         _loading.endLoading();
@@ -255,7 +255,7 @@ export class RegisterComponent {
                 ]),
                 [this.confirmPasswordField.label]: new FormControl('', [
                     Validators.required,
-                    passwordHelper.passwordsMustMatch(
+                    _passwordHelper.passwordsMustMatch(
                         formHelper.getFormControl(this.passwordField.label),
                         formHelper.getFormControl(
                             this.confirmPasswordField.label

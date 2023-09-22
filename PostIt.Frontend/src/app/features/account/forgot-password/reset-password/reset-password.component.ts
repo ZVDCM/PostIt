@@ -17,9 +17,9 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
         </header>
         <section>
             <form
+                [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
                 method="POST"
-                [formGroup]="formHelper.formGroup"
             >
                 <div class="flex flex-col gap-4">
                     <!-- PASSWORD -->
@@ -163,7 +163,7 @@ export class ResetPasswordComponent {
         public accountConstants: AccountConstantsService,
         public formHelper: FormHelperService,
         public resetPasswordHttp: ResetPasswordHttpService,
-        public passwordHelper: PasswordHelperService,
+        private _passwordHelper: PasswordHelperService,
         private _loading: LoadingService
     ) {
         _loading.endLoading();
@@ -174,7 +174,7 @@ export class ResetPasswordComponent {
                 ]),
                 [this.confirmPasswordField.label]: new FormControl('', [
                     Validators.required,
-                    passwordHelper.passwordsMustMatch(
+                    _passwordHelper.passwordsMustMatch(
                         formHelper.getFormControl(this.passwordField.label),
                         formHelper.getFormControl(
                             this.confirmPasswordField.label

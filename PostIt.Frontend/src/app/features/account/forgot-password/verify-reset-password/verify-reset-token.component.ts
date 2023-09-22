@@ -16,9 +16,9 @@ import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
         </header>
         <section>
             <form
+                [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
                 method="POST"
-                [formGroup]="formHelper.formGroup"
             >
                 <div class="flex flex-col gap-2">
                     <label [htmlFor]="resetTokenField.id">{{

@@ -28,10 +28,10 @@ import { Observable } from 'rxjs';
         </header>
         <section>
             <form
-                class="flex flex-col gap-4"
-                method="POST"
                 [formGroup]="formHelper.formGroup"
                 (submit)="onSubmit()"
+                class="flex flex-col gap-4"
+                method="POST"
             >
                 <div class="flex flex-col gap-4">
                     <!-- EMAIL -->
@@ -164,7 +164,7 @@ export class LoginComponent implements AfterViewInit {
             })
         );
     }
-    
+
     public ngAfterViewInit(): void {
         this._loading.endLoading();
     }

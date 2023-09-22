@@ -16,9 +16,9 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
         </header>
         <section>
             <form
+                [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
                 method="POST"
-                [formGroup]="formHelper.formGroup"
             >
                 <div class="flex flex-col gap-2">
                     <label [htmlFor]="emailField.id">{{
