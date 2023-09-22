@@ -124,7 +124,7 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("emailverification")]
+    [HttpPost("email/verification")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> CreateVerificationTokenAsync(CancellationToken cancellationToken)
@@ -136,7 +136,7 @@ public sealed class AccountController : ApiController
         .Match(NoContent, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("emailverification/verify")]
+    [HttpPut("verify/verificationtoken")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -150,7 +150,7 @@ public sealed class AccountController : ApiController
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Ok, HandleFailure);
 
-    [HttpPost("forgotpassword")]
+    [HttpPost("forgot/password")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateResetTokenAsync(
@@ -163,7 +163,7 @@ public sealed class AccountController : ApiController
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
 
-    [HttpPost("forgotpassword/verify")]
+    [HttpPost("verify/resettoken")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> VerifyResetTokenAsync(
@@ -178,7 +178,7 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [OneShotUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("password/reset")]
+    [HttpPut("reset/password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -192,7 +192,7 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("password/new")]
+    [HttpPut("update/password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -205,7 +205,7 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut]
+    [HttpPut("update/profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
