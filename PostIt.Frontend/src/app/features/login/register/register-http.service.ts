@@ -11,7 +11,7 @@ import {
     tap,
 } from 'rxjs';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IRegister } from './registerTypes';
+import { IRegister } from './register.model';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';

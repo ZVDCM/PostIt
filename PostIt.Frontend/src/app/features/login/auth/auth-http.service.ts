@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ILogin, ILoginPayload } from './authTypes';
+import { ILogin, ILoginPayload } from './auth.model';
 import {
     Observable,
     Subject,
