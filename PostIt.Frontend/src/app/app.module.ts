@@ -10,8 +10,6 @@ import { MessageService } from 'primeng/api';
 
 import { AppComponent } from './app.component';
 import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { accessTokenReducer } from './core/state/access-token/access-token.reducer';
 import { userReducer } from './core/state/user/user.reducer';
 
@@ -28,8 +26,6 @@ import { userReducer } from './core/state/user/user.reducer';
             accessToken: accessTokenReducer,
             user: userReducer,
         }),
-        EffectsModule.forRoot([]),
-        StoreRouterConnectingModule.forRoot(),
     ],
     bootstrap: [AppComponent],
     providers: [LoadingService, MessageService],

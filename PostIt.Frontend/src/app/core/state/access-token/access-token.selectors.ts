@@ -1,5 +1,10 @@
-import { createFeatureSelector } from "@ngrx/store";
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { IAccessTokenState } from './access-token.model';
 
-export const selectAccessToken =
+const selectAccessTokenState =
     createFeatureSelector<IAccessTokenState>('accessToken');
+
+export const selectAccessToken = createSelector(
+    selectAccessTokenState,
+    (state: IAccessTokenState) => state.value
+);

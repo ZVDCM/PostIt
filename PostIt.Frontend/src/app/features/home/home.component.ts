@@ -3,7 +3,7 @@ import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { selectAccessToken } from 'src/app/core/state/access-token/access-token.selectors';
-import { IUserState } from 'src/app/core/state/user/user.model';
+import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { AccountConstantsService } from 'src/app/shared/constants/account-constants.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
@@ -54,13 +54,11 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
                             label="JuanDelaCruz"
                             [model]="items"
                         >
-                            <ng-template
-                                pTemplate="content"
-                            >
+                            <ng-template pTemplate="content">
                                 <div class="flex items-center gap-4">
                                     <i class="pi pi-at p-button-icon"></i>
                                     <span class="p-button-label">{{
-                                        user?.value?.username
+                                        user.username
                                     }}</span>
                                 </div>
                             </ng-template>
@@ -154,7 +152,7 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
     providers: [HomeConstantsService, AccountConstantsService],
 })
 export class HomeComponent {
-    public user$: Observable<IUserState> = new Observable<IUserState>();
+    public user$: Observable<IUser> = new Observable<IUser>();
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
     public isProfileActive: boolean = false;
