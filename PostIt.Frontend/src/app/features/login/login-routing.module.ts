@@ -23,23 +23,28 @@ const routes: Routes = [
                 component: RegisterComponent,
             },
             {
-                path: 'forgotpassword',
+                path: 'forgot',
                 children: [
                     {
-                        path: '',
+                        path: 'password',
                         component: ForgotPasswordComponent,
                     },
+                ],
+            },
+            {
+                path: 'verify',
+                children: [
                     {
-                        path: 'verify',
+                        path: 'resettoken',
                         component: VerifyResetTokenComponent,
                     },
                 ],
             },
             {
-                path: 'password',
+                path: 'reset',
                 children: [
                     {
-                        path: 'reset',
+                        path: 'password',
                         component: ResetPasswordComponent,
                     },
                 ],

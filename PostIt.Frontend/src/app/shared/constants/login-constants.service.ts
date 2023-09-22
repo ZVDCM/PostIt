@@ -9,14 +9,14 @@ export class LoginConstantsService {
     public readonly registerRoute = '/login/register';
     public readonly registerEndpoint = '/account/register';
 
-    public readonly forgotPasswordRoute = '/login/forgotpassword';
-    public readonly forgotPasswordEndpoint = '/account/forgotpassword';
+    public readonly forgotPasswordRoute = '/login/forgot/password';
+    public readonly forgotPasswordEndpoint = '/account/forgot/password';
 
-    public readonly verifyResetTokenRoute = '/login/forgotpassword/verify';
-    public readonly verifyResetTokenEndpoint = '/account/forgotpassword/verify';
+    public readonly verifyResetTokenRoute = '/login/verify/resettoken';
+    public readonly verifyResetTokenEndpoint = '/account/verify/resettoken';
 
-    public readonly resetPasswordRoute = '/login/password/reset';
-    public readonly resetPasswordEndpoint = '/account/password/reset';
+    public readonly resetPasswordRoute = '/login/reset/password';
+    public readonly resetPasswordEndpoint = '/account/reset/password';
 
     public readonly loginForm: IForm = {
         email: { id: 'txt-login-email', label: 'Email', hint: null },

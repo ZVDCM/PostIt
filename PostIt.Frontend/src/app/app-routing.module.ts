@@ -6,7 +6,7 @@ import { NotfoundComponent } from './shared/components/not-found.component';
 import { LoginRoutingModule } from './features/login/login-routing.module';
 
 const routes: Routes = [
-    { path: '', redirectTo: 'account/login', pathMatch: 'full' },
+    { path: '', redirectTo: 'login/auth', pathMatch: 'full' },
     { path: '**', component: NotfoundComponent },
 ];
 

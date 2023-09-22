@@ -7,6 +7,9 @@ import { IForm } from 'src/app/core/models/form.model';
 export class HomeConstantsService {
     public readonly homeRoute = '/home';
 
+    public readonly updateProfileEndpoint = '/account';
+
+    
 
     public readonly profileForm: IForm = {
         username: {
