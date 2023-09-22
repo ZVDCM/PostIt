@@ -1,9 +1,10 @@
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { IUser } from './user.model';
 
-export const UserApiActions = createActionGroup({
-    source: 'User API',
+export const UserActions = createActionGroup({
+    source: 'User',
     events: {
-        'Set User': props<{ user: IUser }>(),
+        setUser: props<{ user: IUser }>(),
+        removeUser: emptyProps(),
     },
 });

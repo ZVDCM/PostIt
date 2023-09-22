@@ -18,6 +18,8 @@ import { PasswordHelperService } from 'src/app/shared/utils/password-helper.serv
 import { UpdateProfileHttpService } from './update-profile-http.service';
 import { UpdatePasswordHttpService } from './update-password-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { UserActions } from 'src/app/core/state/user/user.actions';
+import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 
 @Component({
     selector: 'app-home',
@@ -452,6 +454,12 @@ export class HomeComponent implements AfterViewInit {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
                 routerLink: [loginConstants.loginRoute],
+                command: () => {
+                    this._store.dispatch(UserActions.removeUser());
+                    this._store.dispatch(
+                        AccessTokenActions.removeAccessToken()
+                    );
+                },
             },
         ];
 

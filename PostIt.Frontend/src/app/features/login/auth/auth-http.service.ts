@@ -17,9 +17,9 @@ import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { Store } from '@ngrx/store';
-import { AccessTokenApiActions } from 'src/app/core/state/access-token/access-token.actions';
-import { UserApiActions } from 'src/app/core/state/user/user.actions';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
+import { UserActions } from 'src/app/core/state/user/user.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AuthHttpService {
@@ -55,12 +55,12 @@ export class AuthHttpService {
                     }),
                     tap((data: ILoginPayload) => {
                         this._store.dispatch(
-                            AccessTokenApiActions.setAccessToken({
+                            AccessTokenActions.setAccessToken({
                                 accessToken: data.accessToken,
                             })
                         );
                         this._store.dispatch(
-                            UserApiActions.setUser({
+                            UserActions.setUser({
                                 user: data.user,
                             })
                         );

@@ -1,8 +1,9 @@
-import { createActionGroup, props } from '@ngrx/store';
+import { createActionGroup, emptyProps, props } from '@ngrx/store';
 
-export const AccessTokenApiActions = createActionGroup({
-    source: 'Access Token API',
+export const AccessTokenActions = createActionGroup({
+    source: 'Access Token',
     events: {
-        setAccessToken: props<{ accessToken: string }>(), 
+        setAccessToken: props<{ accessToken: string }>(),
+        removeAccessToken: emptyProps(),
     },
 });
