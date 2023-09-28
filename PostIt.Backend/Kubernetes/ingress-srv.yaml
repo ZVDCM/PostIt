@@ -19,34 +19,34 @@ spec:
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-users-np-srv
+                            name: postit-users-clusterip-srv
                             port:
                                 number: 80
                   - path: /api/account
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-users-np-srv
+                            name: postit-users-clusterip-srv
                             port:
                                 number: 80
                   - path: /api/posts
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-np-srv
+                            name: postit-posts-clusterip-srv
                             port:
                                 number: 80
                   - path: /api/comments
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-np-srv
+                            name: postit-posts-clusterip-srv
                             port:
                                 number: 80
                   - path: /api/likes
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-np-srv
+                            name: postit-posts-clusterip-srv
                             port:
                                 number: 80
