@@ -18,7 +18,7 @@ import {
 export class LoadingService {
     private readonly _start: number = 0;
     private readonly _end: number = 100;
-    private readonly _min: number = 3;
+    private readonly _min: number = 1;
     private readonly _max: number = 9;
     private readonly _millisecondsPerTick = 500;
     private readonly _millisecondsDelay = 500;

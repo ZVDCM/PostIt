@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Reflection;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
 using PostIt.Common.Primitives.Validations;
+using Serilog;
 
 namespace PostIt.Users.Service.Controllers;
 
@@ -16,11 +18,13 @@ public class ApiController : ControllerBase
 {
     protected IMapper Mapper { get; init; }
     protected ISender Sender { get; init; }
+    protected ILogger Logger { get; init; }
 
-    public ApiController(IMapper mapper, ISender sender)
+    public ApiController(IMapper mapper, ISender sender, ILogger logger)
     {
         Mapper = mapper;
         Sender = sender;
+        Logger = logger;
     }
 
     protected IActionResult HandleFailure(Result result)
@@ -37,6 +41,19 @@ public class ApiController : ControllerBase
 
     protected string? GetAccessToken(string cookieName)
     {
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(cookieName);
+        Logger.Information("{@Cookies}", Request.Cookies);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
+        System.Console.WriteLine(1);
         string? accessToken = Request.Cookies[cookieName];
         return string.IsNullOrEmpty(accessToken) ? null : accessToken;
     }

@@ -11,6 +11,7 @@ using Polly;
 using Polly.Extensions.Http;
 using Polly.Timeout;
 using PostIt.Common.Behaviors;
+using PostIt.Common.Options.AllowedHosts;
 using PostIt.Common.Options.Database;
 using PostIt.Common.Options.HttpClient;
 using PostIt.Common.Options.RabbitMq;
@@ -41,6 +42,7 @@ public static class DependencyInjection
         services.ConfigureOptions<DatabaseOptionsSetup>();
         services.ConfigureOptions<RabbitMqOptionsSetup>();
         services.ConfigureOptions<HttpClientOptionsSetup>();
+        services.ConfigureOptions<ClientsOptionsSetup>();
         return services;
     }
 

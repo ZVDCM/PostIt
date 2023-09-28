@@ -20,6 +20,7 @@ import { UpdatePasswordHttpService } from './update-password-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { UserActions } from 'src/app/core/state/user/user.actions';
 import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
+import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
 
 @Component({
     selector: 'app-home',
@@ -397,6 +398,7 @@ import { AccessTokenActions } from 'src/app/core/state/access-token/access-token
         UpdatePasswordHttpService,
         FormHelperService,
         PasswordHelperService,
+        RefreshHttpService,
     ],
 })
 export class HomeComponent implements AfterViewInit {
@@ -429,8 +431,10 @@ export class HomeComponent implements AfterViewInit {
         public updatePasswordHttp: UpdatePasswordHttpService,
         private _passwordHelper: PasswordHelperService,
         private _store: Store,
-        private _loading: LoadingService
+        private _loading: LoadingService,
+        private _refreshHttp: RefreshHttpService
     ) {
+        this._refreshHttp.refresh$().subscribe();
         this.user$ = this._store.select(selectUser);
         this.items = [
             {

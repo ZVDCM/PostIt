@@ -44,6 +44,7 @@ using PostIt.Users.Service.Features.Email.Command.EmailResetToken;
 using PostIt.Users.Service.Features.Email.Command.EmailVerificationToken;
 using PostIt.Users.Service.Features.Users.Commands.CreateUser;
 using PostIt.Users.Service.Infrastructure.Authentication.Configurations.Options.Jwt;
+using Serilog;
 
 namespace PostIt.Users.Service.Controllers;
 
@@ -52,7 +53,11 @@ public sealed class AccountController : ApiController
 {
     private readonly JwtOptions _jwtOptions;
 
-    public AccountController(IMapper mapper, ISender sender, IOptions<JwtOptions> jwtOptions) : base(mapper, sender)
+    public AccountController(
+        IMapper mapper,
+        ISender sender,
+        ILogger logger,
+        IOptions<JwtOptions> jwtOptions) : base(mapper, sender, logger)
     {
         _jwtOptions = jwtOptions.Value;
     }
@@ -85,7 +90,6 @@ public sealed class AccountController : ApiController
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Map(Mapper.Map<RefreshCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
-        .Tap(DeleteCookies)
         .Tap(SendCookie)
         .Map(Mapper.Map<RefreshResponse>)
         .Match(Ok, HandleFailure);
@@ -364,7 +368,8 @@ public sealed class AccountController : ApiController
            MaxAge = TimeSpan.FromSeconds(_jwtOptions.SecondsAccessTokenExpiration),
            HttpOnly = true,
            IsEssential = true,
-           Secure = false
+           SameSite = SameSiteMode.None,
+           Secure = true,
        };
 
     private void SendCookie(Result<Tuple<User, Token>> result)

@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using PostIt.Common;
+using PostIt.Common.Options.AllowedHosts;
 using PostIt.Posts.Service.Domain.Comments;
 using PostIt.Posts.Service.Domain.Likes;
 using PostIt.Posts.Service.Domain.Posts;
@@ -15,8 +17,8 @@ public static class DependencyInjection
     public static IServiceCollection AddDependencies(this IServiceCollection services)
     {
         services
-            .AddCors()
             .AddDefaultOptions()
+            .AddCors()
             .AddDbContext<ApplicationDbContext>()
             .AddMapper()
             .AddMediatr()
@@ -30,10 +32,16 @@ public static class DependencyInjection
 
     private static IServiceCollection AddCors(this IServiceCollection services)
     {
+        var serviceProvider = services.BuildServiceProvider();
+        var clientsOptions = serviceProvider.GetRequiredService<IOptions<ClientsOptions>>().Value;
         services.AddCors(options => options.AddDefaultPolicy(builder =>
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()));
+        {
+            builder
+                .WithOrigins(clientsOptions.Hosts.Split(';'))
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }));
         return services;
     }
 

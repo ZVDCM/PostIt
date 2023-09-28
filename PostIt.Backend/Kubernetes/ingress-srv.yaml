@@ -3,11 +3,14 @@ kind: Ingress
 metadata:
     name: ingress-srv
     annotations:
-        kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/use-regex: "true"
         nginx.ingress.kubernetes.io/enable-cors: "true"
         nginx.ingress.kubernetes.io/cors-allow-origin: "http://localhost:4200"
 spec:
+    ingressClassName: nginx
+    tls:
+        - hosts:
+              - acme.com
+          secretName: tls-secret
     rules:
         - host: acme.com
           http:
@@ -16,34 +19,34 @@ spec:
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-users-clusterip-srv
+                            name: postit-users-np-srv
                             port:
                                 number: 80
                   - path: /api/account
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-users-clusterip-srv
+                            name: postit-users-np-srv
                             port:
                                 number: 80
                   - path: /api/posts
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-clusterip-srv
+                            name: postit-posts-np-srv
                             port:
                                 number: 80
                   - path: /api/comments
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-clusterip-srv
+                            name: postit-posts-np-srv
                             port:
                                 number: 80
                   - path: /api/likes
                     pathType: Prefix
                     backend:
                         service:
-                            name: postit-posts-clusterip-srv
+                            name: postit-posts-np-srv
                             port:
                                 number: 80

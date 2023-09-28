@@ -18,6 +18,7 @@ using PostIt.Users.Service.Features.Users.Commands.DeleteUser;
 using PostIt.Users.Service.Features.Users.Commands.UpdateUser;
 using PostIt.Users.Service.Features.Users.Queries.GetAllUsers;
 using PostIt.Users.Service.Features.Users.Queries.GetUserById;
+using Serilog;
 
 namespace PostIt.Users.Service.Controllers;
 
@@ -28,7 +29,8 @@ public sealed class UsersController : ApiController
 {
     public UsersController(
         IMapper mapper,
-        ISender sender) : base(mapper, sender) { }
+        ISender sender,
+        ILogger logger) : base(mapper, sender, logger) { }
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]

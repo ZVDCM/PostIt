@@ -1,9 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PostIt.Common;
+using PostIt.Common.Options.AllowedHosts;
 using PostIt.Users.Service.Domain.Roles;
 using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
@@ -25,9 +28,9 @@ public static class DependencyInjection
     {
         services
             .AddHttpContextAccessor()
-            .AddCors()
             .AddDefaultOptions()
             .AddOptions()
+            .AddCors()
             .AddAuthentication()
             .AddAuthorization()
             .AddPolicyProvider()
@@ -45,10 +48,16 @@ public static class DependencyInjection
 
     private static IServiceCollection AddCors(this IServiceCollection services)
     {
+        var serviceProvider = services.BuildServiceProvider();
+        var clientsOptions = serviceProvider.GetRequiredService<IOptions<ClientsOptions>>().Value;
         services.AddCors(options => options.AddDefaultPolicy(builder =>
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader()));
+        {
+            builder
+                .WithOrigins(clientsOptions.Hosts.Split(';'))
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }));
         return services;
     }
 

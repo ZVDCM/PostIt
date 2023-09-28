@@ -24,7 +24,7 @@ import { UserActions } from 'src/app/core/state/user/user.actions';
 @Injectable({ providedIn: 'root' })
 export class AuthHttpService {
     private readonly _url: string =
-        this._serverConstants.server + this._loginConstants.loginEndpoint;
+        this._serverConstants.serverApi + this._loginConstants.loginEndpoint;
     private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
     public isLoading: boolean = false;
@@ -99,6 +99,8 @@ export class AuthHttpService {
     }
 
     private loginUser(user: ILogin): Observable<ILoginPayload> {
-        return this._http.post<ILoginPayload>(this._url, user);
+        return this._http.post<ILoginPayload>(this._url, user, {
+            withCredentials: true,
+        });
     }
 }

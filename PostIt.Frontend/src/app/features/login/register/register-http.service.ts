@@ -22,7 +22,7 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
 })
 export class RegisterHttpService {
     private readonly _url: string =
-        this._serverConstants.server + this._loginConstants.registerEndpoint;
+        this._serverConstants.serverApi + this._loginConstants.registerEndpoint;
     private _register$$: Subject<IRegister> = new Subject<IRegister>();
 
     public isLoading: boolean = false;
@@ -60,7 +60,7 @@ export class RegisterHttpService {
                         this._router.navigate([
                             this._loginConstants.loginEndpoint,
                         ]);
-                    }),
+                    })
                 )
             ),
             catchError((err) =>
