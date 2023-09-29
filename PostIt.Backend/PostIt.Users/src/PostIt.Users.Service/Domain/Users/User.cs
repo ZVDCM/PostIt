@@ -59,6 +59,7 @@ public sealed class User : Entity, IAggregate, IAuditable
     {
         Username = username;
         Email = email;
+        
     }
 
     public void UpdatePassword(string password)
@@ -93,6 +94,9 @@ public sealed class User : Entity, IAggregate, IAuditable
 
     public void VerifyEmail()
         => EmailVerified = true;
+
+    public void UnverifyEmail()
+        => EmailVerified = false;
 
     public void DisableToken(Token token)
         => token.Disable();

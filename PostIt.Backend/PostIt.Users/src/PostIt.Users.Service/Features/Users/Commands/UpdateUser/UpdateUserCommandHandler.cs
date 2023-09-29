@@ -24,7 +24,14 @@ public sealed class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand
         User? user = await _userRepository.GetUserAsync(u => u.Id == request.UserId, cancellationToken);
         if (user is null) return Result.Failure<User>(UserErrors.UserNotFound);
 
+        User? userTemp = await _userRepository.GetUserAsync(u => u.Email == request.Email, cancellationToken);
+        if (userTemp is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
+
+        string oldEmail = user.Email;
+        
         user.UpdateProfile(request.Username, request.Email);
+
+        if (!string.Equals(oldEmail, request.Email)) user.UnverifyEmail();
 
         return await _unitOfWork.SaveChangesAsync(cancellationToken) ? user : Result.Failure<User>(UserErrors.UserNotUpdated);
     }
