@@ -98,6 +98,7 @@ public sealed class AccountController : ApiController
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> RegisterAccountAsync(RegisterRequest request, CancellationToken cancellationToken)
         => await Result.Create(request, Errors.BadRequest)
         .Map(Mapper.Map<CreateUserCommand>)
