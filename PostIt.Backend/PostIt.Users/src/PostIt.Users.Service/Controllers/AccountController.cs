@@ -353,6 +353,9 @@ public sealed class AccountController : ApiController
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpDelete("posts/{id:guid}/comments/{commentId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteCommentOnPostAsync(Guid id, Guid commentId, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => id != Guid.Empty, Errors.BadRequest)

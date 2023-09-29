@@ -35,10 +35,13 @@ public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileC
         Result<User> result = await _jwtService.GetUserAsync(request.AccessToken, cancellationToken);
         if (result.IsFailure) return Result.Failure<User>(result.Error);
 
+        User user = result.Value!;
+
+        if (!user.EmailVerified) return Result.Failure<User>(UserErrors.UserNotVerified);
+       
         User? userTemp = await _userRepository.GetUserAsync(u => u.Email == request.Email, cancellationToken);
         if (userTemp is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
 
-        User user = result.Value!;
         string oldUsername = user.Username;
         string oldEmail = user.Email;
 

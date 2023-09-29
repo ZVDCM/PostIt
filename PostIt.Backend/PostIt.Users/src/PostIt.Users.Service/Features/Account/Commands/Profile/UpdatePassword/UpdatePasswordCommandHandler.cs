@@ -30,6 +30,8 @@ public sealed class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswor
 
         User user = result.Value!;
 
+        if(!user.EmailVerified) return Result.Failure(UserErrors.UserNotVerified);
+
         bool isMatch = BCrypt.Net.BCrypt.EnhancedVerify(request.OldPassword, user.Password, HashType.SHA512);
         if (!isMatch) return Result.Failure(UserErrors.UserForbidden);
 

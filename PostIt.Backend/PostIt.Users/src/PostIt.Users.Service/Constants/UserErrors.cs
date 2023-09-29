@@ -5,6 +5,10 @@ namespace PostIt.Users.Service.Constants;
 
 public static class UserErrors
 {
+    public static Error UserNotVerified => new(
+        "UserAPI.UserNotVerified",
+        "The user is not verified.",
+        (int)HttpStatusCode.Forbidden);
     public static Error UserAlreadyExists => new(
         "UserAPI.UserAlreadyExists",
         "The user already exists.",

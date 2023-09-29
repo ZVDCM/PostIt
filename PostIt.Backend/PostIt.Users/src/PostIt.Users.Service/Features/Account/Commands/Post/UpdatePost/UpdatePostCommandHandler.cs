@@ -4,6 +4,7 @@ using MassTransit;
 using PostIt.Common.Abstractions.Commands;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Posts.Events;
+using PostIt.Users.Service.Constants;
 using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 
@@ -25,6 +26,9 @@ public sealed class UpdatePostCommandHandler : ICommandHandler<UpdatePostCommand
         if (result.IsFailure) return Result.Failure(result.Error);
 
         User user = result.Value!;
+
+        if (!user.EmailVerified) return Result.Failure(UserErrors.UserNotVerified);
+
         PostUpdated postUpdated = new(request.PostId.Value, user.Id.Value, request.Title, request.Image);
         await _publishEndpoint.Publish(postUpdated, cancellationToken);
 
