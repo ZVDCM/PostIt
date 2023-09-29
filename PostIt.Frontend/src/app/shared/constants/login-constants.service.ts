@@ -5,16 +5,12 @@ import { IForm } from '../../core/models/form.model';
 export class LoginConstantsService {
     public readonly loginRoute = '/login';
     public readonly loginEndpoint = '/account/login';
-
     public readonly registerRoute = '/login/register';
     public readonly registerEndpoint = '/account/register';
-
     public readonly forgotPasswordRoute = '/login/forgot/password';
     public readonly forgotPasswordEndpoint = '/account/forgot/password';
-
     public readonly verifyResetTokenRoute = '/login/verify/resettoken';
     public readonly verifyResetTokenEndpoint = '/account/verify/resettoken';
-
     public readonly resetPasswordRoute = '/login/reset/password';
     public readonly resetPasswordEndpoint = '/account/reset/password';
 

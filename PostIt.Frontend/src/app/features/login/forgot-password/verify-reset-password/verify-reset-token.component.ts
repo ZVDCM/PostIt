@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
@@ -90,9 +89,8 @@ export class VerifyResetTokenComponent {
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public verifyResetTokenHttp: VerifyResetTokenHttpService,
-        private _loading: LoadingService
     ) {
-        this._loading.endLoading();
+        // this._loading.endLoading();
         this.formHelper.setFormGroup(
             new FormGroup({
                 [this.resetTokenField.label]: new FormControl('', [

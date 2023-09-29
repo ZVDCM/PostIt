@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LoadingService } from '../services/loading.service';
+import { ProgressService } from '../services/progress.service';
 import { Observable } from 'rxjs';
+import { LoadingService } from '../services/loading.service';
 
 @Component({
     selector: 'loading',
@@ -8,7 +9,8 @@ import { Observable } from 'rxjs';
         <div
             class="relative"
             *ngIf="
-                (isLoading$ | async) && (loading.progress$ | async) as progress
+                (loading$ | async) && (progress$ | async) as _progress;
+                else endLoading
             "
         >
             <div
@@ -19,14 +21,16 @@ import { Observable } from 'rxjs';
             <div
                 id="loading-foreground"
                 class="absolute top-0 left-0 h-1 transition-all"
-                [style.width]="progress + '%'"
+                [style.width]="_progress + '%'"
                 [ngStyle]="{
-                    backgroundColor: loading.isCancelled
-                        ? 'var(--error-color)'
-                        : 'var(--primary-color)'
+                    backgroundColor:
+                        progress.isCancelled === null
+                            ? 'var(--error-color)'
+                            : 'var(--primary-color)'
                 }"
             ></div>
         </div>
+        <ng-template #endLoading> {{ resetProgress() }} </ng-template>
     `,
     styles: [
         `
@@ -38,9 +42,18 @@ import { Observable } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoadingComponent {
-    public isLoading$: Observable<boolean> = new Observable<boolean>();
+    public loading$: Observable<boolean> = new Observable<boolean>();
+    public progress$: Observable<number> = new Observable<number>();
 
-    constructor(public loading: LoadingService) {
-        this.isLoading$ = this.loading.watchLoading();
+    constructor(
+        public progress: ProgressService,
+        public loading: LoadingService
+    ) {
+        this.loading$ = this.loading.watchLoading$();
+        this.progress$ = this.progress.watchProgress$();
+    }
+
+    public resetProgress(): void {
+        this.progress$ = this.progress.watchProgress$();
     }
 }

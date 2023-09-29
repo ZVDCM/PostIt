@@ -7,12 +7,11 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
 import { UpdateProfileHttpService } from './update-profile-http.service';
@@ -21,6 +20,8 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
 import { UserActions } from 'src/app/core/state/user/user.actions';
 import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
+import { LogoutHttpService } from './logout-http.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-home',
@@ -122,233 +123,242 @@ import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service
                     </div>
                 </div>
             </aside>
+            <p-dialog
+                [(visible)]="showModal"
+                [modal]="true"
+                [resizable]="false"
+                [draggable]="false"
+                [closeOnEscape]="false"
+                [header]="isProfileForm ? 'Update Profile' : 'Update Password'"
+                (onHide)="onModalHide(user)"
+                styleClass="w-full max-w-lg"
+            >
+                <ng-container *ngIf="isProfileForm; else passwordForm">
+                    <form
+                        [formGroup]="profileFormHelper.formGroup"
+                        (submit)="onProfileSubmit(user)"
+                        method="POST"
+                    >
+                        <div class="flex flex-col gap-4">
+                            <!-- USERNAME -->
+                            <div class="flex flex-col gap-2">
+                                <label [htmlFor]="usernameField.id">{{
+                                    usernameField.label
+                                }}</label>
+                                <input
+                                    [id]="usernameField.id"
+                                    [attr.aria-describedby]="
+                                        usernameField.id + '-help'
+                                    "
+                                    [formControlName]="usernameField.label"
+                                    [readOnly]="loading.isLoading"
+                                    [autocomplete]="true"
+                                    (blur)="
+                                        profileFormHelper
+                                            .getFormControl(
+                                                usernameField.label
+                                            )!
+                                            .markAsDirty()
+                                    "
+                                    pInputText
+                                />
+                                <small
+                                    *ngIf="usernameField.hint !== null"
+                                    id="{{ usernameField.id }}-help"
+                                    [ngClass]="{
+                                        hidden: !profileFormHelper.isInputInvalid(
+                                            usernameField.label
+                                        )
+                                    }"
+                                    class="p-error"
+                                    >{{ usernameField.hint }}
+                                </small>
+                            </div>
+                            <!-- EMAIL -->
+                            <div class="flex flex-col gap-2">
+                                <label [htmlFor]="emailField.id">{{
+                                    emailField.label
+                                }}</label>
+                                <input
+                                    [id]="emailField.id"
+                                    [attr.aria-describedby]="
+                                        emailField.id + '-help'
+                                    "
+                                    [formControlName]="emailField.label"
+                                    [readonly]="loading.isLoading"
+                                    [autocomplete]="true"
+                                    (blur)="
+                                        profileFormHelper
+                                            .getFormControl(emailField.label)!
+                                            .markAsDirty()
+                                    "
+                                    pInputText
+                                />
+                                <small
+                                    *ngIf="emailField.hint !== null"
+                                    id="{{ emailField.id }}-help"
+                                    [ngClass]="{
+                                        hidden: !profileFormHelper.isInputInvalid(
+                                            emailField.label
+                                        )
+                                    }"
+                                    class="p-error"
+                                    >{{ emailField.hint }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-5 mt-10">
+                            <p-button
+                                [loading]="loading.isLoading"
+                                type="submit"
+                                styleClass="w-full"
+                                label="Register"
+                            ></p-button>
+                            <p-button
+                                [disabled]="loading.isLoading"
+                                (click)="showModal = false"
+                                type="button"
+                                styleClass="w-full p-button-outlined p-button-danger"
+                                label="Cancel"
+                            ></p-button>
+                        </div>
+                    </form>
+                </ng-container>
+                <ng-template #passwordForm>
+                    <form
+                        [formGroup]="passwordFormHelper.formGroup"
+                        (submit)="onPasswordSubmit()"
+                        method="POST"
+                    >
+                        <div class="flex flex-col gap-4">
+                            <!-- PASSWORD -->
+                            <div class="flex flex-col gap-2">
+                                <label [htmlFor]="passwordField.id">{{
+                                    passwordField.label
+                                }}</label>
+                                <div class="p-inputgroup">
+                                    <input
+                                        [id]="passwordField.id"
+                                        [attr.aria-describedby]="
+                                            passwordField.id + '-help'
+                                        "
+                                        [type]="
+                                            showPassword ? 'text' : 'password'
+                                        "
+                                        [autocomplete]="false"
+                                        [formControlName]="passwordField.label"
+                                        [readOnly]="loading.isLoading"
+                                        (blur)="
+                                            passwordFormHelper
+                                                .getFormControl(
+                                                    passwordField.label
+                                                )!
+                                                .markAsDirty()
+                                        "
+                                        pInputText
+                                    />
+                                    <button
+                                        type="button"
+                                        pButton
+                                        icon="pi {{
+                                            showPassword
+                                                ? 'pi-eye-slash'
+                                                : 'pi-eye'
+                                        }}"
+                                        (click)="showPassword = !showPassword"
+                                    ></button>
+                                </div>
+                                <small
+                                    *ngIf="passwordField.hint !== null"
+                                    id="{{ passwordField.id }}-help"
+                                    [ngClass]="{
+                                        hidden: !passwordFormHelper.isInputInvalid(
+                                            passwordField.label
+                                        )
+                                    }"
+                                    class="p-error"
+                                    >{{ passwordField.hint }}</small
+                                >
+                            </div>
+                            <!-- CONFIRM PASSWORD -->
+                            <div class="flex flex-col gap-2">
+                                <label [htmlFor]="confirmPasswordField.id">{{
+                                    confirmPasswordField.label
+                                }}</label>
+                                <div class="p-inputgroup">
+                                    <input
+                                        [id]="confirmPasswordField.id"
+                                        [attr.aria-describedby]="
+                                            confirmPasswordField.id + '-help'
+                                        "
+                                        [type]="
+                                            showConfirmPassword
+                                                ? 'text'
+                                                : 'password'
+                                        "
+                                        [autocomplete]="false"
+                                        [formControlName]="
+                                            confirmPasswordField.label
+                                        "
+                                        [readOnly]="loading.isLoading"
+                                        (blur)="
+                                            passwordFormHelper
+                                                .getFormControl(
+                                                    confirmPasswordField.label
+                                                )!
+                                                .markAsDirty()
+                                        "
+                                        pInputText
+                                    />
+                                    <button
+                                        type="button"
+                                        pButton
+                                        icon="pi {{
+                                            showConfirmPassword
+                                                ? 'pi-eye-slash'
+                                                : 'pi-eye'
+                                        }}"
+                                        (click)="
+                                            showConfirmPassword =
+                                                !showConfirmPassword
+                                        "
+                                    ></button>
+                                </div>
+                                <small
+                                    *ngIf="confirmPasswordField.hint !== null"
+                                    id="{{ confirmPasswordField.id }}-help"
+                                    [ngClass]="{
+                                        hidden: !passwordFormHelper.isInputInvalid(
+                                            confirmPasswordField.label
+                                        )
+                                    }"
+                                    class="p-error"
+                                    >{{ confirmPasswordField.hint }}</small
+                                >
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-5 mt-10">
+                            <p-button
+                                [loading]="loading.isLoading"
+                                type="submit"
+                                styleClass="w-full"
+                                label="Register"
+                            ></p-button>
+                            <p-button
+                                [disabled]="loading.isLoading"
+                                (click)="showModal = false"
+                                type="button"
+                                styleClass="w-full p-button-outlined p-button-danger"
+                                label="Cancel"
+                            ></p-button>
+                        </div>
+                    </form>
+                </ng-template>
+            </p-dialog>
         </ng-container>
-        <p-dialog
-            [(visible)]="showModal"
-            [modal]="true"
-            [resizable]="false"
-            [draggable]="false"
-            [closeOnEscape]="false"
-            [header]="isProfileForm ? 'Update Profile' : 'Update Password'"
-            (onHide)="onModalHide()"
-            styleClass="w-full max-w-lg"
-        >
-            <ng-container *ngIf="isProfileForm; else passwordForm">
-                <form
-                    [formGroup]="profileFormHelper.formGroup"
-                    (submit)="onProfileSubmit()"
-                    method="POST"
-                >
-                    <div class="flex flex-col gap-4">
-                        <!-- USERNAME -->
-                        <div class="flex flex-col gap-2">
-                            <label [htmlFor]="usernameField.id">{{
-                                usernameField.label
-                            }}</label>
-                            <input
-                                [id]="usernameField.id"
-                                [attr.aria-describedby]="
-                                    usernameField.id + '-help'
-                                "
-                                [formControlName]="usernameField.label"
-                                [readOnly]="updateProfileHttp.isLoading"
-                                [autocomplete]="true"
-                                (blur)="
-                                    profileFormHelper
-                                        .getFormControl(usernameField.label)!
-                                        .markAsDirty()
-                                "
-                                pInputText
-                            />
-                            <small
-                                *ngIf="usernameField.hint !== null"
-                                id="{{ usernameField.id }}-help"
-                                [ngClass]="{
-                                    hidden: !profileFormHelper.isInputInvalid(
-                                        usernameField.label
-                                    )
-                                }"
-                                class="p-error"
-                                >{{ usernameField.hint }}
-                            </small>
-                        </div>
-                        <!-- EMAIL -->
-                        <div class="flex flex-col gap-2">
-                            <label [htmlFor]="emailField.id">{{
-                                emailField.label
-                            }}</label>
-                            <input
-                                [id]="emailField.id"
-                                [attr.aria-describedby]="
-                                    emailField.id + '-help'
-                                "
-                                [formControlName]="emailField.label"
-                                [readonly]="updateProfileHttp.isLoading"
-                                [autocomplete]="true"
-                                (blur)="
-                                    profileFormHelper
-                                        .getFormControl(emailField.label)!
-                                        .markAsDirty()
-                                "
-                                pInputText
-                            />
-                            <small
-                                *ngIf="emailField.hint !== null"
-                                id="{{ emailField.id }}-help"
-                                [ngClass]="{
-                                    hidden: !profileFormHelper.isInputInvalid(
-                                        emailField.label
-                                    )
-                                }"
-                                class="p-error"
-                                >{{ emailField.hint }}
-                            </small>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-5 mt-10">
-                        <p-button
-                            [loading]="updateProfileHttp.isLoading"
-                            type="submit"
-                            styleClass="w-full"
-                            label="Register"
-                        ></p-button>
-                        <p-button
-                            [disabled]="updateProfileHttp.isLoading"
-                            (click)="showModal = false"
-                            type="button"
-                            styleClass="w-full p-button-outlined p-button-danger"
-                            label="Cancel"
-                        ></p-button>
-                    </div>
-                </form>
-            </ng-container>
-            <ng-template #passwordForm>
-                <form
-                    [formGroup]="passwordFormHelper.formGroup"
-                    (submit)="onPasswordSubmit()"
-                    method="POST"
-                >
-                    <div class="flex flex-col gap-4">
-                        <!-- PASSWORD -->
-                        <div class="flex flex-col gap-2">
-                            <label [htmlFor]="passwordField.id">{{
-                                passwordField.label
-                            }}</label>
-                            <div class="p-inputgroup">
-                                <input
-                                    [id]="passwordField.id"
-                                    [attr.aria-describedby]="
-                                        passwordField.id + '-help'
-                                    "
-                                    [type]="showPassword ? 'text' : 'password'"
-                                    [autocomplete]="false"
-                                    [formControlName]="passwordField.label"
-                                    [readOnly]="updatePasswordHttp.isLoading"
-                                    (blur)="
-                                        passwordFormHelper
-                                            .getFormControl(
-                                                passwordField.label
-                                            )!
-                                            .markAsDirty()
-                                    "
-                                    pInputText
-                                />
-                                <button
-                                    type="button"
-                                    pButton
-                                    icon="pi {{
-                                        showPassword ? 'pi-eye-slash' : 'pi-eye'
-                                    }}"
-                                    (click)="showPassword = !showPassword"
-                                ></button>
-                            </div>
-                            <small
-                                *ngIf="passwordField.hint !== null"
-                                id="{{ passwordField.id }}-help"
-                                [ngClass]="{
-                                    hidden: !passwordFormHelper.isInputInvalid(
-                                        passwordField.label
-                                    )
-                                }"
-                                class="p-error"
-                                >{{ passwordField.hint }}</small
-                            >
-                        </div>
-                        <!-- CONFIRM PASSWORD -->
-                        <div class="flex flex-col gap-2">
-                            <label [htmlFor]="confirmPasswordField.id">{{
-                                confirmPasswordField.label
-                            }}</label>
-                            <div class="p-inputgroup">
-                                <input
-                                    [id]="confirmPasswordField.id"
-                                    [attr.aria-describedby]="
-                                        confirmPasswordField.id + '-help'
-                                    "
-                                    [type]="
-                                        showConfirmPassword
-                                            ? 'text'
-                                            : 'password'
-                                    "
-                                    [autocomplete]="false"
-                                    [formControlName]="
-                                        confirmPasswordField.label
-                                    "
-                                    [readOnly]="updatePasswordHttp.isLoading"
-                                    (blur)="
-                                        passwordFormHelper
-                                            .getFormControl(
-                                                confirmPasswordField.label
-                                            )!
-                                            .markAsDirty()
-                                    "
-                                    pInputText
-                                />
-                                <button
-                                    type="button"
-                                    pButton
-                                    icon="pi {{
-                                        showConfirmPassword
-                                            ? 'pi-eye-slash'
-                                            : 'pi-eye'
-                                    }}"
-                                    (click)="
-                                        showConfirmPassword =
-                                            !showConfirmPassword
-                                    "
-                                ></button>
-                            </div>
-                            <small
-                                *ngIf="confirmPasswordField.hint !== null"
-                                id="{{ confirmPasswordField.id }}-help"
-                                [ngClass]="{
-                                    hidden: !passwordFormHelper.isInputInvalid(
-                                        confirmPasswordField.label
-                                    )
-                                }"
-                                class="p-error"
-                                >{{ confirmPasswordField.hint }}</small
-                            >
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-5 mt-10">
-                        <p-button
-                            [loading]="updatePasswordHttp.isLoading"
-                            type="submit"
-                            styleClass="w-full"
-                            label="Register"
-                        ></p-button>
-                        <p-button
-                            [disabled]="updatePasswordHttp.isLoading"
-                            (click)="showModal = false"
-                            type="button"
-                            styleClass="w-full p-button-outlined p-button-danger"
-                            label="Cancel"
-                        ></p-button>
-                    </div>
-                </form>
-            </ng-template>
-        </p-dialog>
+        <ng-container *ngIf="updateProfile$ | async"></ng-container>
+        <ng-container *ngIf="loading$ | async"></ng-container>
+        <ng-container *ngIf="logout$ | async"></ng-container>
     `,
     styles: [
         `
@@ -399,10 +409,14 @@ import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service
         FormHelperService,
         PasswordHelperService,
         RefreshHttpService,
+        LogoutHttpService,
     ],
 })
-export class HomeComponent implements AfterViewInit {
+export class HomeComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
+    public updateProfile$: Observable<void> = new Observable<void>();
+    public logout$: Observable<void> = new Observable<void>();
+    public loading$: Observable<boolean> = new Observable<boolean>();
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
     public isProfileActive: boolean = false;
@@ -431,11 +445,18 @@ export class HomeComponent implements AfterViewInit {
         public updatePasswordHttp: UpdatePasswordHttpService,
         private _passwordHelper: PasswordHelperService,
         private _store: Store,
-        private _loading: LoadingService,
-        private _refreshHttp: RefreshHttpService
+        private _refreshHttp: RefreshHttpService,
+        private _logoutHttp: LogoutHttpService,
+        public loading: LoadingService
     ) {
+        this.loading$ = loading.watchLoading$();
         this._refreshHttp.refresh$().subscribe();
-        this.user$ = this._store.select(selectUser);
+        this.user$ = this._store
+            .select(selectUser)
+            .pipe(tap((user: IUser) => this.initProfileForm(user)));
+        this.updateProfile$ = this.updateProfileHttp.watchUpdateProfile$();
+        this.logout$ = this._logoutHttp.watchLogout$();
+
         this.items = [
             {
                 label: 'Update Profile',
@@ -457,22 +478,11 @@ export class HomeComponent implements AfterViewInit {
             {
                 label: 'Logout',
                 icon: 'pi pi-sign-out',
-                routerLink: [loginConstants.loginRoute],
-                command: () => {
-                    this._store.dispatch(UserActions.removeUser());
-                    this._store.dispatch(
-                        AccessTokenActions.removeAccessToken()
-                    );
-                },
+                command: () => _logoutHttp.logout(),
             },
         ];
 
-        this.initProfileForm();
         this.initPasswordForm();
-    }
-
-    public ngAfterViewInit(): void {
-        this._loading.endLoading();
     }
 
     public onClickPosts() {
@@ -485,11 +495,23 @@ export class HomeComponent implements AfterViewInit {
         this.isProfileActive = true;
     }
 
-    public onProfileSubmit(): void {
+    public onProfileSubmit(user: IUser): void {
         if (this.profileFormHelper.formGroup.invalid) {
             this.profileFormHelper.validateAllFormInputs();
+            return;
         }
-        this._loading.showLoading();
+        if (
+            this.profileFormHelper.formGroup.value[this.usernameField.label] ===
+                user.username &&
+            this.profileFormHelper.formGroup.value[this.emailField.label] ===
+                user.email
+        ) {
+            return;
+        }
+
+        this.updateProfileHttp.updateProfile(
+            this.profileFormHelper.formGroup.value
+        );
     }
 
     public onPasswordSubmit(): void {
@@ -498,21 +520,21 @@ export class HomeComponent implements AfterViewInit {
         }
     }
 
-    public onModalHide() {
+    public onModalHide(user: IUser) {
         if (this.isProfileForm) {
-            this.initProfileForm();
+            this.initProfileForm(user);
         } else {
             this.initPasswordForm();
         }
     }
 
-    private initProfileForm(): void {
+    public initProfileForm(user: IUser): void {
         this.profileFormHelper.setFormGroup(
             new FormGroup({
-                [this.usernameField.label]: new FormControl('', [
+                [this.usernameField.label]: new FormControl(user.username, [
                     Validators.required,
                 ]),
-                [this.emailField.label]: new FormControl('', [
+                [this.emailField.label]: new FormControl(user.email, [
                     Validators.required,
                     Validators.email,
                 ]),
@@ -520,7 +542,7 @@ export class HomeComponent implements AfterViewInit {
         );
     }
 
-    private initPasswordForm(): void {
+    public initPasswordForm(): void {
         this.passwordFormHelper.setFormGroup(
             new FormGroup({
                 [this.passwordField.label]: new FormControl('', [
@@ -539,5 +561,19 @@ export class HomeComponent implements AfterViewInit {
                 ]),
             })
         );
+
+        this.passwordFormHelper
+            .getFormControl(this.confirmPasswordField.label)
+            ?.addValidators([
+                Validators.required,
+                this._passwordHelper.passwordsMustMatch(
+                    this.passwordFormHelper.getFormControl(
+                        this.passwordField.label
+                    ),
+                    this.passwordFormHelper.getFormControl(
+                        this.confirmPasswordField.label
+                    )
+                ),
+            ]);
     }
 }

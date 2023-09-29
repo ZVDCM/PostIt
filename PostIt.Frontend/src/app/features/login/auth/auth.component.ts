@@ -7,9 +7,9 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { AuthHttpService } from './auth-http.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { Observable } from 'rxjs';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-auth',
@@ -43,7 +43,7 @@ import { Observable } from 'rxjs';
                             [id]="emailField.id"
                             [attr.aria-describedby]="emailField.id + '-help'"
                             [formControlName]="emailField.label"
-                            [readonly]="authHttp.isLoading"
+                            [readonly]="loading.isLoading"
                             [autocomplete]="true"
                             pInputText
                         />
@@ -73,7 +73,7 @@ import { Observable } from 'rxjs';
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
                                 [formControlName]="passwordField.label"
-                                [readonly]="authHttp.isLoading"
+                                [readonly]="loading.isLoading"
                                 pInputText
                             />
                             <button
@@ -114,7 +114,7 @@ import { Observable } from 'rxjs';
                     >
                 </div>
                 <p-button
-                    [loading]="authHttp.isLoading"
+                    [loading]="loading.isLoading"
                     type="submit"
                     class="mt-10"
                     styleClass="w-full"
@@ -123,6 +123,7 @@ import { Observable } from 'rxjs';
             </form>
         </section>
         <ng-container *ngIf="login$ | async"></ng-container>
+        <ng-container *ngIf="loading$ | async"></ng-container>
     `,
     styles: [
         `
@@ -134,8 +135,9 @@ import { Observable } from 'rxjs';
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [LoginConstantsService, FormHelperService, AuthHttpService],
 })
-export class AuthComponent implements AfterViewInit {
+export class AuthComponent {
     public login$: Observable<void> = new Observable<void>();
+    public loading$: Observable<boolean> = new Observable<boolean>();
     public showPassword: boolean = false;
 
     public readonly emailField: IFormItem =
@@ -149,8 +151,9 @@ export class AuthComponent implements AfterViewInit {
         public loginConstants: LoginConstantsService,
         public authHttp: AuthHttpService,
         public formHelper: FormHelperService,
-        private _loading: LoadingService
+        public loading: LoadingService
     ) {
+        this.loading$ = loading.watchLoading$();
         this.login$ = authHttp.watchLogin$();
         formHelper.setFormGroup(
             new FormGroup({
@@ -163,10 +166,6 @@ export class AuthComponent implements AfterViewInit {
                 ),
             })
         );
-    }
-
-    public ngAfterViewInit(): void {
-        this._loading.endLoading();
     }
 
     public togglePasswordType(): void {
@@ -184,7 +183,6 @@ export class AuthComponent implements AfterViewInit {
     }
 
     public onSubmit(): void {
-        this._loading.showLoading();
         this.authHttp.login(this.formHelper.formGroup.value);
     }
 }

@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
 import { ResetPasswordHttpService } from './reset-password-http.service';
@@ -164,9 +163,8 @@ export class ResetPasswordComponent {
         public formHelper: FormHelperService,
         public resetPasswordHttp: ResetPasswordHttpService,
         private _passwordHelper: PasswordHelperService,
-        private _loading: LoadingService
     ) {
-        _loading.endLoading();
+        // _loading.endLoading();
         formHelper.setFormGroup(
             new FormGroup({
                 [this.passwordField.label]: new FormControl('', [

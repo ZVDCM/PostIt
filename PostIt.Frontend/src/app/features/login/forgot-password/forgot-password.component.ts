@@ -4,7 +4,6 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { ForgotPasswordHttpService } from './forgot-password-http.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-forgot-password',
@@ -88,9 +87,8 @@ export class ForgotPasswordComponent {
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public forgotPasswordHttp: ForgotPasswordHttpService,
-        private _loading: LoadingService
     ) {
-        this._loading.endLoading();
+        // this._loading.endLoading();
         this.formHelper.setFormGroup(
             new FormGroup({
                 [this.emailField.label]: new FormControl('', [

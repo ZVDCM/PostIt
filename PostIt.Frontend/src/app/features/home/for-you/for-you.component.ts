@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-for-you',
@@ -34,8 +33,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 export class ForYouComponent {
     public items: MenuItem[] = [];
 
-    constructor(private _loading: LoadingService) {
-        _loading.endLoading();
+    constructor() {
         this.items = [{ label: 'For you' }, { label: 'Following' }];
     }
 }

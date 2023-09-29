@@ -3,7 +3,6 @@ import {
     ChangeDetectionStrategy,
     Component,
 } from '@angular/core';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-account',
@@ -42,9 +41,9 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements AfterViewInit {
-    constructor(private _loading: LoadingService) {}
+    // constructor(private _loading: LoadingService) {}
 
     public ngAfterViewInit(): void {
-        this._loading.endLoading();
+        // this._loading.endLoading();
     }
 }

@@ -1,17 +1,17 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ILogin, ILoginPayload } from './auth.model';
+import { ILogin, IAuthPayload } from './auth.model';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
     tap,
 } from 'rxjs';
-import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
@@ -20,6 +20,8 @@ import { Store } from '@ngrx/store';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 import { UserActions } from 'src/app/core/state/user/user.actions';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { ProgressService } from 'src/app/shared/services/progress.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthHttpService {
@@ -27,15 +29,13 @@ export class AuthHttpService {
         this._serverConstants.serverApi + this._loginConstants.loginEndpoint;
     private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
-    public isLoading: boolean = false;
-    public isCancelled: boolean = false;
-
     constructor(
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
+        private _progress: ProgressService,
         private _messageService: MessageService,
         private _router: Router,
         private _store: Store
@@ -44,16 +44,16 @@ export class AuthHttpService {
     public watchLogin$(): Observable<void> {
         return this._login$$.asObservable().pipe(
             tap(() => {
-                this.isLoading = true;
-                this.isCancelled = true;
+                this._loading.startLoading();
+                this._progress.isCancelled = true;
             }),
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
                     tap((_) => {
-                        this.isLoading = false;
-                        this.isCancelled = false;
+                        this._loading.endLoading();
+                        this._progress.isCancelled = false;
                     }),
-                    tap((data: ILoginPayload) => {
+                    map((data: IAuthPayload) => {
                         this._store.dispatch(
                             AccessTokenActions.setAccessToken({
                                 accessToken: data.accessToken,
@@ -72,23 +72,37 @@ export class AuthHttpService {
             ),
             catchError((err) =>
                 of(err).pipe(
-                    tap((_) => {
-                        this.isLoading = this._loading.endLoading();
-                        this.isCancelled = false;
-                    }),
                     filter((err) => err instanceof HttpErrorResponse),
+                    tap((_) => {
+                        this._loading.endLoading();
+                        this._progress.isCancelled = false;
+                    }),
                     tap((err) => {
-                        this._messageService.add({
-                            severity: 'error',
-                            summary: 'Error',
-                            detail: 'Unauthorized',
-                        });
-                    })
+                        switch (err.status) {
+                            case 401: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Login Error',
+                                    detail: 'Invalid username or password',
+                                });
+                                break;
+                            }
+                            default: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Server Error',
+                                    detail: 'Something went wrong',
+                                });
+                            }
+                        }
+                    }),
+                    switchMap(() => this.watchLogin$())
                 )
             ),
             finalize(() => {
-                if (this.isCancelled) {
-                    this._loading.isCancelled = true;
+                if (this._progress.isCancelled) {
+                    this._progress.isCancelled = null;
+                    this._loading.endLoading();
                 }
             })
         );
@@ -98,8 +112,8 @@ export class AuthHttpService {
         this._login$$.next(user);
     }
 
-    private loginUser(user: ILogin): Observable<ILoginPayload> {
-        return this._http.post<ILoginPayload>(this._url, user, {
+    private loginUser(user: ILogin): Observable<IAuthPayload> {
+        return this._http.post<IAuthPayload>(this._url, user, {
             withCredentials: true,
         });
     }

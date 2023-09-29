@@ -8,5 +8,6 @@ export const accessTokenReducer = createReducer(
     initialState,
     on(AccessTokenActions.setAccessToken, (_, action) => ({
         value: action.accessToken,
-    }))
+    })),
+    on(AccessTokenActions.removeAccessToken, () => initialState)
 );
