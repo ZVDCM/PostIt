@@ -28,8 +28,8 @@ public sealed class UpdateUserCommandHandler : ICommandHandler<UpdateUserCommand
         if (userTemp is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
 
         string oldEmail = user.Email;
-        
-        user.UpdateProfile(request.Username, request.Email);
+
+        user.Update(request.Username, request.Email, request.Password);
 
         if (!string.Equals(oldEmail, request.Email)) user.UnverifyEmail();
 

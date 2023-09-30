@@ -27,8 +27,8 @@ using PostIt.Users.Service.Features.Account.Commands.Login;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.DeletePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.UpdatePost;
-using PostIt.Users.Service.Features.Account.Commands.Profile.UpdatePassword;
-using PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
+using PostIt.Users.Service.Features.Account.Commands.Profile.ChangePassword;
+using PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
 using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
@@ -115,10 +115,10 @@ public sealed class AccountProfile : Profile
                         f.FollowUserId.Value,
                         f.FollowUsername)),
                 r.Value!.CreatedOnUtc));
-        CreateMap<Result<Tuple<string, UpdateProfileRequest>>, UpdateProfileCommand>()
-            .ConvertUsing(r => new UpdateProfileCommand(r.Value!.Item1, r.Value.Item2.Username, r.Value.Item2.Email));
-        CreateMap<Result<Tuple<string, UpdatePasswordRequest>>, UpdatePasswordCommand>()
-            .ConvertUsing(r => new UpdatePasswordCommand(r.Value!.Item1, r.Value.Item2.OldPassword, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
+        CreateMap<Result<Tuple<string, EditProfileRequest>>, EditProfileCommand>()
+            .ConvertUsing(r => new EditProfileCommand(r.Value!.Item1, r.Value.Item2.Username, r.Value.Item2.Email));
+        CreateMap<Result<Tuple<string, ChangePasswordRequest>>, ChangePasswordCommand>()
+            .ConvertUsing(r => new ChangePasswordCommand(r.Value!.Item1, r.Value.Item2.OldPassword, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
         CreateMap<Result<string>, GetProfileQuery>()
             .ConvertUsing(r => new GetProfileQuery(r.Value!));
         CreateMap<Result<Guid>, GetUserProfileQuery>()

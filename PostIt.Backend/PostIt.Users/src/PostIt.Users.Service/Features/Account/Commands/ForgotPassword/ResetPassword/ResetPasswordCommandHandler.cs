@@ -28,7 +28,7 @@ public sealed class ResetPasswordCommandHandler : ICommandHandler<ResetPasswordC
 
         User user = result.Value!;
 
-        user.UpdatePassword(request.NewPassword);
+        user.ChangePassword(request.NewPassword);
         user.VerifyEmail();
 
         return await _unitOfWork.SaveChangesAsync(cancellationToken) ?

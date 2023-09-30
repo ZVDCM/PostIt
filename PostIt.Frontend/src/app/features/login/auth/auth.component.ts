@@ -158,7 +158,7 @@ export class AuthComponent {
         formHelper.setFormGroup(
             new FormGroup({
                 [this.emailField.label]: new FormControl(
-                    'JuanDelaCruz@gmail.com'
+                    'verj.morales@gmail.com'
                 ),
                 [this.passwordField.label]: new FormControl('TestTest!23'),
                 [this.rememberField.label]: new FormControl(

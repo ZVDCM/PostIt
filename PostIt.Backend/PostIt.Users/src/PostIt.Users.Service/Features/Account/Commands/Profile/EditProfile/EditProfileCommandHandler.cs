@@ -9,16 +9,16 @@ using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
-namespace PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
+namespace PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
 
-public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileCommand, Result<User>>
+public sealed class EditProfileCommandHandler : ICommandHandler<EditProfileCommand, Result<User>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public UpdateProfileCommandHandler(
+    public EditProfileCommandHandler(
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IJwtService jwtService,
@@ -30,7 +30,7 @@ public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileC
         _userRepository = userRepository;
     }
 
-    public async Task<Result<User>> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Result<User>> Handle(EditProfileCommand request, CancellationToken cancellationToken)
     {
         Result<User> result = await _jwtService.GetUserAsync(request.AccessToken, cancellationToken);
         if (result.IsFailure) return Result.Failure<User>(result.Error);
@@ -38,14 +38,14 @@ public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileC
         User user = result.Value!;
 
         if (!user.EmailVerified) return Result.Failure<User>(UserErrors.UserNotVerified);
-       
+
         User? userTemp = await _userRepository.GetUserAsync(u => u.Email == request.Email, cancellationToken);
         if (userTemp is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
 
         string oldUsername = user.Username;
         string oldEmail = user.Email;
 
-        user.UpdateProfile(request.Username, request.Email);
+        user.EditProfile(request.Username, request.Email);
 
         if (!string.Equals(oldEmail, request.Email)) user.UnverifyEmail();
 

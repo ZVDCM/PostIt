@@ -12,7 +12,7 @@ import {
 } from 'rxjs';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IUpdateProfile } from './update-profile.model';
+import { IUpdateProfile } from './edit-profile.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { IUserPayload } from 'src/app/core/state/user/user.model';
 import { MessageService } from 'primeng/api';
@@ -24,7 +24,7 @@ import { ProgressService } from 'src/app/shared/services/progress.service';
 @Injectable({
     providedIn: 'root',
 })
-export class UpdateProfileHttpService {
+export class EditProfileHttpService {
     private readonly _url: string =
         this._serverConstants.serverApi +
         this._homeConstants.updateProfileEndpoint;
@@ -44,14 +44,14 @@ export class UpdateProfileHttpService {
         private _messageService: MessageService
     ) {}
 
-    public watchUpdateProfile$(): Observable<void> {
+    public watchEditProfile$(): Observable<void> {
         return this._updateProfile$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
             switchMap((user: IUpdateProfile) =>
-                this.updateProfileUser(user).pipe(
+                this.editProfileUser(user).pipe(
                     tap((_) => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
@@ -106,7 +106,7 @@ export class UpdateProfileHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchUpdateProfile$())
+                    switchMap(() => this.watchEditProfile$())
                 )
             ),
             finalize(() => {
@@ -118,11 +118,11 @@ export class UpdateProfileHttpService {
         );
     }
 
-    public updateProfile(user: IUpdateProfile): void {
+    public editProfile(user: IUpdateProfile): void {
         this._updateProfile$$.next(user);
     }
 
-    private updateProfileUser(user: IUpdateProfile): Observable<IUserPayload> {
+    private editProfileUser(user: IUpdateProfile): Observable<IUserPayload> {
         return this._httpClient.put<IUserPayload>(this._url, user);
     }
 }

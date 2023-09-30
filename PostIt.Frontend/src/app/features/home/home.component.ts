@@ -14,11 +14,9 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
-import { UpdateProfileHttpService } from './update-profile-http.service';
-import { UpdatePasswordHttpService } from './update-password-http.service';
+import { EditProfileHttpService } from './edit-profile-http.service';
+import { ChangePasswordHttpService } from './change-password-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
-import { UserActions } from 'src/app/core/state/user/user.actions';
-import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
 import { LogoutHttpService } from './logout-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
@@ -356,7 +354,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 </ng-template>
             </p-dialog>
         </ng-container>
-        <ng-container *ngIf="updateProfile$ | async"></ng-container>
+        <ng-container *ngIf="editProfile$ | async"></ng-container>
         <ng-container *ngIf="loading$ | async"></ng-container>
         <ng-container *ngIf="logout$ | async"></ng-container>
     `,
@@ -403,9 +401,9 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
         HomeConstantsService,
         LoginConstantsService,
         { provide: 'profileFormHelper', useClass: FormHelperService },
-        UpdateProfileHttpService,
+        EditProfileHttpService,
         { provide: 'passwordFormHelper', useClass: FormHelperService },
-        UpdatePasswordHttpService,
+        ChangePasswordHttpService,
         FormHelperService,
         PasswordHelperService,
         RefreshHttpService,
@@ -414,7 +412,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 })
 export class HomeComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
-    public updateProfile$: Observable<void> = new Observable<void>();
+    public editProfile$: Observable<void> = new Observable<void>();
     public logout$: Observable<void> = new Observable<void>();
     public loading$: Observable<boolean> = new Observable<boolean>();
     public items: MenuItem[] = [];
@@ -439,10 +437,10 @@ export class HomeComponent {
         public homeConstants: HomeConstantsService,
         @Inject('profileFormHelper')
         public profileFormHelper: FormHelperService,
-        public updateProfileHttp: UpdateProfileHttpService,
+        public editProfileHttp: EditProfileHttpService,
         @Inject('passwordFormHelper')
         public passwordFormHelper: FormHelperService,
-        public updatePasswordHttp: UpdatePasswordHttpService,
+        public changePasswordHttp: ChangePasswordHttpService,
         private _passwordHelper: PasswordHelperService,
         private _store: Store,
         private _refreshHttp: RefreshHttpService,
@@ -454,20 +452,25 @@ export class HomeComponent {
         this.user$ = this._store
             .select(selectUser)
             .pipe(tap((user: IUser) => this.initProfileForm(user)));
-        this.updateProfile$ = this.updateProfileHttp.watchUpdateProfile$();
+        this.editProfile$ = this.editProfileHttp.watchEditProfile$();
         this.logout$ = this._logoutHttp.watchLogout$();
 
         this.items = [
             {
-                label: 'Update Profile',
-                icon: 'pi pi-user',
+                label: 'Verify Account',
+                icon: 'pi pi-verified',
+                command: () => {},
+            },
+            {
+                label: 'Edit Profile',
+                icon: 'pi pi-user-edit',
                 command: () => {
                     this.showModal = true;
                     this.isProfileForm = true;
                 },
             },
             {
-                label: 'Update Password',
+                label: 'Change Password',
                 icon: 'pi pi-lock',
                 command: () => {
                     this.showModal = true;
@@ -509,7 +512,7 @@ export class HomeComponent {
             return;
         }
 
-        this.updateProfileHttp.updateProfile(
+        this.editProfileHttp.editProfile(
             this.profileFormHelper.formGroup.value
         );
     }
@@ -548,17 +551,7 @@ export class HomeComponent {
                 [this.passwordField.label]: new FormControl('', [
                     Validators.required,
                 ]),
-                [this.confirmPasswordField.label]: new FormControl('', [
-                    Validators.required,
-                    this._passwordHelper.passwordsMustMatch(
-                        this.passwordFormHelper.getFormControl(
-                            this.passwordField.label
-                        ),
-                        this.passwordFormHelper.getFormControl(
-                            this.confirmPasswordField.label
-                        )
-                    ),
-                ]),
+                [this.confirmPasswordField.label]: new FormControl(''),
             })
         );
 

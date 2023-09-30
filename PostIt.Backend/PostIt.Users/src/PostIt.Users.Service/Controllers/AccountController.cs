@@ -33,8 +33,8 @@ using PostIt.Users.Service.Features.Account.Commands.Logout;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.DeletePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.UpdatePost;
-using PostIt.Users.Service.Features.Account.Commands.Profile.UpdatePassword;
-using PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
+using PostIt.Users.Service.Features.Account.Commands.Profile.ChangePassword;
+using PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
 using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
@@ -197,28 +197,28 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("update/password")]
+    [HttpPut("change/password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdatePasswordAsync(UpdatePasswordRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Map(Mapper.Map<UpdatePasswordCommand>)
+        .Map(Mapper.Map<ChangePasswordCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("update/profile")]
+    [HttpPut("edit/profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdateProfileAsync(UpdateProfileRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> EditProfileAsync(EditProfileRequest request, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Map(Mapper.Map<UpdateProfileCommand>)
+        .Map(Mapper.Map<EditProfileCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Map(Mapper.Map<ProfileResponse>)
         .Match(Ok, HandleFailure);

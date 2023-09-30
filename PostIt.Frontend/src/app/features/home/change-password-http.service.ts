@@ -5,7 +5,7 @@ import { ServerConstantsService } from 'src/app/shared/constants/server-constant
 @Injectable({
     providedIn: 'root',
 })
-export class UpdatePasswordHttpService {
+export class ChangePasswordHttpService {
     public isLoading: boolean = false;
     
     constructor(

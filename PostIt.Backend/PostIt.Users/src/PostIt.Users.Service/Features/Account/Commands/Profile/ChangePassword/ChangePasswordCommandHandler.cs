@@ -8,14 +8,14 @@ using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
-namespace PostIt.Users.Service.Features.Account.Commands.Profile.UpdatePassword;
+namespace PostIt.Users.Service.Features.Account.Commands.Profile.ChangePassword;
 
-public sealed class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswordCommand, Result>
+public sealed class ChangePasswordCommandHandler : ICommandHandler<ChangePasswordCommand, Result>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
 
-    public UpdatePasswordCommandHandler(
+    public ChangePasswordCommandHandler(
         IUnitOfWork unitOfWork,
         IJwtService jwtService)
     {
@@ -23,19 +23,19 @@ public sealed class UpdatePasswordCommandHandler : ICommandHandler<UpdatePasswor
         _jwtService = jwtService;
     }
 
-    public async Task<Result> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
         Result<User> result = await _jwtService.GetUserAsync(request.AccessToken, cancellationToken);
         if (result.IsFailure) return Result.Failure(result.Error);
 
         User user = result.Value!;
 
-        if(!user.EmailVerified) return Result.Failure(UserErrors.UserNotVerified);
+        if (!user.EmailVerified) return Result.Failure(UserErrors.UserNotVerified);
 
         bool isMatch = BCrypt.Net.BCrypt.EnhancedVerify(request.OldPassword, user.Password, HashType.SHA512);
         if (!isMatch) return Result.Failure(UserErrors.UserForbidden);
 
-        user.UpdatePassword(request.NewPassword);
+        user.ChangePassword(request.NewPassword);
 
         return await _unitOfWork.SaveChangesAsync(cancellationToken) ?
             Result.Success() :
