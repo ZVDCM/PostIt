@@ -141,7 +141,7 @@ public sealed class AccountProfile : Profile
 
     private void AddForgotPasswordMappings()
     {
-        CreateMap<Result<CreateResetTokenRequest>, CreateResetTokenCommand>()
+        CreateMap<Result<SendResetTokenRequest>, CreateResetTokenCommand>()
             .ConvertUsing(r => new CreateResetTokenCommand(r.Value!.Email));
         CreateMap<Result<Tuple<User, Token>>, EmailResetTokenCommand>()
             .ConvertUsing(r => new EmailResetTokenCommand(r.Value!.Item1, r.Value.Item2));

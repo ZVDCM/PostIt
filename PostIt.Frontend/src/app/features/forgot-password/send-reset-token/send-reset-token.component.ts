@@ -8,11 +8,11 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 
 @Component({
-    selector: 'app-create-reset-token',
+    selector: 'app-send-reset-token',
     template: `
         <header class="pt-40 pb-10">
             <h1 class="text-6xl font-extrabold tracking-widest text-center">
-                FORGOT PASSWORD
+                SEND RESET TOKEN
             </h1>
         </header>
         <section>
@@ -84,7 +84,7 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
         FormHelperService,
     ],
 })
-export class CreateResetTokenComponent {
+export class SendResetTokenComponent {
     public loading$: Observable<boolean> = new Observable<boolean>();
     public emailField: IFormItem =
         this.forgotPasswordConstants.forgotPasswordForm['email'];

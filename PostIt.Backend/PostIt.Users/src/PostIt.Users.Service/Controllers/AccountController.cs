@@ -129,10 +129,10 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("email/verification")]
+    [HttpPost("send/verificationtoken")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> CreateVerificationTokenAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> SendVerificationTokenAsync(CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Map(Mapper.Map<CreateVerificationTokenCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
@@ -155,11 +155,11 @@ public sealed class AccountController : ApiController
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Ok, HandleFailure);
 
-    [HttpPost("create/resettoken")]
+    [HttpPost("send/resettoken")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateResetTokenAsync(
-        CreateResetTokenRequest request,
+    public async Task<IActionResult> SendResetTokenAsync(
+        SendResetTokenRequest request,
         CancellationToken cancellationToken)
         => await Result.Create(request, Errors.BadRequest)
         .Map(Mapper.Map<CreateResetTokenCommand>)

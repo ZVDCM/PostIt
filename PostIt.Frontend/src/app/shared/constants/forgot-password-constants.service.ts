@@ -6,7 +6,7 @@ import { IForm } from 'src/app/core/models/form.model';
 })
 export class ForgotPasswordConstantsService {
     public readonly forgotPasswordRoute = '/forgotpassword';
-    public readonly createResetTokenEndpoint = '/account/create/resettoken';
+    public readonly sendResetTokenEndpoint = '/account/send/resettoken';
     public readonly verifyResetTokenRoute =
         this.forgotPasswordRoute + '/verify/resettoken';
     public readonly verifyResetTokenEndpoint = '/account/verify/resettoken';

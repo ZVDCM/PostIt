@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ForgotPasswordRoutingModule } from './forgot-password-routing.module';
-import { CreateResetTokenComponent } from './create-reset-token/create-reset-token.component';
+import { SendResetTokenComponent } from './send-reset-token/send-reset-token.component';
 import { HttpClientModule } from '@angular/common/http';
 import { SharedModule } from 'src/app/shared/shared.module';
 import { ForgotPasswordComponent } from './forgot-password.component';
@@ -12,7 +12,7 @@ import { VerifyResetTokenComponent } from './verify-reset-token/verify-reset-tok
 @NgModule({
     declarations: [
         ForgotPasswordComponent,
-        CreateResetTokenComponent,
+        SendResetTokenComponent,
         ResetPasswordComponent,
         VerifyResetTokenComponent,
     ],
