@@ -147,7 +147,6 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
         ForgotPasswordConstantsService,
         LoginHttpService,
         FormHelperService,
-        LoadingService,
     ],
 })
 export class LoginComponent {
