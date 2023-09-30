@@ -11,10 +11,11 @@ import { SplitButtonModule } from 'primeng/splitbutton';
 import { DialogModule } from 'primeng/dialog';
 
 import { LoadingComponent } from './components/loading.component';
-import { NotfoundComponent } from './components/not-found.component';
+import { NotfoundComponent } from '../features/not-found/not-found.component';
+import { FooterComponent } from './components/footer.component';
 
 @NgModule({
-    declarations: [NotfoundComponent, LoadingComponent],
+    declarations: [LoadingComponent, FooterComponent],
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -29,8 +30,8 @@ import { NotfoundComponent } from './components/not-found.component';
         DialogModule,
     ],
     exports: [
-        NotfoundComponent,
         LoadingComponent,
+        FooterComponent,
         InputTextModule,
         CheckboxModule,
         ButtonModule,

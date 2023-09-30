@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable, map } from 'rxjs';
 import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 import { UserActions } from 'src/app/core/state/user/user.actions';
-import { IAuthPayload } from 'src/app/features/login/auth/auth.model';
+import { IAuthPayload } from 'src/app/features/login/auth.model';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 
 @Injectable({

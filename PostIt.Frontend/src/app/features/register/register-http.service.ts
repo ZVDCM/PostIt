@@ -1,72 +1,67 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ILogin, IAuthPayload } from './auth.model';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
-    map,
     of,
     switchMap,
     tap,
 } from 'rxjs';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { IRegister } from './register.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { Store } from '@ngrx/store';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
-import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
-import { UserActions } from 'src/app/core/state/user/user.actions';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
+import { RegisterConstantsService } from 'src/app/shared/constants/register-constants.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
-@Injectable({ providedIn: 'root' })
-export class AuthHttpService {
+@Injectable({
+    providedIn: 'root',
+})
+export class RegisterHttpService {
     private readonly _url: string =
-        this._serverConstants.serverApi + this._loginConstants.loginEndpoint;
-    private _login$$: Subject<ILogin> = new Subject<ILogin>();
+        this._serverConstants.serverApi +
+        this._registerConstants.registerEndpoint;
+    private _register$$: Subject<IRegister> = new Subject<IRegister>();
 
     constructor(
+        private _router: Router,
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
-        private _homeConstants: HomeConstantsService,
-        private _loading: LoadingService,
-        private _progress: ProgressService,
+        private _registerConstants: RegisterConstantsService,
         private _messageService: MessageService,
-        private _router: Router,
-        private _store: Store
+        private _loading: LoadingService,
+        private _progress: ProgressService
     ) {}
 
-    public watchLogin$(): Observable<void> {
-        return this._login$$.asObservable().pipe(
-            tap(() => {
+    public watchRegister$(): Observable<void> {
+        return this._register$$.asObservable().pipe(
+            tap((_) => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: ILogin) =>
-                this.loginUser(user).pipe(
+            switchMap((user: IRegister) =>
+                this.registerUser(user).pipe(
                     tap((_) => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    map((data: IAuthPayload) => {
-                        this._store.dispatch(
-                            AccessTokenActions.setAccessToken({
-                                accessToken: data.accessToken,
-                            })
-                        );
-                        this._store.dispatch(
-                            UserActions.setUser({
-                                user: data.user,
-                            })
-                        );
+                    tap((_) => {
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Registration was successful',
+                        });
                     }),
                     tap((_) => {
-                        this._router.navigate([this._homeConstants.homeRoute]);
+                        this._router.navigate([
+                            this._loginConstants.loginRoute,
+                        ]);
                     })
                 )
             ),
@@ -79,11 +74,19 @@ export class AuthHttpService {
                     }),
                     tap((err) => {
                         switch (err.status) {
-                            case 401: {
+                            case 400: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Login Error',
-                                    detail: 'Invalid username or password',
+                                    summary: 'Registration Error',
+                                    detail: 'Invalid form data',
+                                });
+                                break;
+                            }
+                            case 409: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Registration Error',
+                                    detail: 'Email already in use',
                                 });
                                 break;
                             }
@@ -96,7 +99,7 @@ export class AuthHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchLogin$())
+                    switchMap(() => this.watchRegister$())
                 )
             ),
             finalize(() => {
@@ -108,13 +111,11 @@ export class AuthHttpService {
         );
     }
 
-    public login(user: ILogin): void {
-        this._login$$.next(user);
+    public register(user: IRegister): void {
+        this._register$$.next(user);
     }
 
-    private loginUser(user: ILogin): Observable<IAuthPayload> {
-        return this._http.post<IAuthPayload>(this._url, user, {
-            withCredentials: true,
-        });
+    private registerUser(user: IRegister): Observable<void> {
+        return this._http.post<void>(this._url, user);
     }
 }

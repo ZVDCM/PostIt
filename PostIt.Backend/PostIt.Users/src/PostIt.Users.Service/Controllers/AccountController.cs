@@ -155,7 +155,7 @@ public sealed class AccountController : ApiController
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Ok, HandleFailure);
 
-    [HttpPost("forgot/password")]
+    [HttpPost("create/resettoken")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateResetTokenAsync(

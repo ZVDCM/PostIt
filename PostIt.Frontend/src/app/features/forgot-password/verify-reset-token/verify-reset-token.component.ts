@@ -4,6 +4,7 @@ import { IFormItem } from 'src/app/core/models/form.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
 
 @Component({
     selector: 'app-verify-reset-token',
@@ -51,7 +52,9 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
                         [loading]="verifyResetTokenHttp.isLoading"
-                        [routerLink]="loginConstants.resetPasswordRoute"
+                        [routerLink]="
+                            forgotPasswordConstants.resetPasswordRoute
+                        "
                         type="submit"
                         styleClass="w-full"
                         label="Verify reset token"
@@ -76,6 +79,7 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
+        ForgotPasswordConstantsService,
         LoginConstantsService,
         VerifyResetTokenHttpService,
         FormHelperService,
@@ -83,14 +87,14 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
 })
 export class VerifyResetTokenComponent {
     public resetTokenField: IFormItem =
-        this.loginConstants.resetTokenForm['token'];
+        this.forgotPasswordConstants.resetTokenForm['token'];
 
     constructor(
+        public forgotPasswordConstants: ForgotPasswordConstantsService,
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
-        public verifyResetTokenHttp: VerifyResetTokenHttpService,
+        public verifyResetTokenHttp: VerifyResetTokenHttpService
     ) {
-        // this._loading.endLoading();
         this.formHelper.setFormGroup(
             new FormGroup({
                 [this.resetTokenField.label]: new FormControl('', [

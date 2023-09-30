@@ -5,6 +5,7 @@ import { IFormItem } from 'src/app/core/models/form.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
 import { ResetPasswordHttpService } from './reset-password-http.service';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
 
 @Component({
     selector: 'app-reset-password',
@@ -119,7 +120,9 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
                         [loading]="resetPasswordHttp.isLoading"
-                        [routerLink]="loginConstants.resetPasswordRoute"
+                        [routerLink]="
+                            forgotPasswordConstants.resetPasswordRoute
+                        "
                         type="submit"
                         styleClass="w-full"
                         label="Reset Password"
@@ -144,6 +147,7 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
+        ForgotPasswordConstantsService,
         LoginConstantsService,
         ResetPasswordHttpService,
         FormHelperService,
@@ -152,17 +156,18 @@ import { ResetPasswordHttpService } from './reset-password-http.service';
 })
 export class ResetPasswordComponent {
     public passwordField: IFormItem =
-        this.loginConstants.resetPasswordForm['resetNewPassword'];
+        this.forgotPasswordConstants.resetPasswordForm['resetNewPassword'];
     public confirmPasswordField: IFormItem =
-        this.loginConstants.resetPasswordForm['resetConfirmPassword'];
+        this.forgotPasswordConstants.resetPasswordForm['resetConfirmPassword'];
     public showPassword: boolean = false;
     public showConfirmPassword: boolean = false;
 
     constructor(
+        public forgotPasswordConstants: ForgotPasswordConstantsService,
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public resetPasswordHttp: ResetPasswordHttpService,
-        private _passwordHelper: PasswordHelperService,
+        private _passwordHelper: PasswordHelperService
     ) {
         // _loading.endLoading();
         formHelper.setFormGroup(

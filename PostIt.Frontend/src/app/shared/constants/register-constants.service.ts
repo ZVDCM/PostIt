@@ -4,25 +4,21 @@ import { IForm } from 'src/app/core/models/form.model';
 @Injectable({
     providedIn: 'root',
 })
-export class HomeConstantsService {
-    public readonly homeRoute = '/home';
-    public readonly logoutEndpoint = '/account/logout';
-    public readonly editProfileEndpoint = '/account/edit/profile';
-    public readonly changePasswordEndpoint = '/account/change/password';
+export class RegisterConstantsService {
+    public readonly registerRoute = '/register';
+    public readonly registerEndpoint = '/account/register';
 
-    public readonly profileForm: IForm = {
+    public readonly registerForm: IForm = {
         username: {
-            id: 'txt-update-username',
+            id: 'txt-register-username',
             label: 'Username',
             hint: 'Username must not be empty',
         },
         email: {
-            id: 'txt-update-email',
+            id: 'txt-register-email',
             label: 'Email',
             hint: 'Email must follow valid email format',
         },
-    };
-    public readonly passwordForm: IForm = {
         password: {
             id: 'txt-register-password',
             label: 'Password',

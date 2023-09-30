@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
         <main class="h-full relative z-[2]">
             <router-outlet />
         </main>
-        <loading />
+        <app-loading />
         <p-toast />
     `,
     styles: [

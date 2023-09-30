@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { LoadingService } from '../services/loading.service';
 
 @Component({
-    selector: 'loading',
+    selector: 'app-loading',
     template: `
         <div
             class="relative"

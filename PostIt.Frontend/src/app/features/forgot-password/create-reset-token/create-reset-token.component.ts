@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
-import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { ForgotPasswordHttpService } from './forgot-password-http.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 
 @Component({
-    selector: 'app-forgot-password',
+    selector: 'app-create-reset-token',
     template: `
         <header class="pt-40 pb-10">
             <h1 class="text-6xl font-extrabold tracking-widest text-center">
@@ -27,7 +29,7 @@ import { IFormItem } from 'src/app/core/models/form.model';
                         [id]="emailField.id"
                         [attr.aria-describedby]="emailField.id + '-help'"
                         [formControlName]="emailField.label"
-                        [readonly]="forgotPasswordHttp.isLoading"
+                        [readonly]="loading.isLoading"
                         [autocomplete]="true"
                         (blur)="
                             formHelper
@@ -48,14 +50,16 @@ import { IFormItem } from 'src/app/core/models/form.model';
                 </div>
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
-                        [loading]="forgotPasswordHttp.isLoading"
-                        [routerLink]="loginConstants.verifyResetTokenRoute"
+                        [loading]="loading.isLoading"
+                        [routerLink]="
+                            forgotPasswordConstants.verifyResetTokenRoute
+                        "
                         type="submit"
                         styleClass="w-full"
                         label="Send reset token"
                     ></p-button>
                     <p-button
-                        [disabled]="forgotPasswordHttp.isLoading"
+                        [disabled]="loading.isLoading"
                         [routerLink]="loginConstants.loginRoute"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-secondary"
@@ -64,6 +68,7 @@ import { IFormItem } from 'src/app/core/models/form.model';
                 </div>
             </form>
         </section>
+        <ng-container *ngIf="loading$ | async"></ng-container>
     `,
     styles: [
         `
@@ -74,21 +79,23 @@ import { IFormItem } from 'src/app/core/models/form.model';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
+        ForgotPasswordConstantsService,
         LoginConstantsService,
-        ForgotPasswordHttpService,
         FormHelperService,
     ],
 })
-export class ForgotPasswordComponent {
+export class CreateResetTokenComponent {
+    public loading$: Observable<boolean> = new Observable<boolean>();
     public emailField: IFormItem =
-        this.loginConstants.forgotPasswordForm['email'];
+        this.forgotPasswordConstants.forgotPasswordForm['email'];
 
     constructor(
+        public forgotPasswordConstants: ForgotPasswordConstantsService,
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
-        public forgotPasswordHttp: ForgotPasswordHttpService,
+        public loading: LoadingService
     ) {
-        // this._loading.endLoading();
+        this.loading$ = loading.watchLoading$();
         this.formHelper.setFormGroup(
             new FormGroup({
                 [this.emailField.label]: new FormControl('', [

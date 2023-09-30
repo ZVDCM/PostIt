@@ -27,7 +27,7 @@ import { ProgressService } from 'src/app/shared/services/progress.service';
 export class EditProfileHttpService {
     private readonly _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.updateProfileEndpoint;
+        this._homeConstants.editProfileEndpoint;
     private _updateProfile$$: Subject<IUpdateProfile> =
         new Subject<IUpdateProfile>();
 
