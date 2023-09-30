@@ -1,13 +1,16 @@
 import {
+    AfterViewChecked,
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     Inject,
+    ViewChild,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MenuItem } from 'primeng/api';
-import { Observable, tap } from 'rxjs';
+import { Observable, Subject, interval, take, tap, timer } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
@@ -59,20 +62,27 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                     >
                         <span>Profile</span>
                     </button>
-                    <div class="mt-auto mr-11">
+                    <div
+                        class="mt-auto mr-11 flex justify-between items-center"
+                    >
                         <p-splitButton
                             [menuStyle]="{ width: '100%' }"
                             [model]="items"
-                            class="w-full"
+                            class="w-56"
                             styleClass="w-full"
-                            label="JuanDelaCruz"
                         >
                             <ng-template pTemplate="content">
-                                <div class="flex items-center gap-4">
+                                <div
+                                    [pTooltip]="addToolTip ? user.username : ''"
+                                    class="w-full flex items-center gap-4"
+                                    tooltipPosition="top"
+                                >
                                     <i class="pi pi-at p-button-icon"></i>
-                                    <span class="p-button-label">{{
-                                        user.username
-                                    }}</span>
+                                    <span
+                                        #username
+                                        class="p-button-label text-ellipsis overflow-hidden"
+                                        >{{ user.username }}</span
+                                    >
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="dropdownicon">
@@ -127,7 +137,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 [resizable]="false"
                 [draggable]="false"
                 [closeOnEscape]="false"
-                [header]="isProfileForm ? 'Update Profile' : 'Update Password'"
+                [header]="isProfileForm ? 'Edit Profile' : 'Change Password'"
                 (onHide)="onModalHide(user)"
                 styleClass="w-full max-w-lg"
             >
@@ -354,8 +364,10 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 </ng-template>
             </p-dialog>
         </ng-container>
+        <ng-container *ngIf="refresh$ | async"></ng-container>
         <ng-container *ngIf="editProfile$ | async"></ng-container>
         <ng-container *ngIf="loading$ | async"></ng-container>
+        <ng-container *ngIf="tooltip$ | async"></ng-container>
         <ng-container *ngIf="logout$ | async"></ng-container>
     `,
     styles: [
@@ -410,11 +422,18 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
         LogoutHttpService,
     ],
 })
-export class HomeComponent {
+export class HomeComponent implements AfterViewInit {
+    @ViewChild('username')
+    public usernameRef: ElementRef = new ElementRef(null);
+
     public user$: Observable<IUser> = new Observable<IUser>();
+    public refresh$: Observable<void> = new Observable<void>();
     public editProfile$: Observable<void> = new Observable<void>();
     public logout$: Observable<void> = new Observable<void>();
     public loading$: Observable<boolean> = new Observable<boolean>();
+    public tooltip$$: Subject<boolean> = new Subject<boolean>();
+    public tooltip$: Observable<boolean> = new Observable<boolean>();
+
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
     public isProfileActive: boolean = false;
@@ -422,6 +441,7 @@ export class HomeComponent {
     public isProfileForm: boolean = true;
     public showPassword: boolean = false;
     public showConfirmPassword: boolean = false;
+    public addToolTip: boolean = false;
 
     public readonly usernameField: IFormItem =
         this.homeConstants.profileForm['username'];
@@ -447,13 +467,14 @@ export class HomeComponent {
         private _logoutHttp: LogoutHttpService,
         public loading: LoadingService
     ) {
-        this.loading$ = loading.watchLoading$();
-        this._refreshHttp.refresh$().subscribe();
         this.user$ = this._store
             .select(selectUser)
             .pipe(tap((user: IUser) => this.initProfileForm(user)));
+        this.refresh$ = this._refreshHttp.refresh$();
         this.editProfile$ = this.editProfileHttp.watchEditProfile$();
         this.logout$ = this._logoutHttp.watchLogout$();
+        this.loading$ = loading.watchLoading$();
+        this.tooltip$ = this.tooltip$$.asObservable();
 
         this.items = [
             {
@@ -486,6 +507,21 @@ export class HomeComponent {
         ];
 
         this.initPasswordForm();
+    }
+
+    ngAfterViewInit(): void {
+        const element = this.usernameRef.nativeElement;
+        interval(300)
+            .pipe(take(2))
+            .subscribe(() => {
+                if (
+                    element.scrollHeight > element.clientHeight ||
+                    element.scrollWidth > element.clientWidth
+                ) {
+                    this.tooltip$$.next(true);
+                    this.addToolTip = true;
+                }
+            });
     }
 
     public onClickPosts() {

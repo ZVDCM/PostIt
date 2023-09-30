@@ -9,9 +9,9 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { ToggleButtonModule } from 'primeng/togglebutton';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { DialogModule } from 'primeng/dialog';
+import { TooltipModule } from 'primeng/tooltip';
 
 import { LoadingComponent } from './components/loading.component';
-import { NotfoundComponent } from '../features/not-found/not-found.component';
 import { FooterComponent } from './components/footer.component';
 
 @NgModule({
@@ -28,6 +28,7 @@ import { FooterComponent } from './components/footer.component';
         ToggleButtonModule,
         SplitButtonModule,
         DialogModule,
+        TooltipModule,
     ],
     exports: [
         LoadingComponent,
@@ -42,6 +43,7 @@ import { FooterComponent } from './components/footer.component';
         ToggleButtonModule,
         SplitButtonModule,
         DialogModule,
+        TooltipModule,
     ],
 })
 export class SharedModule {}
