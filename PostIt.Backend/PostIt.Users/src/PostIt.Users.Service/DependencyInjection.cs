@@ -105,7 +105,7 @@ public static class DependencyInjection
         services
             .AddFluentEmail(emailOptions.DefaultFrom)
             .AddSendGridSender(emailOptions.SendGridApiKey)
-            .AddRazorRenderer(Directory.GetCurrentDirectory());
+            .AddRazorRenderer();
         return services;
     }
 }

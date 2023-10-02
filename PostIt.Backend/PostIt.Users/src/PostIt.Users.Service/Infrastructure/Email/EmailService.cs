@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentEmail.Core;
-using PostIt.Users.Service.Constants;
 using PostIt.Users.Service.Domain.Tokens;
 using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Email.Models;
@@ -12,6 +11,24 @@ namespace PostIt.Users.Service.Infrastructure.Email;
 
 public sealed class EmailSender : IEmailSender
 {
+    private readonly string _template = @"
+    <html>
+        <body>
+            <header>
+                <h1>Post It!</h1>
+            </header>
+            <main>
+                <section>
+                    <h2>@Model.Title</h2>
+                    <h3 style=""letter-spacing: 2rem"">@Model.Token</h3>
+                </section>
+            </main>
+            <footer>
+                <small>2023 ZVDCM</p>
+            </footer>
+        </body>
+    </html>
+    ";
     private readonly IFluentEmail _fluentEmail;
     private readonly ILogger _logger;
 
@@ -32,7 +49,7 @@ public sealed class EmailSender : IEmailSender
             .To(user.Email)
             .Subject($"Email Verification Token: {verificationToken.Value}")
             .Tag("email-verification")
-            .UsingTemplateFromFile($"{EmailConstants.TemplateFilePath}/Default.cshtml", emailModel)
+            .UsingTemplateFromFile(_template, emailModel)
             .SendAsync(cancellationToken);
 
         if (response.Successful) return true;
@@ -51,7 +68,7 @@ public sealed class EmailSender : IEmailSender
             .To(user.Email)
             .Subject($"Forgot Password Token: {forgotPasswordToken.Value}")
             .Tag("forgot-password")
-            .UsingTemplateFromFile($"{EmailConstants.TemplateFilePath}/Default.cshtml", emailModel)
+            .UsingTemplate(_template, emailModel)
             .SendAsync(cancellationToken);
 
         if (response.Successful) return true;
