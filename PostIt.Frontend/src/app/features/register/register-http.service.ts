@@ -30,7 +30,7 @@ export class RegisterHttpService {
 
     constructor(
         private _router: Router,
-        private _http: HttpClient,
+        private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
         private _registerConstants: RegisterConstantsService,
@@ -116,6 +116,6 @@ export class RegisterHttpService {
     }
 
     private registerUser(user: IRegister): Observable<void> {
-        return this._http.post<void>(this._url, user);
+        return this._httpClient.post<void>(this._url, user);
     }
 }

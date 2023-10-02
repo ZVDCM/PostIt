@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
     providedIn: 'root',
 })
 export class VerifyResetTokenHttpService {
-    public isLoading: boolean = false;
     constructor() {}
+
+    public cancelRequest(): void {}
 }

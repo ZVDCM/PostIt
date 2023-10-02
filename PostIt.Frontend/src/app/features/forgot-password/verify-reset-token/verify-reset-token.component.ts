@@ -5,6 +5,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { OneShotAuthHttpService } from '../one-shot-auth-http.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
 
 @Component({
     selector: 'app-verify-reset-token',
@@ -27,12 +29,12 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                     <input
                         [id]="resetTokenField.id"
                         [attr.aria-describedby]="resetTokenField.id + '-help'"
-                        [formControlName]="resetTokenField.label"
-                        [readonly]="verifyResetTokenHttp.isLoading"
+                        [formControlName]="resetTokenField.name"
+                        [readonly]="loading.isLoading"
                         [autocomplete]="true"
                         (blur)="
                             formHelper
-                                .getFormControl(resetTokenField.label)!
+                                .getFormControl(resetTokenField.name)!
                                 .markAsDirty()
                         "
                         pInputText
@@ -42,7 +44,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                         id="{{ resetTokenField.id }}-help"
                         [ngClass]="{
                             hidden: !formHelper.isInputInvalid(
-                                resetTokenField.label
+                                resetTokenField.name
                             )
                         }"
                         class="p-error"
@@ -51,21 +53,26 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                 </div>
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
-                        [loading]="verifyResetTokenHttp.isLoading"
-                        [routerLink]="
-                            forgotPasswordConstants.resetPasswordRoute
-                        "
+                        [loading]="loading.isLoading"
                         type="submit"
                         styleClass="w-full"
                         label="Verify reset token"
                     ></p-button>
                     <p-button
-                        [disabled]="verifyResetTokenHttp.isLoading"
+                        *ngIf="!loading.isLoading; else cancelRegistration"
                         [routerLink]="loginConstants.loginRoute"
                         type="button"
-                        styleClass="w-full p-button-outlined p-button-danger"
-                        label="Cancel"
+                        styleClass="w-full p-button-outlined p-button-secondary"
+                        label="Go back"
                     ></p-button>
+                    <ng-template #cancelRegistration>
+                        <p-button
+                            (click)="verifyResetTokenHttp.cancelRequest()"
+                            type="button"
+                            styleClass="w-full p-button-outlined p-button-danger"
+                            label="Cancel"
+                        ></p-button>
+                    </ng-template>
                 </div>
             </form>
         </section>
@@ -93,6 +100,7 @@ export class VerifyResetTokenComponent {
         public forgotPasswordConstants: ForgotPasswordConstantsService,
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
+        public loading: LoadingService,
         public verifyResetTokenHttp: VerifyResetTokenHttpService
     ) {
         this.formHelper.setFormGroup(

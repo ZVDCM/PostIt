@@ -17,6 +17,7 @@ export class ForgotPasswordConstantsService {
     public readonly forgotPasswordForm: IForm = {
         email: {
             id: 'txt-forgot-password-email',
+            name: 'email',
             label: 'Email',
             hint: 'Email must follow valid email format',
         },
@@ -25,6 +26,7 @@ export class ForgotPasswordConstantsService {
     public readonly resetTokenForm: IForm = {
         token: {
             id: 'txt-reset-token',
+            name: 'token',
             label: 'Token',
             hint: 'Token must not be empty',
         },
@@ -33,11 +35,13 @@ export class ForgotPasswordConstantsService {
     public readonly resetPasswordForm: IForm = {
         resetNewPassword: {
             id: 'txt-reset-new-password',
+            name: 'newPassword',
             label: 'New Password',
             hint: 'Password must not be empty',
         },
         resetConfirmPassword: {
             id: 'txt-reset-confirm-password',
+            name: 'confirmPassword',
             label: 'Confirm Password',
             hint: 'Both passwords must match',
         },

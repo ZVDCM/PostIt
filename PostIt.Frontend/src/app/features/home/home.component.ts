@@ -158,13 +158,13 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     [attr.aria-describedby]="
                                         usernameField.id + '-help'
                                     "
-                                    [formControlName]="usernameField.label"
+                                    [formControlName]="usernameField.name"
                                     [readOnly]="loading.isLoading"
                                     [autocomplete]="true"
                                     (blur)="
                                         profileFormHelper
                                             .getFormControl(
-                                                usernameField.label
+                                                usernameField.name
                                             )!
                                             .markAsDirty()
                                     "
@@ -175,7 +175,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     id="{{ usernameField.id }}-help"
                                     [ngClass]="{
                                         hidden: !profileFormHelper.isInputInvalid(
-                                            usernameField.label
+                                            usernameField.name
                                         )
                                     }"
                                     class="p-error"
@@ -192,12 +192,12 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     [attr.aria-describedby]="
                                         emailField.id + '-help'
                                     "
-                                    [formControlName]="emailField.label"
+                                    [formControlName]="emailField.name"
                                     [readonly]="loading.isLoading"
                                     [autocomplete]="true"
                                     (blur)="
                                         profileFormHelper
-                                            .getFormControl(emailField.label)!
+                                            .getFormControl(emailField.name)!
                                             .markAsDirty()
                                     "
                                     pInputText
@@ -207,7 +207,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     id="{{ emailField.id }}-help"
                                     [ngClass]="{
                                         hidden: !profileFormHelper.isInputInvalid(
-                                            emailField.label
+                                            emailField.name
                                         )
                                     }"
                                     class="p-error"
@@ -254,12 +254,12 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                             showPassword ? 'text' : 'password'
                                         "
                                         [autocomplete]="false"
-                                        [formControlName]="passwordField.label"
+                                        [formControlName]="passwordField.name"
                                         [readOnly]="loading.isLoading"
                                         (blur)="
                                             passwordFormHelper
                                                 .getFormControl(
-                                                    passwordField.label
+                                                    passwordField.name
                                                 )!
                                                 .markAsDirty()
                                         "
@@ -281,7 +281,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     id="{{ passwordField.id }}-help"
                                     [ngClass]="{
                                         hidden: !passwordFormHelper.isInputInvalid(
-                                            passwordField.label
+                                            passwordField.name
                                         )
                                     }"
                                     class="p-error"
@@ -306,13 +306,13 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                         "
                                         [autocomplete]="false"
                                         [formControlName]="
-                                            confirmPasswordField.label
+                                            confirmPasswordField.name
                                         "
                                         [readOnly]="loading.isLoading"
                                         (blur)="
                                             passwordFormHelper
                                                 .getFormControl(
-                                                    confirmPasswordField.label
+                                                    confirmPasswordField.name
                                                 )!
                                                 .markAsDirty()
                                         "
@@ -337,7 +337,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     id="{{ confirmPasswordField.id }}-help"
                                     [ngClass]="{
                                         hidden: !passwordFormHelper.isInputInvalid(
-                                            confirmPasswordField.label
+                                            confirmPasswordField.name
                                         )
                                     }"
                                     class="p-error"
@@ -570,10 +570,10 @@ export class HomeComponent implements AfterViewInit {
     public initProfileForm(user: IUser): void {
         this.profileFormHelper.setFormGroup(
             new FormGroup({
-                [this.usernameField.label]: new FormControl(user.username, [
+                [this.usernameField.name]: new FormControl(user.username, [
                     Validators.required,
                 ]),
-                [this.emailField.label]: new FormControl(user.email, [
+                [this.emailField.name]: new FormControl(user.email, [
                     Validators.required,
                     Validators.email,
                 ]),
@@ -584,23 +584,23 @@ export class HomeComponent implements AfterViewInit {
     public initPasswordForm(): void {
         this.passwordFormHelper.setFormGroup(
             new FormGroup({
-                [this.passwordField.label]: new FormControl('', [
+                [this.passwordField.name]: new FormControl('', [
                     Validators.required,
                 ]),
-                [this.confirmPasswordField.label]: new FormControl(''),
+                [this.confirmPasswordField.name]: new FormControl(''),
             })
         );
 
         this.passwordFormHelper
-            .getFormControl(this.confirmPasswordField.label)
+            .getFormControl(this.confirmPasswordField.name)
             ?.addValidators([
                 Validators.required,
                 this._passwordHelper.passwordsMustMatch(
                     this.passwordFormHelper.getFormControl(
-                        this.passwordField.label
+                        this.passwordField.name
                     ),
                     this.passwordFormHelper.getFormControl(
-                        this.confirmPasswordField.label
+                        this.confirmPasswordField.name
                     )
                 ),
             ]);

@@ -43,7 +43,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                 [attr.aria-describedby]="
                                     emailField.id + '-help'
                                 "
-                                [formControlName]="emailField.label"
+                                [formControlName]="emailField.name"
                                 [readonly]="loading.isLoading"
                                 [autocomplete]="true"
                                 pInputText
@@ -53,7 +53,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                 id="{{ emailField.id }}-help"
                                 [ngClass]="{
                                     hidden: !formHelper.isInputInvalid(
-                                        emailField.label
+                                        emailField.name
                                     )
                                 }"
                                 class="p-error"
@@ -73,7 +73,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                     "
                                     [type]="showPassword ? 'text' : 'password'"
                                     [autocomplete]="false"
-                                    [formControlName]="passwordField.label"
+                                    [formControlName]="passwordField.name"
                                     [readonly]="loading.isLoading"
                                     pInputText
                                 />
@@ -91,7 +91,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                 id="{{ passwordField.id }}-help"
                                 [ngClass]="{
                                     hidden: !formHelper.isInputInvalid(
-                                        passwordField.label
+                                        passwordField.name
                                     )
                                 }"
                                 class="p-error"
@@ -101,7 +101,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                     </div>
                     <div class="flex justify-between">
                         <p-checkbox
-                            [formControlName]="rememberField.label"
+                            [formControlName]="rememberField.name"
                             [inputId]="rememberField.id"
                             [binary]="true"
                             [label]="rememberField.label"
@@ -173,12 +173,12 @@ export class LoginComponent {
         this.login$ = loginHttp.watchLogin$();
         formHelper.setFormGroup(
             new FormGroup({
-                [this.emailField.label]: new FormControl(
+                [this.emailField.name]: new FormControl(
                     'verj.morales@gmail.com'
                 ),
-                [this.passwordField.label]: new FormControl('TestTest!23'),
-                [this.rememberField.label]: new FormControl(
-                    localStorage.getItem(this.emailField.label) ? true : false
+                [this.passwordField.name]: new FormControl('TestTest!23'),
+                [this.rememberField.name]: new FormControl(
+                    localStorage.getItem(this.emailField.name) ? true : false
                 ),
             })
         );
@@ -192,13 +192,15 @@ export class LoginComponent {
         localStorage.clear();
         if (checked) {
             localStorage.setItem(
-                this.emailField.label,
-                this.formHelper.formGroup.get(this.emailField.label)?.value
+                this.emailField.name,
+                this.formHelper.formGroup.get(this.emailField.name)?.value
             );
         }
     }
 
     public onSubmit(): void {
-        this.loginHttp.login(this.formHelper.formGroup.value);
+        const { [this.rememberField.label]: remember, ...newObject } =
+            this.formHelper.formGroup.value;
+        this.loginHttp.login(newObject);
     }
 }

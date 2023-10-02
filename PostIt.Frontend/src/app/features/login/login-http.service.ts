@@ -30,7 +30,7 @@ export class LoginHttpService {
     private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
     constructor(
-        private _http: HttpClient,
+        private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
         private _homeConstants: HomeConstantsService,
@@ -113,7 +113,7 @@ export class LoginHttpService {
     }
 
     private loginUser(user: ILogin): Observable<IAuthPayload> {
-        return this._http.post<IAuthPayload>(this._url, user, {
+        return this._httpClient.post<IAuthPayload>(this._url, user, {
             withCredentials: true,
         });
     }

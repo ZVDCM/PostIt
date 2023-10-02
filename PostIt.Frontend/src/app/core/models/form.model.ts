@@ -1,5 +1,6 @@
 export interface IFormItem {
     id: string;
+    name: string;
     label: string;
     hint: string | null;
 }
