@@ -8,6 +8,7 @@ import {
     finalize,
     of,
     switchMap,
+    takeUntil,
     tap,
 } from 'rxjs';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
@@ -27,6 +28,7 @@ export class RegisterHttpService {
         this._serverConstants.serverApi +
         this._registerConstants.registerEndpoint;
     private _register$$: Subject<IRegister> = new Subject<IRegister>();
+    private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
         private _router: Router,
@@ -47,6 +49,7 @@ export class RegisterHttpService {
             }),
             switchMap((user: IRegister) =>
                 this.registerUser(user).pipe(
+                    takeUntil(this._cancelRequest$$),
                     tap((_) => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
@@ -109,6 +112,12 @@ export class RegisterHttpService {
                 }
             })
         );
+    }
+
+    public cancelRequest(): void {
+        this._progress.isCancelled = null;
+        this._loading.endLoading();
+        this._cancelRequest$$.next();
     }
 
     public register(user: IRegister): void {

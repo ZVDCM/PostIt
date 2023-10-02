@@ -107,9 +107,7 @@ import { RegisterConstantsService } from 'src/app/shared/constants/register-cons
                                     [readOnly]="loading.isLoading"
                                     (blur)="
                                         formHelper
-                                            .getFormControl(
-                                                passwordField.name
-                                            )!
+                                            .getFormControl(passwordField.name)!
                                             .markAsDirty()
                                     "
                                     pInputText
@@ -209,7 +207,7 @@ import { RegisterConstantsService } from 'src/app/shared/constants/register-cons
                         ></p-button>
                         <ng-template #cancelRegistration>
                             <p-button
-                                [routerLink]="loginConstants.loginRoute"
+                                (click)="registerHttp.cancelRequest()"
                                 type="button"
                                 styleClass="w-full p-button-outlined p-button-danger"
                                 label="Cancel"
