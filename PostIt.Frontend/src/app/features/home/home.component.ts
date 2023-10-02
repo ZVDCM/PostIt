@@ -163,9 +163,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                     [autocomplete]="true"
                                     (blur)="
                                         profileFormHelper
-                                            .getFormControl(
-                                                usernameField.name
-                                            )!
+                                            .getFormControl(usernameField.name)!
                                             .markAsDirty()
                                     "
                                     pInputText
@@ -223,12 +221,20 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                                 label="Register"
                             ></p-button>
                             <p-button
-                                [disabled]="loading.isLoading"
+                                *ngIf="!loading.isLoading; else cancel"
                                 (click)="showModal = false"
                                 type="button"
-                                styleClass="w-full p-button-outlined p-button-danger"
+                                styleClass="w-full p-button-outlined p-button-secondary"
                                 label="Cancel"
                             ></p-button>
+                            <ng-template #cancel>
+                                <p-button
+                                    (click)="editProfileHttp.cancelRequest()"
+                                    type="button"
+                                    styleClass="w-full p-button-outlined p-button-danger"
+                                    label="Cancel"
+                                ></p-button>
+                            </ng-template>
                         </div>
                     </form>
                 </ng-container>

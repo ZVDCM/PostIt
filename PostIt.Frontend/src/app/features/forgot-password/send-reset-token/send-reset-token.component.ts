@@ -59,13 +59,13 @@ import { SendResetTokenHttpService } from './send-reset-token-http.service';
                     ></p-button>
 
                     <p-button
-                        *ngIf="!loading.isLoading; else cancelRegistration"
+                        *ngIf="!loading.isLoading; else cancel"
                         [routerLink]="loginConstants.loginRoute"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-secondary"
                         label="Go back"
                     ></p-button>
-                    <ng-template #cancelRegistration>
+                    <ng-template #cancel>
                         <p-button
                             (click)="sendResetTokenHttp.cancelRequest()"
                             type="button"

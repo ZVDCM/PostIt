@@ -8,6 +8,7 @@ import {
     map,
     of,
     switchMap,
+    takeUntil,
     tap,
 } from 'rxjs';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
@@ -30,6 +31,7 @@ export class EditProfileHttpService {
         this._homeConstants.editProfileEndpoint;
     private _updateProfile$$: Subject<IUpdateProfile> =
         new Subject<IUpdateProfile>();
+    private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     public isLoading: boolean = false;
     public isCancelled: boolean = false;
@@ -52,6 +54,7 @@ export class EditProfileHttpService {
             }),
             switchMap((user: IUpdateProfile) =>
                 this.editProfileUser(user).pipe(
+                    takeUntil(this._cancelRequest$$),
                     tap((_) => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
@@ -116,6 +119,12 @@ export class EditProfileHttpService {
                 }
             })
         );
+    }
+
+    public cancelRequest(): void {
+        this._progress.isCancelled = null;
+        this._loading.endLoading();
+        this._cancelRequest$$.next();
     }
 
     public editProfile(user: IUpdateProfile): void {

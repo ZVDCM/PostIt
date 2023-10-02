@@ -59,13 +59,13 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                         label="Verify reset token"
                     ></p-button>
                     <p-button
-                        *ngIf="!loading.isLoading; else cancelRegistration"
+                        *ngIf="!loading.isLoading; else cancel"
                         [routerLink]="loginConstants.loginRoute"
                         type="button"
                         styleClass="w-full p-button-outlined p-button-secondary"
                         label="Go back"
                     ></p-button>
-                    <ng-template #cancelRegistration>
+                    <ng-template #cancel>
                         <p-button
                             (click)="verifyResetTokenHttp.cancelRequest()"
                             type="button"
