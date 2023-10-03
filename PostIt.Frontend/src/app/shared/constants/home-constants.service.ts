@@ -26,6 +26,16 @@ export class HomeConstantsService {
             hint: 'Email must follow valid email format',
         },
     };
+
+    public readonly verificationForm: IForm = {
+        token: {
+            id: 'txt-verification-token',
+            name: 'token',
+            label: 'Token',
+            hint: 'Token must not be empty',
+        },
+    };
+
     public readonly passwordForm: IForm = {
         password: {
             id: 'txt-register-password',

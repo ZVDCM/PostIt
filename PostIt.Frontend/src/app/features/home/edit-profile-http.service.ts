@@ -33,7 +33,6 @@ export class EditProfileHttpService {
         new Subject<IUpdateProfile>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
-    public isLoading: boolean = false;
     public isCancelled: boolean = false;
 
     constructor(
@@ -123,9 +122,11 @@ export class EditProfileHttpService {
     }
 
     public cancelRequest(): void {
-        this._progress.isCancelled = null;
-        this._loading.endLoading();
-        this._cancelRequest$$.next();
+        if (this._loading.isLoading) {
+            this._progress.isCancelled = null;
+            this._loading.endLoading();
+            this._cancelRequest$$.next();
+        }
     }
 
     public editProfile(user: IUpdateProfile): void {

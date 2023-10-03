@@ -125,9 +125,11 @@ export class ResetPasswordHttpService {
     }
 
     public cancelRequest(): void {
-        this._progress.isCancelled = null;
-        this._loading.endLoading();
-        this._cancelRequest$$.next();
+        if (this._loading.isLoading) {
+            this._progress.isCancelled = null;
+            this._loading.endLoading();
+            this._cancelRequest$$.next();
+        }
     }
 
     public resetPassword(user: IResetPassword): void {
