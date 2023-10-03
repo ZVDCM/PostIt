@@ -1,5 +1,4 @@
 import {
-    AfterViewChecked,
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
@@ -9,8 +8,8 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { MenuItem } from 'primeng/api';
-import { Observable, Subject, interval, take, tap, timer } from 'rxjs';
+import { MenuItem, MessageService } from 'primeng/api';
+import { Observable, Subject, interval, take, tap } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
@@ -23,6 +22,7 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
 import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
 import { LogoutHttpService } from './logout-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
     selector: 'app-home',
@@ -70,6 +70,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                             [model]="items"
                             class="w-56"
                             styleClass="w-full"
+                            (click)="onClickUsername(user)"
                         >
                             <ng-template pTemplate="content">
                                 <div
@@ -471,7 +472,9 @@ export class HomeComponent implements AfterViewInit {
         private _store: Store,
         private _refreshHttp: RefreshHttpService,
         private _logoutHttp: LogoutHttpService,
-        public loading: LoadingService
+        public loading: LoadingService,
+        private _messageService: MessageService,
+        private _clipboard: Clipboard
     ) {
         this.user$ = this._store
             .select(selectUser)
@@ -610,5 +613,14 @@ export class HomeComponent implements AfterViewInit {
                     )
                 ),
             ]);
+    }
+
+    public onClickUsername(user: IUser): void {
+        this._clipboard.copy(user.username);
+        this._messageService.add({
+            severity: 'info',
+            summary: 'Username Copied',
+            detail: 'You have copied username to clipboard',
+        });
     }
 }
