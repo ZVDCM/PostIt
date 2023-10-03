@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 
 @Component({
-    selector: 'app-for-you',
+    selector: 'app-posts',
     template: `
         <section>
             <p-tabMenu
@@ -30,7 +30,7 @@ import { MenuItem } from 'primeng/api';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ForYouComponent {
+export class PostsComponent {
     public items: MenuItem[] = [];
 
     constructor() {

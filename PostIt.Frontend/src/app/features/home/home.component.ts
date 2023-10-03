@@ -23,6 +23,7 @@ import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service
 import { LogoutHttpService } from './logout-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-home',
@@ -70,7 +71,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
                             [model]="items"
                             class="w-56"
                             styleClass="w-full"
-                            (click)="onClickUsername(user)"
+                            (onClick)="onClickUsername(user)"
                         >
                             <ng-template pTemplate="content">
                                 <div
@@ -474,7 +475,8 @@ export class HomeComponent implements AfterViewInit {
         private _logoutHttp: LogoutHttpService,
         public loading: LoadingService,
         private _messageService: MessageService,
-        private _clipboard: Clipboard
+        private _clipboard: Clipboard,
+        private _router: Router
     ) {
         this.user$ = this._store
             .select(selectUser)
@@ -536,11 +538,13 @@ export class HomeComponent implements AfterViewInit {
     public onClickPosts() {
         this.isPostsActive = true;
         this.isProfileActive = false;
+        this._router.navigate([this.homeConstants.postsRoute]);
     }
 
     public onClickProfile() {
         this.isPostsActive = false;
         this.isProfileActive = true;
+        this._router.navigate([this.homeConstants.profileRoute]);
     }
 
     public onProfileSubmit(user: IUser): void {
