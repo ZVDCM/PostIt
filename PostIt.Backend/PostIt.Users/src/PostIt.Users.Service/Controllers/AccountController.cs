@@ -170,6 +170,7 @@ public sealed class AccountController : ApiController
 
     [HttpPost("verify/resettoken")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> VerifyResetTokenAsync(
         VerifyResetTokenRequest request,
@@ -185,6 +186,7 @@ public sealed class AccountController : ApiController
     [OneShotUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("reset/password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest request, CancellationToken cancellationToken)
@@ -199,6 +201,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("change/password")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> ChangePasswordAsync(ChangePasswordRequest request, CancellationToken cancellationToken)

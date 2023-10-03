@@ -41,19 +41,6 @@ public class ApiController : ControllerBase
 
     protected string? GetAccessToken(string cookieName)
     {
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(cookieName);
-        Logger.Information("{@Cookies}", Request.Cookies);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
-        System.Console.WriteLine(1);
         string? accessToken = Request.Cookies[cookieName];
         return string.IsNullOrEmpty(accessToken) ? null : accessToken;
     }

@@ -29,6 +29,8 @@ public sealed class VerifyResetTokenCommandHandler : ICommandHandler<VerifyReset
         Token? token = user.GetForgotPasswordToken(t => t.Value == request.ResetToken);
         if (token is null) return Result.Failure<Tuple<User, Token>>(Errors.Unauthorized);
 
+        token.Disable();
+
         var accessToken = _jwtService.GenerateAccessToken(user);
 
         return Result.Success(Tuple.Create(user, accessToken));

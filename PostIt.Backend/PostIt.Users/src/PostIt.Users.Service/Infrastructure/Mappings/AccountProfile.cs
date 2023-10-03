@@ -135,8 +135,8 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new CreateVerificationTokenCommand(r.Value!));
         CreateMap<Result<Tuple<User, Token>>, EmailVerificationTokenCommand>()
             .ConvertUsing(r => new EmailVerificationTokenCommand(r.Value!.Item1, r.Value.Item2));
-        CreateMap<Result<(string, VerifyVerificationTokenRequest)>, VerifyVerificationTokenCommand>()
-            .ConvertUsing(r => new VerifyVerificationTokenCommand(r.Value.Item1, r.Value.Item2.Token));
+        CreateMap<Result<Tuple<string, VerifyVerificationTokenRequest>>, VerifyVerificationTokenCommand>()
+            .ConvertUsing(r => new VerifyVerificationTokenCommand(r.Value!.Item1, r.Value.Item2.Token));
     }
 
     private void AddForgotPasswordMappings()
@@ -147,8 +147,8 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new EmailResetTokenCommand(r.Value!.Item1, r.Value.Item2));
         CreateMap<Result<VerifyResetTokenRequest>, VerifyResetTokenCommand>()
             .ConvertUsing(r => new VerifyResetTokenCommand(r.Value!.Email, r.Value!.Token));
-        CreateMap<Result<(string, ResetPasswordRequest)>, ResetPasswordCommand>()
-           .ConvertUsing(r => new ResetPasswordCommand(r.Value.Item1, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
+        CreateMap<Result<Tuple<string, ResetPasswordRequest>>, ResetPasswordCommand>()
+           .ConvertUsing(r => new ResetPasswordCommand(r.Value!.Item1, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
     }
 
     private void AddPostsMappings()
