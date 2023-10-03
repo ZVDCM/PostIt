@@ -82,6 +82,7 @@ export class LogoutHttpService {
                                     summary: 'Server Error',
                                     detail: 'Something went wrong',
                                 });
+                                break;
                             }
                         }
                     }),

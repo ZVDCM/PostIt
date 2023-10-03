@@ -99,6 +99,7 @@ export class RegisterHttpService {
                                     summary: 'Server Error',
                                     detail: 'Something went wrong',
                                 });
+                                break;
                             }
                         }
                     }),

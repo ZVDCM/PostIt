@@ -90,6 +90,7 @@ export class SendResetTokenHttpService {
                                     summary: 'Server Error',
                                     detail: 'Something went wrong',
                                 });
+                                break;
                             }
                         }
                     }),

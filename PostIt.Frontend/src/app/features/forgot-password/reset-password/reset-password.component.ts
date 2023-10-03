@@ -6,6 +6,8 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
 import { ResetPasswordHttpService } from './reset-password-http.service';
 import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-reset-password',
@@ -20,6 +22,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                 [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
                 method="POST"
+                (submit)="onSubmit()"
             >
                 <div class="flex flex-col gap-4">
                     <!-- PASSWORD -->
@@ -35,11 +38,11 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                 "
                                 [type]="showPassword ? 'text' : 'password'"
                                 [autocomplete]="false"
-                                [formControlName]="passwordField.label"
-                                [readOnly]="resetPasswordHttp.isLoading"
+                                [formControlName]="passwordField.name"
+                                [readOnly]="loading.isLoading"
                                 (blur)="
                                     formHelper
-                                        .getFormControl(passwordField.label)!
+                                        .getFormControl(passwordField.name)!
                                         .markAsDirty()
                                 "
                                 pInputText
@@ -58,7 +61,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                             id="{{ passwordField.id }}-help"
                             [ngClass]="{
                                 hidden: !formHelper.isInputInvalid(
-                                    passwordField.label
+                                    passwordField.name
                                 )
                             }"
                             class="p-error"
@@ -80,12 +83,12 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                                     showConfirmPassword ? 'text' : 'password'
                                 "
                                 [autocomplete]="false"
-                                [formControlName]="confirmPasswordField.label"
-                                [readOnly]="resetPasswordHttp.isLoading"
+                                [formControlName]="confirmPasswordField.name"
+                                [readOnly]="loading.isLoading"
                                 (blur)="
                                     formHelper
                                         .getFormControl(
-                                            confirmPasswordField.label
+                                            confirmPasswordField.name
                                         )!
                                         .markAsDirty()
                                 "
@@ -109,7 +112,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                             id="{{ confirmPasswordField.id }}-help"
                             [ngClass]="{
                                 hidden: !formHelper.isInputInvalid(
-                                    confirmPasswordField.label
+                                    confirmPasswordField.name
                                 )
                             }"
                             class="p-error"
@@ -119,7 +122,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                 </div>
                 <div class="flex flex-col gap-5 mt-10">
                     <p-button
-                        [loading]="resetPasswordHttp.isLoading"
+                        [loading]="loading.isLoading"
                         [routerLink]="
                             forgotPasswordConstants.resetPasswordRoute
                         "
@@ -128,15 +131,25 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
                         label="Reset Password"
                     ></p-button>
                     <p-button
-                        [disabled]="resetPasswordHttp.isLoading"
+                        *ngIf="!loading.isLoading; else cancel"
                         [routerLink]="loginConstants.loginRoute"
                         type="button"
-                        styleClass="w-full p-button-outlined p-button-danger"
-                        label="Cancel"
+                        styleClass="w-full p-button-outlined p-button-secondary"
+                        label="Go back"
                     ></p-button>
+                    <ng-template #cancel>
+                        <p-button
+                            (click)="resetPasswordHttp.cancelRequest()"
+                            type="button"
+                            styleClass="w-full p-button-outlined p-button-danger"
+                            label="Cancel"
+                        ></p-button>
+                    </ng-template>
                 </div>
             </form>
         </section>
+        <ng-container *ngIf="resetPassword$ | async"></ng-container>
+        <ng-container *ngIf="loading$ | async"></ng-container>
     `,
     styles: [
         `
@@ -155,36 +168,55 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
     ],
 })
 export class ResetPasswordComponent {
+    public loading$: Observable<boolean> = new Observable<boolean>();
+    public resetPassword$: Observable<void> = new Observable<void>();
+
+    public showPassword: boolean = false;
+    public showConfirmPassword: boolean = false;
+
     public passwordField: IFormItem =
         this.forgotPasswordConstants.resetPasswordForm['resetNewPassword'];
     public confirmPasswordField: IFormItem =
         this.forgotPasswordConstants.resetPasswordForm['resetConfirmPassword'];
-    public showPassword: boolean = false;
-    public showConfirmPassword: boolean = false;
 
     constructor(
         public forgotPasswordConstants: ForgotPasswordConstantsService,
         public loginConstants: LoginConstantsService,
         public formHelper: FormHelperService,
         public resetPasswordHttp: ResetPasswordHttpService,
+        public loading: LoadingService,
         private _passwordHelper: PasswordHelperService
     ) {
-        // _loading.endLoading();
+        this.resetPassword$ = resetPasswordHttp.watchResetPassword$();
         formHelper.setFormGroup(
             new FormGroup({
-                [this.passwordField.label]: new FormControl('', [
+                [this.passwordField.name]: new FormControl('', [
                     Validators.required,
                 ]),
-                [this.confirmPasswordField.label]: new FormControl('', [
-                    Validators.required,
-                    _passwordHelper.passwordsMustMatch(
-                        formHelper.getFormControl(this.passwordField.label),
-                        formHelper.getFormControl(
-                            this.confirmPasswordField.label
-                        )
-                    ),
-                ]),
+                [this.confirmPasswordField.name]: new FormControl(''),
             })
         );
+
+        formHelper
+            .getFormControl(this.confirmPasswordField.name)
+            ?.addValidators([
+                Validators.required,
+                _passwordHelper.passwordsMustMatch(
+                    formHelper.getFormControl(this.passwordField.name),
+                    formHelper.getFormControl(this.confirmPasswordField.name)
+                ),
+            ]);
+    }
+
+    public onSubmit(): void {
+        if (this.formHelper.formGroup.invalid) {
+            this.formHelper.validateAllFormInputs();
+            return;
+        }
+        const {
+            [this.confirmPasswordField.name]: confirmPassword,
+            ...newObject
+        } = this.formHelper.formGroup.value;
+        this.resetPasswordHttp.resetPassword(newObject);
     }
 }

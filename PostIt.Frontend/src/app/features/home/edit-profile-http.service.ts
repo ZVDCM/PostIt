@@ -106,6 +106,7 @@ export class EditProfileHttpService {
                                     summary: 'Server Error',
                                     detail: 'Something went wrong',
                                 });
+                                break;
                             }
                         }
                     }),

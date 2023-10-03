@@ -2,11 +2,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
-import { OneShotAuthHttpService } from '../one-shot-auth-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { VerifyResetTokenHttpService } from './verify-reset-token-http.service';
+import { Observable } from 'rxjs';
 
 @Component({
     selector: 'app-verify-reset-token',
@@ -21,6 +21,7 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
                 method="POST"
+                (submit)="onSubmit()"
             >
                 <div class="flex flex-col gap-2">
                     <label [htmlFor]="resetTokenField.id">{{
@@ -76,6 +77,8 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
                 </div>
             </form>
         </section>
+        <ng-container *ngIf="loading$ | async"></ng-container>
+        <ng-container *ngIf="verifyResetToken$ | async"></ng-container>
     `,
     styles: [
         `
@@ -93,6 +96,8 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     ],
 })
 export class VerifyResetTokenComponent {
+    public verifyResetToken$: Observable<void> = new Observable<void>();
+    public loading$: Observable<boolean> = new Observable<boolean>();
     public resetTokenField: IFormItem =
         this.forgotPasswordConstants.resetTokenForm['token'];
 
@@ -103,12 +108,23 @@ export class VerifyResetTokenComponent {
         public loading: LoadingService,
         public verifyResetTokenHttp: VerifyResetTokenHttpService
     ) {
+        this.verifyResetToken$ = verifyResetTokenHttp.watchVerifyResetToken$();
         this.formHelper.setFormGroup(
             new FormGroup({
-                [this.resetTokenField.label]: new FormControl('', [
+                [this.resetTokenField.name]: new FormControl('', [
                     Validators.required,
                 ]),
             })
+        );
+    }
+
+    public onSubmit(): void {
+        if (this.formHelper.formGroup.invalid) {
+            this.formHelper.validateAllFormInputs();
+            return;
+        }
+        this.verifyResetTokenHttp.verifyResetToken(
+            this.formHelper.formGroup.value
         );
     }
 }

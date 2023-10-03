@@ -93,6 +93,7 @@ export class LoginHttpService {
                                     summary: 'Server Error',
                                     detail: 'Something went wrong',
                                 });
+                                break;
                             }
                         }
                     }),
