@@ -470,10 +470,10 @@ export class HomeComponent implements AfterViewInit {
         public passwordFormHelper: FormHelperService,
         public changePasswordHttp: ChangePasswordHttpService,
         private _passwordHelper: PasswordHelperService,
+        public loading: LoadingService,
         private _store: Store,
         private _refreshHttp: RefreshHttpService,
         private _logoutHttp: LogoutHttpService,
-        public loading: LoadingService,
         private _messageService: MessageService,
         private _clipboard: Clipboard,
         private _router: Router
