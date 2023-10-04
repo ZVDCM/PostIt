@@ -54,6 +54,7 @@ public class ApiController : ControllerBase
             (int)HttpStatusCode.NotFound => NotFound(),
             (int)HttpStatusCode.BadRequest => BadRequest(),
             (int)HttpStatusCode.Unauthorized => Unauthorized(),
+            (int)HttpStatusCode.Forbidden => Forbid(),
             _ => Problem(error)
         };
 

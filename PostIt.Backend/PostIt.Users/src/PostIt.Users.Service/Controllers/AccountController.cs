@@ -172,6 +172,7 @@ public sealed class AccountController : ApiController
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> VerifyResetTokenAsync(
         VerifyResetTokenRequest request,
         CancellationToken cancellationToken)

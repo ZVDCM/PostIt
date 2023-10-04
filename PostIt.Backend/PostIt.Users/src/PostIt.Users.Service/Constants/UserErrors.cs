@@ -5,6 +5,10 @@ namespace PostIt.Users.Service.Constants;
 
 public static class UserErrors
 {
+    public static Error UserWrongPassword => new(
+        "UserAPI.UserWrongPassword",
+        "The user password is wrong.",
+        (int)HttpStatusCode.Forbidden);
     public static Error UserNotVerified => new(
         "UserAPI.UserNotVerified",
         "The user is not verified.",

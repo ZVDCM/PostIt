@@ -31,7 +31,7 @@ public sealed class ChangePasswordCommandHandler : ICommandHandler<ChangePasswor
         User user = result.Value!;
 
         bool isMatch = BCrypt.Net.BCrypt.EnhancedVerify(request.OldPassword, user.Password, HashType.SHA512);
-        if (!isMatch) return Result.Failure(UserErrors.UserForbidden);
+        if (!isMatch) return Result.Failure(UserErrors.UserWrongPassword);
 
         user.ChangePassword(request.NewPassword);
 
