@@ -33,8 +33,6 @@ export class EditProfileHttpService {
         new Subject<IUpdateProfile>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
-    public isCancelled: boolean = false;
-
     constructor(
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
@@ -54,7 +52,7 @@ export class EditProfileHttpService {
             switchMap((user: IUpdateProfile) =>
                 this.editProfileUser(user).pipe(
                     takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -65,7 +63,7 @@ export class EditProfileHttpService {
                             })
                         );
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
@@ -77,7 +75,7 @@ export class EditProfileHttpService {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -86,7 +84,7 @@ export class EditProfileHttpService {
                             case 400: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Update Error',
+                                    summary: 'Error',
                                     detail: 'Invalid form data',
                                 });
                                 break;
@@ -94,7 +92,7 @@ export class EditProfileHttpService {
                             case 409: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Update Error',
+                                    summary: 'Error',
                                     detail: 'Email already in use',
                                 });
                                 break;
@@ -102,8 +100,8 @@ export class EditProfileHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }

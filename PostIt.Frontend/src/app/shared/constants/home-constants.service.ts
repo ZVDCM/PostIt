@@ -11,6 +11,10 @@ export class HomeConstantsService {
     public readonly logoutEndpoint = '/account/logout';
     public readonly editProfileEndpoint = '/account/edit/profile';
     public readonly changePasswordEndpoint = '/account/change/password';
+    public readonly sendVerificationTokenEndpoint =
+        '/account/send/verificationtoken';
+    public readonly verifyVerificationTokenEndpoint =
+        '/account/verify/verificationtoken';
 
     public readonly profileForm: IForm = {
         username: {

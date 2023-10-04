@@ -58,7 +58,7 @@ export class RegisterHttpService {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Registration was successful',
+                            detail: 'was successful',
                         });
                     }),
                     tap((_) => {
@@ -80,7 +80,7 @@ export class RegisterHttpService {
                             case 400: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Registration Error',
+                                    summary: 'Error',
                                     detail: 'Invalid form data',
                                 });
                                 break;
@@ -88,7 +88,7 @@ export class RegisterHttpService {
                             case 409: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Registration Error',
+                                    summary: 'Error',
                                     detail: 'Email already in use',
                                 });
                                 break;
@@ -96,8 +96,8 @@ export class RegisterHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }

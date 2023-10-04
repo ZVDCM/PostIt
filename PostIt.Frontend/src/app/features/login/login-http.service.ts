@@ -49,7 +49,7 @@ export class LoginHttpService {
             }),
             switchMap((user: ILogin) =>
                 this.loginUser(user).pipe(
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -65,7 +65,7 @@ export class LoginHttpService {
                             })
                         );
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._router.navigate([this._homeConstants.homeRoute]);
                     })
                 )
@@ -73,7 +73,7 @@ export class LoginHttpService {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -82,7 +82,7 @@ export class LoginHttpService {
                             case 401: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Login Error',
+                                    summary: 'Error',
                                     detail: 'Invalid username or password',
                                 });
                                 break;
@@ -90,8 +90,8 @@ export class LoginHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }

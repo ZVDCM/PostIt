@@ -44,25 +44,25 @@ export class ResetPasswordHttpService {
 
     public watchResetPassword$(): Observable<void> {
         return this._resetPassword$$.asObservable().pipe(
-            tap((_) => {
+            tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
             switchMap((user: IResetPassword) =>
                 this.resetPasswordUser(user).pipe(
                     takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
                             detail: 'Password reset successful',
                         });
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._router.navigate([
                             this._loginConstants.loginRoute,
                         ]);
@@ -72,7 +72,7 @@ export class ResetPasswordHttpService {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -81,7 +81,7 @@ export class ResetPasswordHttpService {
                             case 400: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Forgot Password Error',
+                                    summary: 'Error',
                                     detail: 'Invalid form data',
                                 });
                                 break;
@@ -89,7 +89,7 @@ export class ResetPasswordHttpService {
                             case 401: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Forgot Password Error',
+                                    summary: 'Error',
                                     detail: 'User unauthorized',
                                 });
                                 break;
@@ -97,7 +97,7 @@ export class ResetPasswordHttpService {
                             case 403: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Forgot Password Error',
+                                    summary: 'Error',
                                     detail: 'Invalid user',
                                 });
                                 break;
@@ -105,8 +105,8 @@ export class ResetPasswordHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }

@@ -52,17 +52,17 @@ export class LogoutHttpService {
             }),
             switchMap((_) =>
                 this.logoutUser().pipe(
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._store.dispatch(
                             AccessTokenActions.removeAccessToken()
                         );
                         this._store.dispatch(UserActions.removeUser());
                     }),
-                    tap((_) =>
+                    tap(() =>
                         this._router.navigate([this._loginConstants.loginRoute])
                     )
                 )
@@ -70,7 +70,7 @@ export class LogoutHttpService {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -79,8 +79,8 @@ export class LogoutHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }

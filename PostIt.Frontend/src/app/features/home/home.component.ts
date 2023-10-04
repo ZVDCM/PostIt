@@ -154,9 +154,23 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                             <div class="flex flex-col gap-4">
                                 <!-- TOKEN -->
                                 <div class="flex flex-col gap-2">
-                                    <label [htmlFor]="tokenField.id">{{
-                                        tokenField.label
-                                    }}</label>
+                                    <label [htmlFor]="tokenField.id"
+                                        >{{ tokenField.label }}
+                                        <span
+                                            class="float-right"
+                                            [ngClass]="{
+                                                'cursor-pointer': !loading.isLoading,
+                                                'hover:underline': !loading.isLoading,
+                                            }"
+                                            [ngStyle]="{
+                                                color: loading.isLoading
+                                                    ? 'var(--primary-800)'
+                                                    : 'var(--primary-color)'
+                                            }"
+                                            (click)="onClickGetToken()"
+                                            >get token</span
+                                        ></label
+                                    >
                                     <input
                                         [id]="tokenField.id"
                                         [attr.aria-describedby]="
@@ -166,7 +180,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                         [readOnly]="loading.isLoading"
                                         [autocomplete]="true"
                                         (blur)="
-                                            profileFormHelper
+                                            verifyAccountFormHelper
                                                 .getFormControl(
                                                     tokenField.name
                                                 )!
@@ -465,6 +479,8 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
         <ng-container *ngIf="loading$ | async"></ng-container>
         <ng-container *ngIf="tooltip$ | async"></ng-container>
         <ng-container *ngIf="logout$ | async"></ng-container>
+        <ng-container *ngIf="sendVerificationToken$ | async"></ng-container>
+        <ng-container *ngIf="verifyVerificationToken$ | async"></ng-container>
     `,
     styles: [
         `
@@ -530,6 +546,8 @@ export class HomeComponent implements AfterViewInit {
     public loading$: Observable<boolean> = new Observable<boolean>();
     public tooltip$$: Subject<boolean> = new Subject<boolean>();
     public tooltip$: Observable<boolean> = new Observable<boolean>();
+    public sendVerificationToken$: Observable<void> = new Observable<void>();
+    public verifyVerificationToken$: Observable<void> = new Observable<void>();
 
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
@@ -582,6 +600,10 @@ export class HomeComponent implements AfterViewInit {
         this.logout$ = this._logoutHttp.watchLogout$();
         this.loading$ = loading.watchLoading$();
         this.tooltip$ = this.tooltip$$.asObservable();
+        this.sendVerificationToken$ =
+            this.verifyAccountHttp.watchSendVerificationToken$();
+        this.verifyVerificationToken$ =
+            this.verifyAccountHttp.watchVerifyVerificationToken$();
 
         this.items = [
             {
@@ -635,6 +657,45 @@ export class HomeComponent implements AfterViewInit {
             });
     }
 
+    public initProfileForm(user: IUser): void {
+        this.profileFormHelper.setFormGroup(
+            new FormGroup({
+                [this.usernameField.name]: new FormControl(user.username, [
+                    Validators.required,
+                ]),
+                [this.emailField.name]: new FormControl(user.email, [
+                    Validators.required,
+                    Validators.email,
+                ]),
+            })
+        );
+    }
+
+    public initPasswordForm(): void {
+        this.passwordFormHelper.setFormGroup(
+            new FormGroup({
+                [this.passwordField.name]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.confirmPasswordField.name]: new FormControl(''),
+            })
+        );
+
+        this.passwordFormHelper
+            .getFormControl(this.confirmPasswordField.name)
+            ?.addValidators([
+                Validators.required,
+                this._passwordHelper.passwordsMustMatch(
+                    this.passwordFormHelper.getFormControl(
+                        this.passwordField.name
+                    ),
+                    this.passwordFormHelper.getFormControl(
+                        this.confirmPasswordField.name
+                    )
+                ),
+            ]);
+    }
+
     public onClickPosts() {
         this.isPostsActive = true;
         this.isProfileActive = false;
@@ -653,7 +714,9 @@ export class HomeComponent implements AfterViewInit {
             return;
         }
 
-        console.log(this.verifyAccountFormHelper.formGroup.value);
+        this.verifyAccountHttp.verifyVerificationToken(
+            this.verifyAccountFormHelper.formGroup.value
+        );
     }
 
     public onProfileSubmit(user: IUser): void {
@@ -709,50 +772,11 @@ export class HomeComponent implements AfterViewInit {
         );
     }
 
-    public initProfileForm(user: IUser): void {
-        this.profileFormHelper.setFormGroup(
-            new FormGroup({
-                [this.usernameField.name]: new FormControl(user.username, [
-                    Validators.required,
-                ]),
-                [this.emailField.name]: new FormControl(user.email, [
-                    Validators.required,
-                    Validators.email,
-                ]),
-            })
-        );
-    }
-
-    public initPasswordForm(): void {
-        this.passwordFormHelper.setFormGroup(
-            new FormGroup({
-                [this.passwordField.name]: new FormControl('', [
-                    Validators.required,
-                ]),
-                [this.confirmPasswordField.name]: new FormControl(''),
-            })
-        );
-
-        this.passwordFormHelper
-            .getFormControl(this.confirmPasswordField.name)
-            ?.addValidators([
-                Validators.required,
-                this._passwordHelper.passwordsMustMatch(
-                    this.passwordFormHelper.getFormControl(
-                        this.passwordField.name
-                    ),
-                    this.passwordFormHelper.getFormControl(
-                        this.confirmPasswordField.name
-                    )
-                ),
-            ]);
-    }
-
     public onClickUsername(user: IUser): void {
         this._clipboard.copy(user.username);
         this._messageService.add({
             severity: 'info',
-            summary: 'Username Copied',
+            summary: 'Copied to Clipboard',
             detail: 'You have copied username to clipboard',
         });
     }
@@ -768,5 +792,9 @@ export class HomeComponent implements AfterViewInit {
             default:
                 throw Error('Unknown form');
         }
+    }
+
+    public onClickGetToken(): void {
+        this.verifyAccountHttp.sendVerificationToken();
     }
 }

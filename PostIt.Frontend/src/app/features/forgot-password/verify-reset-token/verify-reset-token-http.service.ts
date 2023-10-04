@@ -46,23 +46,22 @@ export class VerifyResetTokenHttpService {
 
     public watchVerifyResetToken$(): Observable<void> {
         return this._verifyResetToken$$.asObservable().pipe(
-            tap((_) => {
+            tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
             switchMap((user: IVerifyResetToken) => {
                 return this.verifyResetTokenUser(user).pipe(
                     takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
                     map((data: IAuthPayload) => {
-                        console.log(data);
                         this._oneShot.accessToken = data.accessToken;
                         this._oneShot.user = data.user;
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._router.navigate([
                             this._forgotPasswordConstants.resetPasswordRoute,
                         ]);
@@ -72,7 +71,7 @@ export class VerifyResetTokenHttpService {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -81,7 +80,7 @@ export class VerifyResetTokenHttpService {
                             case 400: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Forgot Password Error',
+                                    summary: 'Error',
                                     detail: 'Invalid form data',
                                 });
                                 break;
@@ -89,7 +88,7 @@ export class VerifyResetTokenHttpService {
                             case 401: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Forgot Password Error',
+                                    summary: 'Error',
                                     detail: 'Invalid Reset Token',
                                 });
                                 break;
@@ -97,8 +96,8 @@ export class VerifyResetTokenHttpService {
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
-                                    summary: 'Server Error',
-                                    detail: 'Something went wrong',
+                                    summary: 'Error',
+                                    detail: err.error.detail,
                                 });
                                 break;
                             }
