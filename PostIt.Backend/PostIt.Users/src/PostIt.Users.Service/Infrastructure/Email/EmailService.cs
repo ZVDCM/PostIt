@@ -49,7 +49,7 @@ public sealed class EmailSender : IEmailSender
             .To(user.Email)
             .Subject($"Email Verification Token: {verificationToken.Value}")
             .Tag("email-verification")
-            .UsingTemplateFromFile(_template, emailModel)
+            .UsingTemplate(_template, emailModel)
             .SendAsync(cancellationToken);
 
         if (response.Successful) return true;

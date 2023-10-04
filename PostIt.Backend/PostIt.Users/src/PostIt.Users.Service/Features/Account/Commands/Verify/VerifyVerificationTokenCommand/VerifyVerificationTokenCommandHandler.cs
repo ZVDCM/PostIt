@@ -39,7 +39,7 @@ public sealed class VerifyVerificationTokenCommandHandler : ICommandHandler<Veri
             return Result.Failure(TokenErrors.TokenExpired);
         }
         user.VerifyEmail();
-        user.DisableToken(verificationToken);
+        verificationToken.Disable();
 
         return await _unitOfWork.SaveChangesAsync(cancellationToken) ?
             Result.Success() :

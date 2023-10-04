@@ -45,7 +45,7 @@ public sealed class RefreshCommandHandler : ICommandHandler<RefreshCommand, Resu
         }
 
         Token accessToken = _jwtService.GenerateAccessToken(user);
-        user.DisableToken(latestRefreshToken);
+        latestRefreshToken.Disable();
         Token refreshToken = _jwtService.GenerateRefreshToken(user);
         user.AddRefreshToken(refreshToken);
 

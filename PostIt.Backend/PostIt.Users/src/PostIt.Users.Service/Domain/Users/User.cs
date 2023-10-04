@@ -99,9 +99,6 @@ public sealed class User : Entity, IAggregate, IAuditable
     public void UnverifyEmail()
         => EmailVerified = false;
 
-    public void DisableToken(Token token)
-        => token.Disable();
-
     public void FollowUser(User user)
         => _followings.Add(Follow.Create(Id, user.Id, user.Username));
 
