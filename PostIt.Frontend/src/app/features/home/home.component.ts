@@ -36,7 +36,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
             >
                 <nav class="h-full flex flex-col gap-5 py-10 pl-10">
                     <header
-                        [routerLink]="homeConstants.homeRoute"
+                        (click)="onClickPosts()"
                         class="cursor-pointer mb-14 pr-10 focus:outline-none"
                     >
                         <h1
@@ -571,20 +571,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                     transition: all 0.2s;
                 }
 
-                p-toggleButton {
-                    ::ng-deep .p-button {
-                        @apply rounded-none border-0;
-
-                        &:not(.p-highlight) {
-                            .p-button-label {
-                                @apply text-gray-400;
-                            }
-                        }
-
-                        .p-button-label {
-                            @apply ml-5;
-                            flex: unset;
-                        }
+                p-splitButton {
+                    ::ng-deep li[aria-label="Verify Account"] a span {
+                        color: var(--primary-color) !important;
                     }
                 }
             }
@@ -666,9 +655,45 @@ export class HomeComponent implements AfterViewInit {
         private _clipboard: Clipboard,
         private _router: Router
     ) {
-        this.user$ = this._store
-            .select(selectUser)
-            .pipe(tap((user: IUser) => this.initProfileForm(user)));
+        this.user$ = this._store.select(selectUser).pipe(
+            tap((user: IUser) => {
+                this.items = [
+                    {
+                        label: 'Verify Account',
+                        icon: 'pi pi-verified',
+                        command: () => {
+                            this.activeForm = 0;
+                            this.showModal = true;
+                        },
+                        disabled: user.isVerified,
+                    },
+                    {
+                        label: 'Edit Profile',
+                        icon: 'pi pi-user-edit',
+                        command: () => {
+                            this.activeForm = 1;
+                            this.showModal = true;
+                        },
+                    },
+                    {
+                        label: 'Change Password',
+                        icon: 'pi pi-lock',
+                        command: () => {
+                            this.activeForm = 2;
+                            this.showModal = true;
+                        },
+                    },
+                    { separator: true },
+                    {
+                        label: 'Logout',
+                        icon: 'pi pi-sign-out',
+                        command: () => _logoutHttp.logout(),
+                    },
+                ];
+
+                this.initProfileForm(user);
+            })
+        );
         this.refresh$ = this._refreshHttp.refresh$();
         this.editProfile$ = this.editProfileHttp.watchEditProfile$();
         this.logout$ = this._logoutHttp.watchLogout$();
@@ -679,39 +704,6 @@ export class HomeComponent implements AfterViewInit {
         this.verifyVerificationToken$ =
             this.verifyAccountHttp.watchVerifyVerificationToken$();
         this.changePassword$ = this.changePasswordHttp.watchChangePassword$();
-
-        this.items = [
-            {
-                label: 'Verify Account',
-                icon: 'pi pi-verified',
-                command: () => {
-                    this.activeForm = 0;
-                    this.showModal = true;
-                },
-            },
-            {
-                label: 'Edit Profile',
-                icon: 'pi pi-user-edit',
-                command: () => {
-                    this.activeForm = 1;
-                    this.showModal = true;
-                },
-            },
-            {
-                label: 'Change Password',
-                icon: 'pi pi-lock',
-                command: () => {
-                    this.activeForm = 2;
-                    this.showModal = true;
-                },
-            },
-            { separator: true },
-            {
-                label: 'Logout',
-                icon: 'pi pi-sign-out',
-                command: () => _logoutHttp.logout(),
-            },
-        ];
 
         this.initVerificationForm();
         this.initPasswordForm();
@@ -830,8 +822,10 @@ export class HomeComponent implements AfterViewInit {
         if (this.passwordFormHelper.formGroup.invalid) {
             this.passwordFormHelper.validateAllFormInputs();
         }
-        const { [this.confirmPasswordField.name]: confirmPassword, ...newObject } =
-            this.passwordFormHelper.formGroup.value;
+        const {
+            [this.confirmPasswordField.name]: confirmPassword,
+            ...newObject
+        } = this.passwordFormHelper.formGroup.value;
         this.changePasswordHttp.changePassword(newObject);
     }
 

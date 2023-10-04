@@ -7,7 +7,6 @@ import {
     catchError,
     filter,
     finalize,
-    map,
     of,
     switchMap,
     takeUntil,
