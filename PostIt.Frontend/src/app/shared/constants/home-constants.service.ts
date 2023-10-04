@@ -41,17 +41,23 @@ export class HomeConstantsService {
     };
 
     public readonly passwordForm: IForm = {
-        password: {
-            id: 'txt-register-password',
-            name: 'password',
-            label: 'Password',
-            hint: 'Password must not be empty',
+        oldPassword: {
+            id: 'txt-register-old-password',
+            name: 'oldPassword',
+            label: 'Old Password',
+            hint: 'Old Password must not be empty',
+        },
+        newPassword: {
+            id: 'txt-register-new-password',
+            name: 'newPassword',
+            label: 'New Password',
+            hint: 'New Password must not be empty',
         },
         confirmPassword: {
             id: 'txt-register-confirm-password',
             name: 'confirmPassword',
             label: 'Confirm Password',
-            hint: 'Both passwords must match',
+            hint: 'Password must match new password',
         },
     };
 }

@@ -167,7 +167,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                                     ? 'var(--primary-800)'
                                                     : 'var(--primary-color)'
                                             }"
-                                            (click)="onClickGetToken()"
+                                            (click)="
+                                                verifyAccountHttp.sendVerificationToken()
+                                            "
                                             >get token</span
                                         ></label
                                     >
@@ -338,31 +340,31 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                             method="POST"
                         >
                             <div class="flex flex-col gap-4">
-                                <!-- PASSWORD -->
+                                <!-- OLD PASSWORD -->
                                 <div class="flex flex-col gap-2">
-                                    <label [htmlFor]="passwordField.id">{{
-                                        passwordField.label
+                                    <label [htmlFor]="oldPasswordField.id">{{
+                                        oldPasswordField.label
                                     }}</label>
                                     <div class="p-inputgroup">
                                         <input
-                                            [id]="passwordField.id"
+                                            [id]="oldPasswordField.id"
                                             [attr.aria-describedby]="
-                                                passwordField.id + '-help'
+                                                oldPasswordField.id + '-help'
                                             "
                                             [type]="
-                                                showPassword
+                                                showOldPassword
                                                     ? 'text'
                                                     : 'password'
                                             "
                                             [autocomplete]="false"
                                             [formControlName]="
-                                                passwordField.name
+                                                oldPasswordField.name
                                             "
                                             [readOnly]="loading.isLoading"
                                             (blur)="
                                                 passwordFormHelper
                                                     .getFormControl(
-                                                        passwordField.name
+                                                        oldPasswordField.name
                                                     )!
                                                     .markAsDirty()
                                             "
@@ -372,25 +374,82 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                             type="button"
                                             pButton
                                             icon="pi {{
-                                                showPassword
+                                                showOldPassword
                                                     ? 'pi-eye-slash'
                                                     : 'pi-eye'
                                             }}"
                                             (click)="
-                                                showPassword = !showPassword
+                                                showOldPassword =
+                                                    !showOldPassword
                                             "
                                         ></button>
                                     </div>
                                     <small
-                                        *ngIf="passwordField.hint !== null"
-                                        id="{{ passwordField.id }}-help"
+                                        *ngIf="oldPasswordField.hint !== null"
+                                        id="{{ oldPasswordField.id }}-help"
                                         [ngClass]="{
                                             hidden: !passwordFormHelper.isInputInvalid(
-                                                passwordField.name
+                                                oldPasswordField.name
                                             )
                                         }"
                                         class="p-error"
-                                        >{{ passwordField.hint }}</small
+                                        >{{ oldPasswordField.hint }}</small
+                                    >
+                                </div>
+                                <!-- NEW PASSWORD -->
+                                <div class="flex flex-col gap-2">
+                                    <label [htmlFor]="newPasswordField.id">{{
+                                        newPasswordField.label
+                                    }}</label>
+                                    <div class="p-inputgroup">
+                                        <input
+                                            [id]="newPasswordField.id"
+                                            [attr.aria-describedby]="
+                                                newPasswordField.id + '-help'
+                                            "
+                                            [type]="
+                                                showNewPassword
+                                                    ? 'text'
+                                                    : 'password'
+                                            "
+                                            [autocomplete]="false"
+                                            [formControlName]="
+                                                newPasswordField.name
+                                            "
+                                            [readOnly]="loading.isLoading"
+                                            (blur)="
+                                                passwordFormHelper
+                                                    .getFormControl(
+                                                        newPasswordField.name
+                                                    )!
+                                                    .markAsDirty()
+                                            "
+                                            pInputText
+                                        />
+                                        <button
+                                            type="button"
+                                            pButton
+                                            icon="pi {{
+                                                showNewPassword
+                                                    ? 'pi-eye-slash'
+                                                    : 'pi-eye'
+                                            }}"
+                                            (click)="
+                                                showNewPassword =
+                                                    !showNewPassword
+                                            "
+                                        ></button>
+                                    </div>
+                                    <small
+                                        *ngIf="newPasswordField.hint !== null"
+                                        id="{{ newPasswordField.id }}-help"
+                                        [ngClass]="{
+                                            hidden: !passwordFormHelper.isInputInvalid(
+                                                newPasswordField.name
+                                            )
+                                        }"
+                                        class="p-error"
+                                        >{{ newPasswordField.hint }}</small
                                     >
                                 </div>
                                 <!-- CONFIRM PASSWORD -->
@@ -462,12 +521,22 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                     label="Change password"
                                 ></p-button>
                                 <p-button
-                                    [disabled]="loading.isLoading"
+                                    *ngIf="!loading.isLoading; else cancel"
                                     (click)="showModal = false"
                                     type="button"
-                                    styleClass="w-full p-button-outlined p-button-danger"
+                                    styleClass="w-full p-button-outlined p-button-secondary"
                                     label="Cancel"
                                 ></p-button>
+                                <ng-template #cancel>
+                                    <p-button
+                                        (click)="
+                                            changePasswordHttp.cancelRequest()
+                                        "
+                                        type="button"
+                                        styleClass="w-full p-button-outlined p-button-danger"
+                                        label="Cancel"
+                                    ></p-button>
+                                </ng-template>
                             </div>
                         </form>
                     </div>
@@ -481,6 +550,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
         <ng-container *ngIf="logout$ | async"></ng-container>
         <ng-container *ngIf="sendVerificationToken$ | async"></ng-container>
         <ng-container *ngIf="verifyVerificationToken$ | async"></ng-container>
+        <ng-container *ngIf="changePassword$ | async"></ng-container>
     `,
     styles: [
         `
@@ -548,13 +618,15 @@ export class HomeComponent implements AfterViewInit {
     public tooltip$: Observable<boolean> = new Observable<boolean>();
     public sendVerificationToken$: Observable<void> = new Observable<void>();
     public verifyVerificationToken$: Observable<void> = new Observable<void>();
+    public changePassword$: Observable<void> = new Observable<void>();
 
     public items: MenuItem[] = [];
     public isPostsActive: boolean = true;
     public isProfileActive: boolean = false;
     public showModal: boolean = false;
     public activeForm: number = 0;
-    public showPassword: boolean = false;
+    public showOldPassword: boolean = false;
+    public showNewPassword: boolean = false;
     public showConfirmPassword: boolean = false;
     public addToolTip: boolean = false;
 
@@ -566,8 +638,10 @@ export class HomeComponent implements AfterViewInit {
     public readonly emailField: IFormItem =
         this.homeConstants.profileForm['email'];
 
-    public readonly passwordField: IFormItem =
-        this.homeConstants.passwordForm['password'];
+    public readonly oldPasswordField: IFormItem =
+        this.homeConstants.passwordForm['oldPassword'];
+    public readonly newPasswordField: IFormItem =
+        this.homeConstants.passwordForm['newPassword'];
     public readonly confirmPasswordField: IFormItem =
         this.homeConstants.passwordForm['confirmPassword'];
 
@@ -604,30 +678,31 @@ export class HomeComponent implements AfterViewInit {
             this.verifyAccountHttp.watchSendVerificationToken$();
         this.verifyVerificationToken$ =
             this.verifyAccountHttp.watchVerifyVerificationToken$();
+        this.changePassword$ = this.changePasswordHttp.watchChangePassword$();
 
         this.items = [
             {
                 label: 'Verify Account',
                 icon: 'pi pi-verified',
                 command: () => {
-                    this.showModal = true;
                     this.activeForm = 0;
+                    this.showModal = true;
                 },
             },
             {
                 label: 'Edit Profile',
                 icon: 'pi pi-user-edit',
                 command: () => {
-                    this.showModal = true;
                     this.activeForm = 1;
+                    this.showModal = true;
                 },
             },
             {
                 label: 'Change Password',
                 icon: 'pi pi-lock',
                 command: () => {
-                    this.showModal = true;
                     this.activeForm = 2;
+                    this.showModal = true;
                 },
             },
             { separator: true },
@@ -657,6 +732,16 @@ export class HomeComponent implements AfterViewInit {
             });
     }
 
+    public initVerificationForm(): void {
+        this.verifyAccountFormHelper.setFormGroup(
+            new FormGroup({
+                [this.tokenField.name]: new FormControl('', [
+                    Validators.required,
+                ]),
+            })
+        );
+    }
+
     public initProfileForm(user: IUser): void {
         this.profileFormHelper.setFormGroup(
             new FormGroup({
@@ -674,7 +759,10 @@ export class HomeComponent implements AfterViewInit {
     public initPasswordForm(): void {
         this.passwordFormHelper.setFormGroup(
             new FormGroup({
-                [this.passwordField.name]: new FormControl('', [
+                [this.oldPasswordField.name]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.newPasswordField.name]: new FormControl('', [
                     Validators.required,
                 ]),
                 [this.confirmPasswordField.name]: new FormControl(''),
@@ -687,7 +775,7 @@ export class HomeComponent implements AfterViewInit {
                 Validators.required,
                 this._passwordHelper.passwordsMustMatch(
                     this.passwordFormHelper.getFormControl(
-                        this.passwordField.name
+                        this.newPasswordField.name
                     ),
                     this.passwordFormHelper.getFormControl(
                         this.confirmPasswordField.name
@@ -742,6 +830,9 @@ export class HomeComponent implements AfterViewInit {
         if (this.passwordFormHelper.formGroup.invalid) {
             this.passwordFormHelper.validateAllFormInputs();
         }
+        const { [this.confirmPasswordField.name]: confirmPassword, ...newObject } =
+            this.passwordFormHelper.formGroup.value;
+        this.changePasswordHttp.changePassword(newObject);
     }
 
     public onModalHide(user: IUser) {
@@ -760,16 +851,6 @@ export class HomeComponent implements AfterViewInit {
             default:
                 throw Error('Unknown form');
         }
-    }
-
-    public initVerificationForm(): void {
-        this.verifyAccountFormHelper.setFormGroup(
-            new FormGroup({
-                [this.tokenField.name]: new FormControl('', [
-                    Validators.required,
-                ]),
-            })
-        );
     }
 
     public onClickUsername(user: IUser): void {
@@ -792,9 +873,5 @@ export class HomeComponent implements AfterViewInit {
             default:
                 throw Error('Unknown form');
         }
-    }
-
-    public onClickGetToken(): void {
-        this.verifyAccountHttp.sendVerificationToken();
     }
 }

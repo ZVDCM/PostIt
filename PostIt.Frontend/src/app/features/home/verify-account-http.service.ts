@@ -87,7 +87,7 @@ export class VerifyAccountHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }
@@ -156,7 +156,15 @@ export class VerifyAccountHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user',
+                                    detail: 'Invalid user credentials',
+                                });
+                                break;
+                            }
+                            case 404: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Token not found',
                                 });
                                 break;
                             }
@@ -164,7 +172,7 @@ export class VerifyAccountHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }

@@ -93,11 +93,19 @@ export class VerifyResetTokenHttpService {
                                 });
                                 break;
                             }
+                            case 404: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Token not found',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }

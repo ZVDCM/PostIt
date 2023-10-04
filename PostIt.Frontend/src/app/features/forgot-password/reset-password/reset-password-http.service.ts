@@ -98,7 +98,7 @@ export class ResetPasswordHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user',
+                                    detail: 'Invalid user credentials',
                                 });
                                 break;
                             }
@@ -106,7 +106,7 @@ export class ResetPasswordHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }

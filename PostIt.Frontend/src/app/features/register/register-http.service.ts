@@ -97,7 +97,7 @@ export class RegisterHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }

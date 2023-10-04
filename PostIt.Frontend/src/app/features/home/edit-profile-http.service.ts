@@ -67,7 +67,7 @@ export class EditProfileHttpService {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Profile update was successful',
+                            detail: 'Edit was successful',
                         });
                     })
                 )
@@ -101,7 +101,7 @@ export class EditProfileHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail,
+                                    detail: err.error.detail ?? "Something went wrong",
                                 });
                                 break;
                             }
