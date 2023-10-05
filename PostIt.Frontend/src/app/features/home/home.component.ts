@@ -32,8 +32,8 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
     template: `
         <ng-container *ngIf="user$ | async as user">
             <aside
-                class="h-screen sticky top-0 flex flex-col flex-1 items-end"
-                style="border-right: 1px solid var(--surface-border); background-color: var(--surface-ground)"
+                class="h-screen sticky top-0 flex flex-col flex-1 items-end bg-[var(--surface-ground)]"
+                style="border-right: 1px solid var(--surface-border)"
             >
                 <nav class="h-full flex flex-col gap-5 py-10 pl-10">
                     <header
@@ -44,7 +44,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                             class="text-6xl font-extrabold tracking-widest rounded-none"
                         >
                             POST
-                            <span style="color: var(--primary-color)">IT</span>
+                            <span class="text-[var(--primary-color)]">IT</span>
                         </h1>
                     </header>
                     <button
@@ -70,14 +70,10 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                     >
                         <span>Profile</span>
                     </button>
-                    <div
-                        class="mt-auto mr-11 flex justify-between items-center"
-                    >
+                    <div class="w-full mt-auto flex justify-start items-center">
                         <p-splitButton
                             [menuStyle]="{ width: '100%' }"
                             [model]="items"
-                            class="w-56"
-                            styleClass="w-full"
                             (onClick)="onClickUsername(user)"
                         >
                             <ng-template pTemplate="content">
@@ -86,10 +82,10 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                     class="w-full flex items-center gap-4"
                                     tooltipPosition="top"
                                 >
-                                    <i class="pi pi-at p-button-icon"></i>
+                                    <i class="pi pi-at"></i>
                                     <span
                                         #username
-                                        class="p-button-label text-ellipsis overflow-hidden"
+                                        class="font-bold text-ellipsis overflow-hidden"
                                         >{{ user.username }}</span
                                     >
                                 </div>
@@ -98,12 +94,18 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                 <i class="pi pi-chevron-up"></i>
                             </ng-template>
                         </p-splitButton>
+                        <div class="w-[5rem] flex justify-center items-center">
+                            <i
+                                *ngIf="user.isVerified"
+                                class="pi pi-verified text-[var(--primary-color)]"
+                            ></i>
+                        </div>
                     </div>
                 </nav>
             </aside>
             <div
-                class="h-full w-full max-w-3xl"
-                style="border-right: 1px solid var(--surface-border); background-color: var(--surface-ground)"
+                class="h-full w-full max-w-3xl bg-[var(--surface-ground)]"
+                style="border-right: 1px solid var(--surface-border)"
             >
                 <router-outlet />
             </div>
