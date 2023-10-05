@@ -6,6 +6,7 @@ import {
     Inject,
     ViewChild,
 } from '@angular/core';
+import { Location } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -47,7 +48,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         </h1>
                     </header>
                     <button
-                        [ngClass]="{ active: isPostsActive }"
+                        [ngClass]="{
+                            active: location.path() === homeConstants.postsRoute
+                        }"
                         (click)="onClickPosts()"
                         class="nav-button"
                         icon="pi pi-camera"
@@ -56,7 +59,10 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         <span>Posts</span>
                     </button>
                     <button
-                        [ngClass]="{ active: isProfileActive }"
+                        [ngClass]="{
+                            active:
+                                location.path() === homeConstants.profileRoute
+                        }"
                         (click)="onClickProfile()"
                         class="nav-button"
                         icon="pi pi-user"
@@ -572,7 +578,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                 }
 
                 p-splitButton {
-                    ::ng-deep li[aria-label="Verify Account"] a span {
+                    ::ng-deep li[aria-label='Verify Account'] a span {
                         color: var(--primary-color) !important;
                     }
                 }
@@ -610,8 +616,6 @@ export class HomeComponent implements AfterViewInit {
     public changePassword$: Observable<void> = new Observable<void>();
 
     public items: MenuItem[] = [];
-    public isPostsActive: boolean = true;
-    public isProfileActive: boolean = false;
     public showModal: boolean = false;
     public activeForm: number = 0;
     public showOldPassword: boolean = false;
@@ -646,8 +650,9 @@ export class HomeComponent implements AfterViewInit {
         @Inject('verifyAccount')
         public verifyAccountFormHelper: FormHelperService,
         public verifyAccountHttp: VerifyAccountHttpService,
-        private _passwordHelper: PasswordHelperService,
         public loading: LoadingService,
+        public location: Location,
+        private _passwordHelper: PasswordHelperService,
         private _store: Store,
         private _refreshHttp: RefreshHttpService,
         private _logoutHttp: LogoutHttpService,
@@ -777,14 +782,10 @@ export class HomeComponent implements AfterViewInit {
     }
 
     public onClickPosts() {
-        this.isPostsActive = true;
-        this.isProfileActive = false;
         this._router.navigate([this.homeConstants.postsRoute]);
     }
 
     public onClickProfile() {
-        this.isPostsActive = false;
-        this.isProfileActive = true;
         this._router.navigate([this.homeConstants.profileRoute]);
     }
 

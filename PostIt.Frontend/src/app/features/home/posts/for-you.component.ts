@@ -24,7 +24,6 @@ import { MenuItem } from 'primeng/api';
                         @apply w-full flex justify-center items-center tracking-wider;
                     }
                 }
-
             }
         `,
     ],

@@ -10,7 +10,6 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
         <section>
             <header>
                 <h1>{{ user.username }}</h1>
-                <h3>{{ user.email }}</h3>
             </header>
         </section>
     </ng-container>`,
