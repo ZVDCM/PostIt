@@ -117,7 +117,7 @@ public sealed class AccountController : ApiController
         .Map(Mapper.Map<ProfileResponse>)
         .Match(Ok, HandleFailure);
 
-    [HttpGet("profile/{username:string}")]
+    [HttpGet("profile/{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
