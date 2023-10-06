@@ -49,7 +49,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                     </header>
                     <button
                         [ngClass]="{
-                            active: location.path() === homeConstants.postsRoute
+                            active: location
+                                .path()
+                                .includes(homeConstants.postsRoute)
                         }"
                         (click)="onClickPosts()"
                         class="nav-button"

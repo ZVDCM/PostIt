@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
-  selector: 'app-post-search-item',
+  selector: 'app-follow-item',
   template: `
     <p>
-      post-search works!
+      follow works!
     </p>
   `,
   styles: [
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PostSearchComponent {
+export class FollowItemComponent {
 
 }

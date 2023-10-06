@@ -10,6 +10,9 @@ import { MenuItem } from 'primeng/api';
                 [activeItem]="items[0]"
                 pRipple
             ></p-tabMenu>
+            <section>
+                <router-outlet />
+            </section>
         </section>
     `,
     styles: [
@@ -33,6 +36,9 @@ export class PostsComponent {
     public items: MenuItem[] = [];
 
     constructor() {
-        this.items = [{ label: 'For you' }, { label: 'Following' }];
+        this.items = [
+            { label: 'For you', routerLink: 'foryou' },
+            { label: 'Following', routerLink: 'following' },
+        ];
     }
 }

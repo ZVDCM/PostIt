@@ -13,21 +13,21 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { LoadingComponent } from './components/loading.component';
 import { FooterComponent } from './components/footer.component';
-import { CommentComponent } from './components/comment.component';
-import { PostComponent } from './components/post.component';
-import { PostSearchComponent } from './components/post-search.component';
-import { UserSearchComponent } from './components/user-search.component';
-import { FollowComponent } from './components/follow.component';
+import { PostItemComponent } from './components/post-item.component';
+import { CommentItemComponent } from './components/comment-item.component';
+import { PostSearchItemComponent } from './components/post-search-item.component';
+import { UserSearchItemComponent } from './components/user-search-item.component';
+import { FollowItemComponent } from './components/follow-item.component';
 
 @NgModule({
     declarations: [
         LoadingComponent,
         FooterComponent,
-        PostComponent,
-        CommentComponent,
-        PostSearchComponent,
-        UserSearchComponent,
-        FollowComponent,
+        PostItemComponent,
+        CommentItemComponent,
+        PostSearchItemComponent,
+        UserSearchItemComponent,
+        FollowItemComponent,
     ],
     imports: [
         CommonModule,
@@ -46,8 +46,11 @@ import { FollowComponent } from './components/follow.component';
     exports: [
         LoadingComponent,
         FooterComponent,
-        PostComponent,
-        CommentComponent,
+        PostItemComponent,
+        CommentItemComponent,
+        PostSearchItemComponent,
+        UserSearchItemComponent,
+        FollowItemComponent,
         InputTextModule,
         CheckboxModule,
         ButtonModule,

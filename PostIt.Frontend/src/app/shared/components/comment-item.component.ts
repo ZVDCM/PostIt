@@ -6,4 +6,4 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styles: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CommentComponent {}
+export class CommentItemComponent {}
