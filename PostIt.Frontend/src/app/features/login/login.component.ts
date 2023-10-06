@@ -199,7 +199,7 @@ export class LoginComponent {
     }
 
     public onSubmit(): void {
-        const { [this.rememberField.label]: remember, ...newObject } =
+        const { [this.rememberField.name]: remember, ...newObject } =
             this.formHelper.formGroup.value;
         this.loginHttp.login(newObject);
     }

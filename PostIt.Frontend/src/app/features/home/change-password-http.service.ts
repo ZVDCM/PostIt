@@ -99,7 +99,7 @@ export class ChangePasswordHttpService {
                                     severity: 'error',
                                     summary: 'Error',
                                     detail:
-                                        err.error.detail ??
+                                        err.error?.detail ??
                                         'Something went wrong',
                                 });
                                 break;

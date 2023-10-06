@@ -86,7 +86,9 @@ export class SendResetTokenHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail ?? "Something went wrong",
+                                    detail:
+                                        err.error?.detail ??
+                                        'Something went wrong',
                                 });
                                 break;
                             }

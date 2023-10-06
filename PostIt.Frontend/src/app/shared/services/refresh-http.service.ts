@@ -1,7 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, map } from 'rxjs';
+import { MessageService } from 'primeng/api';
+import { Observable, catchError, filter, map, of, tap } from 'rxjs';
 import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
 import { UserActions } from 'src/app/core/state/user/user.actions';
 import { IAuthPayload } from 'src/app/features/login/auth.model';
@@ -16,7 +17,8 @@ export class RefreshHttpService {
     constructor(
         private _http: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _store: Store
+        private _store: Store,
+        private _messageService: MessageService
     ) {}
 
     public refresh$(): Observable<void> {
@@ -32,7 +34,35 @@ export class RefreshHttpService {
                     this._store.dispatch(
                         UserActions.setUser({ user: data.user })
                     );
-                })
+                }),
+                catchError((err) =>
+                    of(err).pipe(
+                        filter((err) => err instanceof HttpErrorResponse),
+                        tap((err) => {
+                            console.log(err);
+                            switch (err.status) {
+                                case 401: {
+                                    this._messageService.add({
+                                        severity: 'error',
+                                        summary: 'Error',
+                                        detail: 'Unauthorized',
+                                    });
+                                    break;
+                                }
+                                default: {
+                                    this._messageService.add({
+                                        severity: 'error',
+                                        summary: 'Error',
+                                        detail:
+                                            err.error?.detail ??
+                                            'Something went wrong',
+                                    });
+                                    break;
+                                }
+                            }
+                        })
+                    )
+                )
             );
     }
 }

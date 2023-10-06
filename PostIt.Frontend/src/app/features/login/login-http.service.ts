@@ -83,7 +83,7 @@ export class LoginHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user credentialsname or password',
+                                    detail: 'Invalid user credentials',
                                 });
                                 break;
                             }
@@ -91,7 +91,9 @@ export class LoginHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error.detail ?? "Something went wrong",
+                                    detail:
+                                        err.error?.detail ??
+                                        'Something went wrong',
                                 });
                                 break;
                             }
