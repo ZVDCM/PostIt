@@ -5,4 +5,4 @@ using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Features.Account.Queries.GetUserProfile;
 
-public readonly record struct GetUserProfileQuery(UserId UserId) : IQuery<Result<User>>;
+public readonly record struct GetUserProfileQuery(string Username) : IQuery<Result<User>>;

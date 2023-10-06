@@ -59,7 +59,6 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new LoginResponse(
                 r.Value!.Item2.Value,
                 new ProfileResponse(
-                    r.Value!.Item1.Id.Value,
                     r.Value!.Item1.Username,
                     r.Value!.Item1.Email,
                     r.Value!.Item1.EmailVerified,
@@ -79,7 +78,6 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new RefreshResponse(
                 r.Value!.Item2.Value,
                 new ProfileResponse(
-                    r.Value!.Item1.Id.Value,
                     r.Value!.Item1.Username,
                     r.Value!.Item1.Email,
                     r.Value!.Item1.EmailVerified,
@@ -101,7 +99,6 @@ public sealed class AccountProfile : Profile
     {
         CreateMap<Result<User>, ProfileResponse>()
             .ConvertUsing(r => new ProfileResponse(
-                r.Value!.Id.Value,
                 r.Value!.Username,
                 r.Value!.Email,
                 r.Value!.EmailVerified,
@@ -121,8 +118,8 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new ChangePasswordCommand(r.Value!.Item1, r.Value.Item2.OldPassword, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Item2.NewPassword, HashType.SHA512, 13)));
         CreateMap<Result<string>, GetProfileQuery>()
             .ConvertUsing(r => new GetProfileQuery(r.Value!));
-        CreateMap<Result<Guid>, GetUserProfileQuery>()
-            .ConvertUsing(r => new GetUserProfileQuery(new UserId(r.Value!)));
+        CreateMap<Result<string>, GetUserProfileQuery>()
+            .ConvertUsing(r => new GetUserProfileQuery(r.Value!));
         CreateMap<Result<Tuple<string, Guid>>, FollowUserCommand>()
             .ConvertUsing(r => new FollowUserCommand(r.Value!.Item1, new UserId(r.Value.Item2)));
         CreateMap<Result<Tuple<string, Guid>>, UnfollowUserCommand>()

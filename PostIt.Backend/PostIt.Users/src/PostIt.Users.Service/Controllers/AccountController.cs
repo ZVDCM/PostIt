@@ -117,12 +117,12 @@ public sealed class AccountController : ApiController
         .Map(Mapper.Map<ProfileResponse>)
         .Match(Ok, HandleFailure);
 
-    [HttpGet("profile/{userId:guid}")]
+    [HttpGet("profile/{username:string}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetUserProfileAsync(Guid userId, CancellationToken cancellationToken)
-        => await Result.Create(userId, Errors.Unauthorized)
+    public async Task<IActionResult> GetUserProfileAsync(string username, CancellationToken cancellationToken)
+        => await Result.Create(username, Errors.Unauthorized)
         .Map(Mapper.Map<GetUserProfileQuery>)
         .Bind(query => Sender.Send(query, cancellationToken))
         .Map(Mapper.Map<ProfileResponse>)

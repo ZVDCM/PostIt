@@ -6,6 +6,6 @@ public sealed class GetUserProfileQueryValidator : AbstractValidator<GetUserProf
 {
     public GetUserProfileQueryValidator()
     {
-        RuleFor(x => x.UserId).NotNull();
+        RuleFor(x => x.Username).NotEmpty();
     }
 }

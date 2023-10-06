@@ -18,7 +18,7 @@ public sealed class GetUserProfileQueryHandler : IQueryHandler<GetUserProfileQue
 
     public async Task<Result<User>> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
     {
-        User? user = await _userRepository.GetUserAsync(u => u.Id == request.UserId, cancellationToken);
+        User? user = await _userRepository.GetUserAsync(u => u.Username == request.Username, cancellationToken);
         if (user is null) return Result.Failure<User>(UserErrors.UserNotFound);
         return Result.Success(user);
     }
