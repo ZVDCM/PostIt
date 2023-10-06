@@ -13,9 +13,22 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import { LoadingComponent } from './components/loading.component';
 import { FooterComponent } from './components/footer.component';
+import { CommentComponent } from './components/comment.component';
+import { PostComponent } from './components/post.component';
+import { PostSearchComponent } from './components/post-search.component';
+import { UserSearchComponent } from './components/user-search.component';
+import { FollowComponent } from './components/follow.component';
 
 @NgModule({
-    declarations: [LoadingComponent, FooterComponent],
+    declarations: [
+        LoadingComponent,
+        FooterComponent,
+        PostComponent,
+        CommentComponent,
+        PostSearchComponent,
+        UserSearchComponent,
+        FollowComponent,
+    ],
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -33,6 +46,8 @@ import { FooterComponent } from './components/footer.component';
     exports: [
         LoadingComponent,
         FooterComponent,
+        PostComponent,
+        CommentComponent,
         InputTextModule,
         CheckboxModule,
         ButtonModule,
