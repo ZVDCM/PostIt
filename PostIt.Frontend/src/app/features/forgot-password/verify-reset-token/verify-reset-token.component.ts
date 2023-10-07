@@ -88,12 +88,6 @@ import { Observable } from 'rxjs';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        ForgotPasswordConstantsService,
-        LoginConstantsService,
-        VerifyResetTokenHttpService,
-        FormHelperService,
-    ],
 })
 export class VerifyResetTokenComponent {
     public verifyResetToken$: Observable<void> = new Observable<void>();

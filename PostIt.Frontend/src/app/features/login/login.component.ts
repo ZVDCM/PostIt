@@ -141,13 +141,6 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        LoginConstantsService,
-        RegisterConstantsService,
-        ForgotPasswordConstantsService,
-        LoginHttpService,
-        FormHelperService,
-    ],
 })
 export class LoginComponent {
     public login$: Observable<void> = new Observable<void>();

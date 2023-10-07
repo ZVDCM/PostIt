@@ -232,13 +232,6 @@ import { RegisterConstantsService } from 'src/app/shared/constants/register-cons
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        RegisterConstantsService,
-        LoginConstantsService,
-        FormHelperService,
-        RegisterHttpService,
-        PasswordHelperService,
-    ],
 })
 export class RegisterComponent {
     public register$: Observable<void> = new Observable<void>();

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 @Component({
     selector: 'app-for-you',
-    template: ``,
+    template: `for you works!`,
     styles: [
         `
             :host {

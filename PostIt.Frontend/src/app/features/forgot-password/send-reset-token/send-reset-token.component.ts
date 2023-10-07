@@ -87,12 +87,6 @@ import { SendResetTokenHttpService } from './send-reset-token-http.service';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        ForgotPasswordConstantsService,
-        LoginConstantsService,
-        FormHelperService,
-        SendResetTokenHttpService,
-    ],
 })
 export class SendResetTokenComponent {
     public loading$: Observable<boolean> = new Observable<boolean>();

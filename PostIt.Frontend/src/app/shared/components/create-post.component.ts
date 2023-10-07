@@ -1,10 +1,15 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Output,
+} from '@angular/core';
 
 @Component({
     selector: 'app-create-post',
     template: `
         <section
-            class="flex justify-between items-center gap-4 p-10 bg-[var(--surface-card)]"
+            class="flex justify-between items-center gap-4 p-[2.45rem] bg-[var(--surface-card)]"
         >
             <i
                 class="pi pi-at text-[var(--primary-color)]"
@@ -12,8 +17,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
             ></i>
             <input
                 [readOnly]="true"
-                placeholder="Got something on your mind? Post It!"
+                (click)="onInputClick()"
                 pInputText
+                id="create-post"
+                placeholder="Got something on your mind? Post It!"
                 type="text"
                 class="w-full cursor-pointer"
                 style="border: none"
@@ -23,4 +30,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
     styles: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CreatePostComponent {}
+export class CreatePostComponent {
+    @Output()
+    public onClick: EventEmitter<true> = new EventEmitter<true>();
+
+    public onInputClick(): void {
+        this.onClick.emit(true);
+    }
+}

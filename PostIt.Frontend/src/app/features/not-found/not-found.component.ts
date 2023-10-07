@@ -34,7 +34,6 @@ import { LoginConstantsService } from 'src/app/shared/constants/login-constants.
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [LoginConstantsService],
 })
 export class NotfoundComponent {
     constructor(

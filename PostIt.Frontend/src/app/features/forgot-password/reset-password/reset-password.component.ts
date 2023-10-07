@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
             <form
                 [formGroup]="formHelper.formGroup"
                 class="flex flex-col"
-                method="POST"
+                method="PUT"
                 (submit)="onSubmit()"
             >
                 <div class="flex flex-col gap-4">
@@ -159,13 +159,6 @@ import { Observable } from 'rxjs';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        ForgotPasswordConstantsService,
-        LoginConstantsService,
-        ResetPasswordHttpService,
-        FormHelperService,
-        PasswordHelperService,
-    ],
 })
 export class ResetPasswordComponent {
     public loading$: Observable<boolean> = new Observable<boolean>();

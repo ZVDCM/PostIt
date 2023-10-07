@@ -60,4 +60,19 @@ export class HomeConstantsService {
             hint: 'Password must match new password',
         },
     };
+
+    public readonly postForm: IForm = {
+        title: {
+            id: 'txt-post-title',
+            name: 'title',
+            label: 'Title',
+            hint: 'Title must not be empty',
+        },
+        image: {
+            id: 'txt-post-image',
+            name: 'image',
+            label: 'Image',
+            hint: null,
+        },
+    };
 }

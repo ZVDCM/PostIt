@@ -10,7 +10,7 @@ import { MessageService } from 'primeng/api';
     selector: 'app-profile',
     template: ` <ng-container *ngIf="user$ | async as user">
         <header
-            class="flex flex-col gap-4 px-10 py-[3.4rem] bg-[var(--surface-card)] border-b-2 border-[var(--surface-border)]"
+            class="flex flex-col gap-4 px-10 py-[3.12rem] bg-[var(--surface-card)] border-b-2 border-[var(--surface-border)]"
         >
             <section class="flex items-center">
                 <div
@@ -64,7 +64,6 @@ import { MessageService } from 'primeng/api';
             </section>
         </header>
         <section class="py-10 flex flex-col gap-4">
-            <app-create-post />
         </section>
     </ng-container>`,
     styles: [``],

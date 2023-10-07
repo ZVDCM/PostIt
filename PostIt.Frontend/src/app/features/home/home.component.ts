@@ -58,7 +58,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         icon="pi pi-camera"
                         pButton
                     >
-                        <span>Posts</span>
+                        Posts
                     </button>
                     <button
                         [ngClass]="{
@@ -70,7 +70,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         icon="pi pi-user"
                         pButton
                     >
-                        <span>Profile</span>
+                        Profile
                     </button>
                     <div class="w-full mt-auto flex justify-start items-center">
                         <p-splitButton
@@ -159,7 +159,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         <form
                             [formGroup]="verifyAccountFormHelper.formGroup"
                             (submit)="onVerifyAccountSubmit()"
-                            method="POST"
+                            method="PUT"
                         >
                             <div class="flex flex-col gap-4">
                                 <!-- TOKEN -->
@@ -244,7 +244,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         <form
                             [formGroup]="profileFormHelper.formGroup"
                             (submit)="onProfileSubmit(user)"
-                            method="POST"
+                            method="PUT"
                         >
                             <div class="flex flex-col gap-4">
                                 <!-- USERNAME -->
@@ -347,7 +347,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         <form
                             [formGroup]="passwordFormHelper.formGroup"
                             (submit)="onPasswordSubmit()"
-                            method="POST"
+                            method="PUT"
                         >
                             <div class="flex flex-col gap-4">
                                 <!-- OLD PASSWORD -->
@@ -591,17 +591,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [
-        HomeConstantsService,
-        LoginConstantsService,
         { provide: 'profileFormHelper', useClass: FormHelperService },
-        EditProfileHttpService,
         { provide: 'passwordFormHelper', useClass: FormHelperService },
-        ChangePasswordHttpService,
         { provide: 'verifyAccount', useClass: FormHelperService },
-        FormHelperService,
-        PasswordHelperService,
-        RefreshHttpService,
-        LogoutHttpService,
     ],
 })
 export class HomeComponent implements AfterViewInit {
@@ -810,9 +802,9 @@ export class HomeComponent implements AfterViewInit {
             return;
         }
         if (
-            this.profileFormHelper.formGroup.value[this.usernameField.label] ===
+            this.profileFormHelper.formGroup.value[this.usernameField.name] ===
                 user.username &&
-            this.profileFormHelper.formGroup.value[this.emailField.label] ===
+            this.profileFormHelper.formGroup.value[this.emailField.name] ===
                 user.email
         ) {
             return;
