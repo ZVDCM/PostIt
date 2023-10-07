@@ -64,9 +64,36 @@ import { MessageService } from 'primeng/api';
             </section>
         </header>
         <section class="py-10 flex flex-col gap-4">
+            <app-create-post />
         </section>
     </ng-container>`,
-    styles: [``],
+    styles: [
+        `
+            :host {
+                ::ng-deep p-fileUpload {
+                    .p-fileupload-content {
+                        @apply hidden;
+                    }
+
+                    .p-fileupload-buttonbar {
+                        @apply border-0 h-min w-min p-0;
+
+                        .p-button {
+                            @apply m-0 p-4;
+
+                            .p-button-icon {
+                                @apply m-0;
+                            }
+
+                            .p-button-label {
+                                @apply hidden;
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileComponent {
