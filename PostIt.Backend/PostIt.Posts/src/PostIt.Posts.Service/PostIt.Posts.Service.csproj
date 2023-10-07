@@ -13,7 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="PostIt.Contracts.Posts" Version="1.0.30" />
+    <PackageReference Include="PostIt.Contracts.Posts" Version="1.0.31" />
     <PackageReference Include="PostIt.Contracts.Users" Version="1.0.28" />
   </ItemGroup>
 

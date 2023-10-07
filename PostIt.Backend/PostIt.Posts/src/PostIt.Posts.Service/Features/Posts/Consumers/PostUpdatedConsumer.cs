@@ -39,7 +39,7 @@ public sealed class PostUpdatedConsumer : IConsumer<PostUpdated>
                 return;
             };
 
-            post.Update(message.Title, message.Image);
+            post.Update(message.Body, message.Image);
             await _unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception exception)

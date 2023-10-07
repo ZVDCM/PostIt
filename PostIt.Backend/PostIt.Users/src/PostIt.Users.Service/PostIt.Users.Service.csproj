@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.9" />
     <PackageReference Include="PostIt.Common" Version="1.0.72" />
-    <PackageReference Include="PostIt.Contracts.Posts" Version="1.0.30" />
+    <PackageReference Include="PostIt.Contracts.Posts" Version="1.0.31" />
     <PackageReference Include="PostIt.Contracts.Users" Version="1.0.31" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

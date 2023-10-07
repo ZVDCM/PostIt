@@ -36,7 +36,7 @@ public sealed class PostCreatedConsumer : IConsumer<PostCreated>
             Post post = Post.Create(
                 message.UserId,
                 message.Username,
-                message.Title,
+                message.Body,
                 message.Image);
 
             await _postRepository.CreateAsync(post, CancellationToken.None);

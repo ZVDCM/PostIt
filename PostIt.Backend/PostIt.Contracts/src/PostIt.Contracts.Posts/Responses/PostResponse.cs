@@ -7,7 +7,7 @@ public sealed record PostResponse(
     Guid PostId,
     Guid UserId,
     string Username,
-    string Title,
+    string Body,
     string Image,
     DateTime CreatedOnUtc,
     DateTime ModifiedOnUtc,

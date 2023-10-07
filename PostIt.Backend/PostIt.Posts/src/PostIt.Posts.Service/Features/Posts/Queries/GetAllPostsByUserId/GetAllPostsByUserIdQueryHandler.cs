@@ -30,7 +30,7 @@ public sealed class GetAllPostsByUserIdQueryHandler : IQueryHandler<GetAllPostsB
         {
             postsQuery = postsQuery.Where(p =>
                 p.Username.Contains(request.SearchTerm) ||
-                p.Title.Contains(request.SearchTerm));
+                p.Body.Contains(request.SearchTerm));
         }
 
         Expression<Func<Post, object>> keyOrder = request.SortColumn?.ToLower() switch
@@ -38,7 +38,7 @@ public sealed class GetAllPostsByUserIdQueryHandler : IQueryHandler<GetAllPostsB
             "id" => p => p.Id,
             "userid" => p => p.UserId,
             "username" => p => p.Username,
-            "title" => p => p.Title,
+            "body" => p => p.Body,
             "image" => p => p.Image,
             "modifiedonutc" => p => p.ModifiedOnUtc,
             _ => p => p.CreatedOnUtc,

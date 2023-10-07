@@ -153,14 +153,14 @@ public sealed class AccountProfile : Profile
         CreateMap<Result<Tuple<string, CreatePostRequest, IFormFile>>, CreatePostCommand>()
            .ConvertUsing(r => new CreatePostCommand(
                r.Value!.Item1,
-               r.Value.Item2.Title,
+               r.Value.Item2.Body,
                r.Value.Item2.Image,
                r.Value.Item3));
         CreateMap<Result<Tuple<string, Guid, UpdatePostRequest>>, UpdatePostCommand>()
             .ConvertUsing(r => new UpdatePostCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2),
-                r.Value.Item3.Title,
+                r.Value.Item3.Body,
                 r.Value.Item3.Image));
         CreateMap<Result<Tuple<string, Guid>>, DeletePostCommand>()
             .ConvertUsing(r => new DeletePostCommand(
