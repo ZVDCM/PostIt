@@ -174,7 +174,7 @@ export class LoginComponent {
         formHelper.setFormGroup(
             new FormGroup({
                 [this.emailField.name]: new FormControl(
-                    'verj.morales@gmail.com'
+                    'JuanDelaCruz@gmail.com'
                 ),
                 [this.passwordField.name]: new FormControl('TestTest!23'),
                 [this.rememberField.name]: new FormControl(

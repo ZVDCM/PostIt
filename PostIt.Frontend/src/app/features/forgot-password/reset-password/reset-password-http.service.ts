@@ -141,7 +141,7 @@ export class ResetPasswordHttpService {
     private resetPasswordUser(user: IResetPassword): Observable<void> {
         return this._httpClient.put<void>(this._url, user, {
             headers: {
-                skip: 'true',
+                oneShot: 'true',
             },
         });
     }

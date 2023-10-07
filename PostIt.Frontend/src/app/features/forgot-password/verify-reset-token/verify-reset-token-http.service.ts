@@ -4,7 +4,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { OneShotAuthHttpService } from '../one-shot-auth-http.service';
+import { OneShotAuthService } from '../one-shot-auth.service';
 import {
     Observable,
     Subject,
@@ -40,7 +40,7 @@ export class VerifyResetTokenHttpService {
         private _loading: LoadingService,
         private _progress: ProgressService,
         private _messageService: MessageService,
-        private _oneShot: OneShotAuthHttpService,
+        private _oneShot: OneShotAuthService,
         private _router: Router
     ) {}
 

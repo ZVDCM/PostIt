@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { OneShotAuthHttpService } from './one-shot-auth-http.service';
 
 @Component({
     selector: 'app-forgot-password',

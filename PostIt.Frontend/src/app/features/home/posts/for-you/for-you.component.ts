@@ -1,10 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Store } from '@ngrx/store';
 
 @Component({
     selector: 'app-for-you',
-    template: ` for you `,
-    styles: [``],
+    template: ``,
+    styles: [
+        `
+            :host {
+                @apply flex flex-col gap-4;
+            }
+        `,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ForYouComponent {

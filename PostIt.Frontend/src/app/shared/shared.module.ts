@@ -18,6 +18,7 @@ import { CommentItemComponent } from './components/comment-item.component';
 import { PostSearchItemComponent } from './components/post-search-item.component';
 import { UserSearchItemComponent } from './components/user-search-item.component';
 import { FollowItemComponent } from './components/follow-item.component';
+import { CreatePostComponent } from './components/create-post.component';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import { FollowItemComponent } from './components/follow-item.component';
         PostSearchItemComponent,
         UserSearchItemComponent,
         FollowItemComponent,
+        CreatePostComponent,
     ],
     imports: [
         CommonModule,
@@ -51,6 +53,7 @@ import { FollowItemComponent } from './components/follow-item.component';
         PostSearchItemComponent,
         UserSearchItemComponent,
         FollowItemComponent,
+        CreatePostComponent,
         InputTextModule,
         CheckboxModule,
         ButtonModule,

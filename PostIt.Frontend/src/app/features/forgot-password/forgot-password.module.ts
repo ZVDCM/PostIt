@@ -8,7 +8,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ForgotPasswordComponent } from './forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { VerifyResetTokenComponent } from './verify-reset-token/verify-reset-token.component';
-import { OneShotAuthHttpService } from './one-shot-auth-http.service';
+import { OneShotAuthService } from './one-shot-auth.service';
 
 @NgModule({
     declarations: [
@@ -24,6 +24,6 @@ import { OneShotAuthHttpService } from './one-shot-auth-http.service';
         SharedModule,
     ],
     exports: [ForgotPasswordRoutingModule],
-    providers: [OneShotAuthHttpService],
+    providers: [OneShotAuthService],
 })
 export class ForgotPasswordModule {}

@@ -23,7 +23,15 @@ export class RefreshHttpService {
 
     public refresh$(): Observable<void> {
         return this._http
-            .post<IAuthPayload>(this._url, {}, { withCredentials: true })
+            .post<IAuthPayload>(
+                this._url,
+                {},
+                {
+                    headers: {
+                        refresh: 'true',
+                    },
+                }
+            )
             .pipe(
                 map((data: IAuthPayload) => {
                     this._store.dispatch(
@@ -39,7 +47,6 @@ export class RefreshHttpService {
                     of(err).pipe(
                         filter((err) => err instanceof HttpErrorResponse),
                         tap((err) => {
-                            console.log(err);
                             switch (err.status) {
                                 case 401: {
                                     this._messageService.add({
