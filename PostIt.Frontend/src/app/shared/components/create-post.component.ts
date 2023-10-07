@@ -34,14 +34,15 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
         </section>
         <ng-container *ngIf="user$ | async as user">
             <p-dialog
+                *ngIf="showModal"
                 [(visible)]="showModal"
                 [modal]="true"
                 [resizable]="false"
                 [draggable]="false"
                 [closeOnEscape]="false"
-                header="Create Post"
                 (onHide)="showModal = false"
-                styleClass="w-full h-min max-w-lg"
+                header="Create Post"
+                styleClass="w-full max-w-lg"
             >
                 <div class="flex flex-col gap-2">
                     <header class="flex items-center gap-2">
@@ -109,12 +110,38 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
             </p-dialog>
         </ng-container>
     `,
-    styles: [],
+    styles: [
+        `
+            :host {
+                ::ng-deep p-fileUpload {
+                    .p-fileupload-content {
+                        @apply hidden;
+                    }
+
+                    .p-fileupload-buttonbar {
+                        @apply border-0 h-min w-min p-0;
+
+                        .p-button {
+                            @apply m-0 p-4;
+
+                            .p-button-icon {
+                                @apply m-0;
+                            }
+
+                            .p-button-label {
+                                @apply hidden;
+                            }
+                        }
+                    }
+                }
+            }
+        `,
+    ],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
-    public showModal: boolean = true;
+    public showModal: boolean = false;
 
     constructor(
         public loading: LoadingService,
