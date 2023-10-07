@@ -6,10 +6,14 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
-import { LoadingService } from '../services/loading.service';
+import { LoadingService } from '../../shared/services/loading.service';
 import { PostsHttpService } from 'src/app/features/home/posts/posts-http.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
+import { HomeConstantsService } from '../../shared/constants/home-constants.service';
+import { IFormItem } from 'src/app/core/models/form.model';
+import { FormHelperService } from '../../shared/utils/form-helper.service';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @Component({
     selector: 'app-create-post',
@@ -56,17 +60,45 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
                             {{ user.username }}
                         </h1>
                     </header>
-                    <form method="POST">
-                        <textarea
-                            [autoResize]="true"
-                            class="w-full"
-                            style="font-size: x-large;"
-                            rows="3"
-                            cols="30"
-                            placeholder="Got something on your mind? Post It!"
-                            pInputTextarea
-                        ></textarea>
-                        <input type="text" class="hidden" />
+                    <form method="POST" [formGroup]="formHelper.formGroup">
+                        <div>
+                            <textarea
+                                [id]="bodyField.id"
+                                [attr.aria-describedby]="
+                                    bodyField.id + '-help'
+                                "
+                                [autoResize]="true"
+                                [formControlName]="bodyField.name"
+                                (blur)="
+                                    formHelper
+                                        .getFormControl(bodyField.name)!
+                                        .markAsDirty()
+                                "
+                                class="w-full"
+                                style="font-size: x-large;"
+                                rows="3"
+                                cols="30"
+                                placeholder="Got something on your mind? Post It!"
+                                pInputTextarea
+                            ></textarea>
+                            <small
+                                *ngIf="bodyField.hint !== null"
+                                id="{{ bodyField.id }}-help"
+                                [ngClass]="{
+                                    hidden: !formHelper.isInputInvalid(
+                                        bodyField.name
+                                    )
+                                }"
+                                class="p-error"
+                                >{{ bodyField.hint }}
+                            </small>
+                        </div>
+                        <input
+                            [formControlName]="bodyField.name"
+                            type="text"
+                            class="hidden"
+                            #postImage
+                        />
                         <p-divider></p-divider>
                         <div class="flex justify-between items-center">
                             <span>Add to your post</span>
@@ -143,12 +175,25 @@ export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
     public showModal: boolean = false;
 
+    public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
+    public imageField: IFormItem = this.homeConstants.createPostForm['image'];
+
     constructor(
+        public homeConstants: HomeConstantsService,
         public loading: LoadingService,
         public postsHttp: PostsHttpService,
+        public formHelper: FormHelperService,
         private _store: Store
     ) {
         this.user$ = this._store.select(selectUser);
+        formHelper.setFormGroup(
+            new FormGroup({
+                [this.bodyField.name]: new FormControl('', [
+                    Validators.required,
+                ]),
+                [this.imageField.name]: new FormControl(''),
+            })
+        );
     }
 
     public onSelect(event: any): void {

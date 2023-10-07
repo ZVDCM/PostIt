@@ -21,7 +21,7 @@ import { CommentItemComponent } from './components/comment-item.component';
 import { PostSearchItemComponent } from './components/post-search-item.component';
 import { UserSearchItemComponent } from './components/user-search-item.component';
 import { FollowItemComponent } from './components/follow-item.component';
-import { CreatePostComponent } from './components/create-post.component';
+import { CreatePostComponent } from '../features/home/create-post.component';
 
 @NgModule({
     declarations: [

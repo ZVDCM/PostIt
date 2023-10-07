@@ -61,12 +61,12 @@ export class HomeConstantsService {
         },
     };
 
-    public readonly postForm: IForm = {
-        title: {
-            id: 'txt-post-title',
-            name: 'title',
-            label: 'Title',
-            hint: 'Title must not be empty',
+    public readonly createPostForm: IForm = {
+        body: {
+            id: 'txt-post-body',
+            name: 'body',
+            label: 'Body',
+            hint: 'Body must not be empty',
         },
         image: {
             id: 'txt-post-image',
