@@ -9,10 +9,10 @@ spec:
     ingressClassName: nginx
     tls:
         - hosts:
-              - postit.local.dev
+              - postit.prod.dev
           secretName: tls-secret
     rules:
-        - host: postit.local.dev
+        - host: postit.prod.dev
           http:
               paths:
                   - path: /api/users
