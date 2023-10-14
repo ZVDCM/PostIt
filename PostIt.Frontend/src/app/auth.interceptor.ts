@@ -60,11 +60,11 @@ export class AuthInterceptor implements HttpInterceptor {
                     filter((err) => err instanceof HttpErrorResponse),
                     filter((err) => err.status === 401),
                     tap((err) => alert(err)),
-                    switchMap(() =>
-                        this._refreshHttp
+                    switchMap(() => {
+                        return this._refreshHttp
                             .refresh$()
-                            .pipe(switchMap(() => next.handle(request)))
-                    )
+                            .pipe(switchMap(() => next.handle(request)));
+                    })
                 )
             )
         );

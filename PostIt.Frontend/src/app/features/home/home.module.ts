@@ -9,6 +9,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { FollowingComponent } from './posts/following/following.component';
 import { ForYouComponent } from './posts/for-you/for-you.component';
 import { PostsComponent } from './posts/posts.component';
+import { CreatePostComponent } from './create-post.component';
 
 @NgModule({
     declarations: [
@@ -17,6 +18,7 @@ import { PostsComponent } from './posts/posts.component';
         PostsComponent,
         ForYouComponent,
         FollowingComponent,
+        CreatePostComponent
     ],
     imports: [CommonModule, HttpClientModule, HomeRoutingModule, SharedModule],
     exports: [HomeRoutingModule],

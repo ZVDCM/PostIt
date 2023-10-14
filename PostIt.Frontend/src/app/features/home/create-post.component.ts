@@ -1,8 +1,8 @@
 import {
     ChangeDetectionStrategy,
     Component,
-    EventEmitter,
-    Output,
+    ElementRef,
+    ViewChild,
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
@@ -14,6 +14,8 @@ import { HomeConstantsService } from '../../shared/constants/home-constants.serv
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { IImage, IPost } from './create-post.model';
+import { CreatePostHttpService } from './create-post-http.service';
 
 @Component({
     selector: 'app-create-post',
@@ -38,13 +40,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
         </section>
         <ng-container *ngIf="user$ | async as user">
             <p-dialog
-                *ngIf="showModal"
+                *ngIf="showModal; else hideModal"
                 [(visible)]="showModal"
                 [modal]="true"
                 [resizable]="false"
                 [draggable]="false"
                 [closeOnEscape]="false"
-                (onHide)="showModal = false"
                 header="Create Post"
                 styleClass="w-full max-w-lg"
             >
@@ -60,24 +61,24 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
                             {{ user.username }}
                         </h1>
                     </header>
-                    <form method="POST" [formGroup]="formHelper.formGroup">
+                    <form
+                        method="POST"
+                        [formGroup]="formHelper.formGroup"
+                        (submit)="onSubmit()"
+                    >
                         <div>
                             <textarea
                                 [id]="bodyField.id"
-                                [attr.aria-describedby]="
-                                    bodyField.id + '-help'
-                                "
-                                [autoResize]="true"
+                                [attr.aria-describedby]="bodyField.id + '-help'"
                                 [formControlName]="bodyField.name"
+                                rows="4"
                                 (blur)="
                                     formHelper
                                         .getFormControl(bodyField.name)!
                                         .markAsDirty()
                                 "
-                                class="w-full"
+                                class="w-full resize-none"
                                 style="font-size: x-large;"
-                                rows="3"
-                                cols="30"
                                 placeholder="Got something on your mind? Post It!"
                                 pInputTextarea
                             ></textarea>
@@ -97,10 +98,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
                             [formControlName]="bodyField.name"
                             type="text"
                             class="hidden"
-                            #postImage
                         />
                         <p-divider></p-divider>
-                        <div class="flex justify-between items-center">
+                        <div
+                            *ngIf="!image; else imageItem"
+                            class="flex justify-between items-center"
+                        >
                             <span>Add to your post</span>
                             <p-fileUpload
                                 [showUploadButton]="false"
@@ -114,6 +117,34 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
                             >
                             </p-fileUpload>
                         </div>
+                        <ng-template #imageItem>
+                            <div
+                                class="max-h-[5rem] flex justify-between items-center rounded-md border border-[var(--surface-border)]"
+                            >
+                                <figure
+                                    class="max-h-[5rem] w-[150px] overflow-hidden rounded-l-md"
+                                >
+                                    <img
+                                        width="100%"
+                                        height="100%"
+                                        class="object-cover"
+                                        [src]="image?.url"
+                                        [alt]="image?.name"
+                                    />
+                                </figure>
+                                <span
+                                    class="max-w-[150px] text-ellipsis whitespace-nowrap overflow-clip"
+                                    >{{ image?.name?.fileName }}</span
+                                >.{{ image?.name?.fileType }}
+                                <button
+                                    type="button"
+                                    icon="pi pi-times"
+                                    class="p-button-danger"
+                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0; height: 5rem"
+                                    pButton
+                                ></button>
+                            </div>
+                        </ng-template>
                         <div class="flex flex-col gap-5 mt-10">
                             <p-button
                                 [loading]="loading.isLoading"
@@ -130,7 +161,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
                             ></p-button>
                             <ng-template #cancel>
                                 <p-button
-                                    (click)="postsHttp.cancelRequest()"
+                                    (click)="createPostHttp.cancelRequest()"
                                     type="button"
                                     styleClass="w-full p-button-outlined p-button-danger"
                                     label="Cancel"
@@ -140,7 +171,11 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
                     </form>
                 </div>
             </p-dialog>
+            <ng-template #hideModal>
+                {{ onModalHide() }}
+            </ng-template>
         </ng-container>
+        <ng-container *ngIf="createPost$ | async"></ng-container>
     `,
     styles: [
         `
@@ -170,10 +205,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
         `,
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [FormHelperService],
 })
 export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
+    public createPost$: Observable<void> = new Observable<void>();
     public showModal: boolean = false;
+    public image: IImage | null = null;
 
     public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
     public imageField: IFormItem = this.homeConstants.createPostForm['image'];
@@ -181,12 +219,50 @@ export class CreatePostComponent {
     constructor(
         public homeConstants: HomeConstantsService,
         public loading: LoadingService,
-        public postsHttp: PostsHttpService,
+        public createPostHttp: CreatePostHttpService,
         public formHelper: FormHelperService,
         private _store: Store
     ) {
+        this.createPost$ = createPostHttp.watchCreatePost$();
         this.user$ = this._store.select(selectUser);
-        formHelper.setFormGroup(
+        this.initCreatePostForm();
+    }
+
+    public onSelect(event: any): void {
+        const image = event.files[0];
+        const imageNameItems = image.name.split('.');
+        this.image = {
+            name: {
+                fileName: imageNameItems.shift(),
+                fileType: imageNameItems.pop(),
+            },
+            url: URL.createObjectURL(image),
+            file: image,
+        };
+        this.formHelper
+            .getFormControl(this.imageField.name)!
+            .setValue(image.name);
+    }
+
+    public onModalHide(): void {
+        this.showModal = false;
+        this.initCreatePostForm();
+    }
+
+    public onSubmit(): void {
+        if (this.formHelper.formGroup.invalid) {
+            this.formHelper.validateAllFormInputs();
+            return;
+        }
+        const post: IPost = {
+            ...this.formHelper.formGroup.value,
+            file: this.image?.file,
+        };
+        this.createPostHttp.createPost(post);
+    }
+
+    private initCreatePostForm(): void {
+        this.formHelper.setFormGroup(
             new FormGroup({
                 [this.bodyField.name]: new FormControl('', [
                     Validators.required,
@@ -194,9 +270,7 @@ export class CreatePostComponent {
                 [this.imageField.name]: new FormControl(''),
             })
         );
-    }
 
-    public onSelect(event: any): void {
-        console.log(event);
+        this.image = null;
     }
 }
