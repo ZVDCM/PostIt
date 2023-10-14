@@ -216,6 +216,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("edit/profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> EditProfileAsync(EditProfileRequest request, CancellationToken cancellationToken)
@@ -230,6 +231,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("/follow/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> FollowUserAsync(Guid userId, CancellationToken cancellationToken)
@@ -242,6 +244,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("/unfollow/{userId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UnfollowUserAsync(Guid userId, CancellationToken cancellationToken)
@@ -253,7 +256,9 @@ public sealed class AccountController : ApiController
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("posts")]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePostAsync(
@@ -271,15 +276,19 @@ public sealed class AccountController : ApiController
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("posts/{id:guid}")]
+    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdatePostAsync(Guid id, UpdatePostRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePostAsync(Guid id, UpdatePostRequest request, IFormFile file, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
         .Join(id)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
+        .Ensure(_ => file is not null, Errors.BadRequest)
+        .Join(file)
         .Map(Mapper.Map<UpdatePostCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
@@ -287,6 +296,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpDelete("posts/{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeletePostAsync(Guid id, CancellationToken cancellationToken)
@@ -300,6 +310,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("posts/{id:guid}/like")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> LikePostAsync(Guid id, CancellationToken cancellationToken)
@@ -313,6 +324,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpDelete("posts/{id:guid}/unlike")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UnlikePostAsync(Guid id, CancellationToken cancellationToken)
@@ -326,6 +338,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("posts/{id:guid}/comment")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreateCommentOnPostAsync(Guid id, CreateCommentOnPostRequest request, CancellationToken cancellationToken)
@@ -341,6 +354,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("posts/{id:guid}/comments/{commentId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> UpdateCommentOnPostAsync(Guid id, Guid commentId, UpdateCommentOnPostRequest request, CancellationToken cancellationToken)
@@ -358,6 +372,7 @@ public sealed class AccountController : ApiController
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpDelete("posts/{id:guid}/comments/{commentId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteCommentOnPostAsync(Guid id, Guid commentId, CancellationToken cancellationToken)

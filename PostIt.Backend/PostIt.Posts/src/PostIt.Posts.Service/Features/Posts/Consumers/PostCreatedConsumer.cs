@@ -17,7 +17,6 @@ public sealed class PostCreatedConsumer : IConsumer<PostCreated>
     private readonly IPostRepository _postRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
-
     private readonly IWebHostEnvironment _webHostEnvironment;
 
     public PostCreatedConsumer(IPostRepository postRepository, IUnitOfWork unitOfWork, ILogger logger, IWebHostEnvironment webHostEnvironment)

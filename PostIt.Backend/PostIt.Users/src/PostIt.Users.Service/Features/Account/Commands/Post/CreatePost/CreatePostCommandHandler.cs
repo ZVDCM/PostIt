@@ -35,7 +35,7 @@ public sealed class CreatePostCommandHandler : ICommandHandler<CreatePostCommand
         await request.File.CopyToAsync(memoryStream, cancellationToken);
         byte[] fileBytes = memoryStream.ToArray();
 
-        PostCreated postCreated = new(user.Id.Value, user.Username, request.Title, request.Image, fileBytes);
+        PostCreated postCreated = new(user.Id.Value, user.Username, request.Body, request.Image, fileBytes);
         await _publishEndpoint.Publish(postCreated, cancellationToken);
 
         return Result.Success();

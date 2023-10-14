@@ -7,7 +7,8 @@ public sealed class UpdatePostCommandValidator : AbstractValidator<UpdatePostCom
     public UpdatePostCommandValidator()
     {
         RuleFor(x => x.PostId).NotNull();
-        RuleFor(x => x.Title).NotEmpty();
+        RuleFor(x => x.Body).NotEmpty();
         RuleFor(x => x.Image).NotEmpty();
+        RuleFor(x => x.File).NotNull();
     }
 }

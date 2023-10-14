@@ -6,6 +6,6 @@ namespace PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 
 public readonly record struct CreatePostCommand(
     string AccessToken,
-    string Title,
+    string Body,
     string Image,
     IFormFile File) : ICommand<Result>;
