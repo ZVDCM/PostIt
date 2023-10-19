@@ -39,7 +39,6 @@ public sealed class GetAllPostsByUserIdQueryHandler : IQueryHandler<GetAllPostsB
             "userid" => p => p.UserId,
             "username" => p => p.Username,
             "body" => p => p.Body,
-            "image" => p => p.Image,
             "modifiedonutc" => p => p.ModifiedOnUtc,
             _ => p => p.CreatedOnUtc,
         };

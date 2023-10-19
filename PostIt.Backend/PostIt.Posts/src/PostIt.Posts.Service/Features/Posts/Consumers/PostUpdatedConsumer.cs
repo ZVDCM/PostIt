@@ -18,18 +18,15 @@ public sealed class PostUpdatedConsumer : IConsumer<PostUpdated>
     private readonly IPostRepository _postRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
-    private readonly IWebHostEnvironment _webHostEnvironment;
 
     public PostUpdatedConsumer(
         IPostRepository postRepository,
         IUnitOfWork unitOfWork,
-        ILogger logger,
-        IWebHostEnvironment webHostEnvironment)
+        ILogger logger)
     {
         _postRepository = postRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
-        _webHostEnvironment = webHostEnvironment;
     }
 
     public async Task Consume(ConsumeContext<PostUpdated> context)
@@ -44,18 +41,8 @@ public sealed class PostUpdatedConsumer : IConsumer<PostUpdated>
                 return;
             };
 
-            post.Update(message.Body, message.Image);
-            bool isSuccessful = await _unitOfWork.SaveChangesAsync(CancellationToken.None);
-            if (isSuccessful)
-            {
-                string filePath = Path.Combine(_webHostEnvironment.WebRootPath, message.Image);
-                if (File.Exists(filePath)) return;
-                await File.WriteAllBytesAsync(filePath, message.FileBytes);
-            }
-            else
-            {
-                _logger.Error(PostErrors.PostNotCreated);
-            }
+            post.Update(message.Body);
+            await _unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception exception)
         {

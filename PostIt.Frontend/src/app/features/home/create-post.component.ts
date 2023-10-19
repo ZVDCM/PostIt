@@ -14,7 +14,7 @@ import { HomeConstantsService } from '../../shared/constants/home-constants.serv
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IImage, IPost } from './create-post.model';
+import { IPost } from './create-post.model';
 import { CreatePostHttpService } from './create-post-http.service';
 
 @Component({
@@ -99,52 +99,6 @@ import { CreatePostHttpService } from './create-post-http.service';
                             type="text"
                             class="hidden"
                         />
-                        <p-divider></p-divider>
-                        <div
-                            *ngIf="!image; else imageItem"
-                            class="flex justify-between items-center"
-                        >
-                            <span>Add to your post</span>
-                            <p-fileUpload
-                                [showUploadButton]="false"
-                                [showCancelButton]="false"
-                                [maxFileSize]="1000000"
-                                (onSelect)="onSelect($event)"
-                                method="post"
-                                accept="image/*"
-                                chooseIcon="pi pi-image"
-                                chooseStyleClass="p-button-rounded p-button-secondary p-button-outlined"
-                            >
-                            </p-fileUpload>
-                        </div>
-                        <ng-template #imageItem>
-                            <div
-                                class="max-h-[5rem] flex justify-between items-center rounded-md border border-[var(--surface-border)]"
-                            >
-                                <figure
-                                    class="max-h-[5rem] w-[150px] overflow-hidden rounded-l-md"
-                                >
-                                    <img
-                                        width="100%"
-                                        height="100%"
-                                        class="object-cover"
-                                        [src]="image?.url"
-                                        [alt]="image?.name"
-                                    />
-                                </figure>
-                                <span
-                                    class="max-w-[150px] text-ellipsis whitespace-nowrap overflow-clip"
-                                    >{{ image?.name?.fileName }}</span
-                                >.{{ image?.name?.fileType }}
-                                <button
-                                    type="button"
-                                    icon="pi pi-times"
-                                    class="p-button-danger"
-                                    style="border-top-left-radius: 0; border-bottom-left-radius: 0; height: 5rem"
-                                    pButton
-                                ></button>
-                            </div>
-                        </ng-template>
                         <div class="flex flex-col gap-5 mt-10">
                             <p-button
                                 [loading]="loading.isLoading"
@@ -211,10 +165,8 @@ export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
     public createPost$: Observable<void> = new Observable<void>();
     public showModal: boolean = false;
-    public image: IImage | null = null;
 
     public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
-    public imageField: IFormItem = this.homeConstants.createPostForm['image'];
 
     constructor(
         public homeConstants: HomeConstantsService,
@@ -228,22 +180,6 @@ export class CreatePostComponent {
         this.initCreatePostForm();
     }
 
-    public onSelect(event: any): void {
-        const image = event.files[0];
-        const imageNameItems = image.name.split('.');
-        this.image = {
-            name: {
-                fileName: imageNameItems.shift(),
-                fileType: imageNameItems.pop(),
-            },
-            url: URL.createObjectURL(image),
-            file: image,
-        };
-        this.formHelper
-            .getFormControl(this.imageField.name)!
-            .setValue(image.name);
-    }
-
     public onModalHide(): void {
         this.showModal = false;
         this.initCreatePostForm();
@@ -254,11 +190,7 @@ export class CreatePostComponent {
             this.formHelper.validateAllFormInputs();
             return;
         }
-        const post: IPost = {
-            ...this.formHelper.formGroup.value,
-            file: this.image?.file,
-        };
-        this.createPostHttp.createPost(post);
+        this.createPostHttp.createPost(this.formHelper.formGroup.value);
     }
 
     private initCreatePostForm(): void {
@@ -267,10 +199,7 @@ export class CreatePostComponent {
                 [this.bodyField.name]: new FormControl('', [
                     Validators.required,
                 ]),
-                [this.imageField.name]: new FormControl(''),
             })
         );
-
-        this.image = null;
     }
 }

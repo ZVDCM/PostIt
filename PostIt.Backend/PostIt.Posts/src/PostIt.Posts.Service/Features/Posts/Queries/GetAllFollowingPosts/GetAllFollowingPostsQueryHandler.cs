@@ -48,7 +48,6 @@ public sealed class GetAllFollowingPostsQueryHandler : IQueryHandler<GetAllFollo
             "userid" => p => p.UserId,
             "username" => p => p.Username,
             "body" => p => p.Body,
-            "image" => p => p.Image,
             "modifiedonutc" => p => p.ModifiedOnUtc,
             _ => p => p.CreatedOnUtc,
         };

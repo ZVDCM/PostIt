@@ -69,11 +69,5 @@ export class HomeConstantsService {
             label: 'Body',
             hint: 'Body must not be empty',
         },
-        image: {
-            id: 'txt-post-image',
-            name: 'image',
-            label: 'Image',
-            hint: null,
-        },
     };
 }

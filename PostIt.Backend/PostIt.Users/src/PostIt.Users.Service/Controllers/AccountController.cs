@@ -256,39 +256,32 @@ public sealed class AccountController : ApiController
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("posts")]
-    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePostAsync(
         CreatePostRequest request,
-        IFormFile file,
         CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Ensure(_ => file is not null, Errors.BadRequest)
-        .Join(file)
         .Map(Mapper.Map<CreatePostCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPut("posts/{id:guid}")]
-    [Consumes("multipart/form-data")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdatePostAsync(Guid id, UpdatePostRequest request, IFormFile file, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdatePostAsync(Guid id, UpdatePostRequest request, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
         .Join(id)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Ensure(_ => file is not null, Errors.BadRequest)
-        .Join(file)
         .Map(Mapper.Map<UpdatePostCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);

@@ -1,4 +1,3 @@
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
@@ -31,11 +30,7 @@ public sealed class CreatePostCommandHandler : ICommandHandler<CreatePostCommand
 
         if (!user.EmailVerified) return Result.Failure(UserErrors.UserNotVerified);
 
-        using var memoryStream = new MemoryStream();
-        await request.File.CopyToAsync(memoryStream, cancellationToken);
-        byte[] fileBytes = memoryStream.ToArray();
-
-        PostCreated postCreated = new(user.Id.Value, user.Username, request.Body, request.Image, fileBytes);
+        PostCreated postCreated = new(user.Id.Value, user.Username, request.Body);
         await _publishEndpoint.Publish(postCreated, cancellationToken);
 
         return Result.Success();

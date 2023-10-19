@@ -7,7 +7,5 @@ public sealed class CreatePostCommandValidator : AbstractValidator<CreatePostCom
     public CreatePostCommandValidator()
     {
         RuleFor(x => x.Body).NotEmpty();
-        RuleFor(x => x.Image).NotEmpty();
-        RuleFor(x => x.File).NotNull();
     }
 }

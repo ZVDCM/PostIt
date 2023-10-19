@@ -5,7 +5,6 @@
 
 **/appsettings.Production.json
 
-Migrations*/
 
 # User-specific files
 *.rsuser

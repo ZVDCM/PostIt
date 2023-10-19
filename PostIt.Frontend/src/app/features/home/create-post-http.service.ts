@@ -130,15 +130,6 @@ export class CreatePostHttpService {
     }
 
     private createPostUser(post: IPost): Observable<void> {
-        const formData: FormData = new FormData();
-        formData.append('file', post.file);
-        const {file, ...newObject} = post;
-        formData.append('data', JSON.stringify(newObject));
-        
-        return this._httpClient.post<void>(this._url, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        return this._httpClient.post<void>(this._url, post);
     }
 }

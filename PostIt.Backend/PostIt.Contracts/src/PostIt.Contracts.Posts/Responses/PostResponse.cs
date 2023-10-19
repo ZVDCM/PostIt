@@ -8,7 +8,6 @@ public sealed record PostResponse(
     Guid UserId,
     string Username,
     string Body,
-    string Image,
     DateTime CreatedOnUtc,
     DateTime ModifiedOnUtc,
     int LikesCount,

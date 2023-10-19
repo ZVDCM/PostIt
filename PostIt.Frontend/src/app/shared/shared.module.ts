@@ -12,7 +12,6 @@ import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DividerModule } from 'primeng/divider';
-import { FileUploadModule } from 'primeng/fileupload';
 
 import { LoadingComponent } from './components/loading.component';
 import { FooterComponent } from './components/footer.component';
@@ -47,7 +46,6 @@ import { FollowItemComponent } from './components/follow-item.component';
         TooltipModule,
         InputTextareaModule,
         DividerModule,
-        FileUploadModule,
     ],
     exports: [
         LoadingComponent,
@@ -70,7 +68,6 @@ import { FollowItemComponent } from './components/follow-item.component';
         TooltipModule,
         InputTextareaModule,
         DividerModule,
-        FileUploadModule,
     ],
 })
 export class SharedModule {}

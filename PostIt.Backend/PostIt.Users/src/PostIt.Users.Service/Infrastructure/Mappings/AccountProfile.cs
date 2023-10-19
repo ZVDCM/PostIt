@@ -150,18 +150,15 @@ public sealed class AccountProfile : Profile
 
     private void AddPostsMappings()
     {
-        CreateMap<Result<Tuple<string, CreatePostRequest, IFormFile>>, CreatePostCommand>()
+        CreateMap<Result<Tuple<string, CreatePostRequest>>, CreatePostCommand>()
            .ConvertUsing(r => new CreatePostCommand(
                r.Value!.Item1,
-               r.Value.Item2.Body,
-               r.Value.Item2.Image,
-               r.Value.Item3));
+               r.Value.Item2.Body));
         CreateMap<Result<Tuple<string, Guid, UpdatePostRequest>>, UpdatePostCommand>()
             .ConvertUsing(r => new UpdatePostCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2),
-                r.Value.Item3.Body,
-                r.Value.Item3.Image));
+                r.Value.Item3.Body));
         CreateMap<Result<Tuple<string, Guid>>, DeletePostCommand>()
             .ConvertUsing(r => new DeletePostCommand(
                 r.Value!.Item1,
