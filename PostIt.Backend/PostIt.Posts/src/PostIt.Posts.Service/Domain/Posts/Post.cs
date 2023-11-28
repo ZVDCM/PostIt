@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using PostIt.Common.Identifiers;
 using PostIt.Common.Primitives;
-using PostIt.Posts.Service.Domain.Comments;
 using PostIt.Posts.Service.Domain.Likes;
 
 namespace PostIt.Posts.Service.Domain.Posts;
@@ -14,7 +13,6 @@ public sealed class Post : Entity, IAuditable
     public string Username { get; private set; } = string.Empty;
     public string Body { get; private set; } = string.Empty;
     public ICollection<Like> Likes { get; private set; } = new List<Like>();
-    public ICollection<Comment> Comments { get; private set; } = new List<Comment>();
     public DateTime CreatedOnUtc { get; init; }
     public DateTime ModifiedOnUtc { get; init; }
 

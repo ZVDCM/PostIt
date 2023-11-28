@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PostIt.Common.Constants;
 using PostIt.Common.Primitives.Results;
-using PostIt.Contracts.Posts.Requests.Comments;
 using PostIt.Contracts.Posts.Requests.Posts;
 using PostIt.Contracts.Users.Requests.Account;
 using PostIt.Contracts.Users.Requests.Account.ForgotPassword;
@@ -18,16 +17,10 @@ using PostIt.Users.Service.Attributes;
 using PostIt.Users.Service.Domain.Roles;
 using PostIt.Users.Service.Domain.Tokens;
 using PostIt.Users.Service.Domain.Users;
-using PostIt.Users.Service.Features.Account.Commands.Comment.CreateCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Comment.DeleteCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Comment.UpdateCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Follow.FollowUser;
-using PostIt.Users.Service.Features.Account.Commands.Follow.UnfollowUser;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
-using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
-using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
+using PostIt.Users.Service.Features.Account.Commands.Like.LikeToggle;
 using PostIt.Users.Service.Features.Account.Commands.Login;
 using PostIt.Users.Service.Features.Account.Commands.Logout;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
@@ -229,32 +222,6 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("/follow/{userId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> FollowUserAsync(Guid userId, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => userId != Guid.Empty, Errors.BadRequest)
-        .Map(Mapper.Map<FollowUserCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(Ok, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("/unfollow/{userId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UnfollowUserAsync(Guid userId, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => userId != Guid.Empty, Errors.BadRequest)
-        .Map(Mapper.Map<UnfollowUserCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(NoContent, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpPost("posts")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -301,80 +268,16 @@ public sealed class AccountController : ApiController
         .Match(NoContent, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("posts/{id:guid}/like")]
+    [HttpPost("posts/{id:guid}/togglelike")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> LikePostAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> ToggleLikeAsync(Guid id, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
         .Join(id)
-        .Map(Mapper.Map<LikePostCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(NoContent, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpDelete("posts/{id:guid}/unlike")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UnlikePostAsync(Guid id, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
-        .Join(id)
-        .Map(Mapper.Map<UnlikePostCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(NoContent, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("posts/{id:guid}/comment")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> CreateCommentOnPostAsync(Guid id, CreateCommentOnPostRequest request, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
-        .Join(id)
-        .Ensure(_ => request is not null, Errors.BadRequest)
-        .Join(request)
-        .Map(Mapper.Map<CreateCommentOnPostCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(NoContent, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("posts/{id:guid}/comments/{commentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> UpdateCommentOnPostAsync(Guid id, Guid commentId, UpdateCommentOnPostRequest request, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
-        .Join(id)
-        .Ensure(_ => commentId != Guid.Empty, Errors.BadRequest)
-        .Join(commentId)
-        .Ensure(_ => request is not null, Errors.BadRequest)
-        .Join(request)
-        .Map(Mapper.Map<UpdateCommentOnPostCommand>)
-        .Bind(command => Sender.Send(command, cancellationToken))
-        .Match(NoContent, HandleFailure);
-
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpDelete("posts/{id:guid}/comments/{commentId:guid}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> DeleteCommentOnPostAsync(Guid id, Guid commentId, CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
-        .Join(id)
-        .Ensure(_ => commentId != Guid.Empty, Errors.BadRequest)
-        .Join(commentId)
-        .Map(Mapper.Map<DeleteCommentOnPostCommand>)
+        .Map(Mapper.Map<LikeToggleCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
 

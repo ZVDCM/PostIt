@@ -21,7 +21,7 @@ public sealed class UserProfile : Profile
     public UserProfile()
     {
         CreateMap<Result<CreateUserRequest>, CreateUserCommand>()
-            .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value!.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value!.Password, HashType.SHA512, 13))));
+            .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value!.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value!.Password, HashType.SHA512, 13), null)));
         CreateMap<Result<Guid>, GetUserByIdQuery>()
             .ConvertUsing(r => new GetUserByIdQuery(new UserId(r.Value!)));
         CreateMap<Result<Tuple<Guid, UpdateUserRequest>>, UpdateUserCommand>()

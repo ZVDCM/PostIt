@@ -12,8 +12,8 @@ using PostIt.Posts.Service.Infrastructure.Persistence;
 namespace PostIt.Posts.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231017111735_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20231128065332_InitialMigrations")]
+    partial class InitialMigrations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,38 +24,6 @@ namespace PostIt.Posts.Service.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("PostIt.Posts.Service.Domain.Comments.Comment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ModifiedOnUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("PostId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("Comments");
-                });
 
             modelBuilder.Entity("PostIt.Posts.Service.Domain.Likes.Like", b =>
                 {
@@ -112,17 +80,6 @@ namespace PostIt.Posts.Service.Infrastructure.Persistence.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("PostIt.Posts.Service.Domain.Comments.Comment", b =>
-                {
-                    b.HasOne("PostIt.Posts.Service.Domain.Posts.Post", "Post")
-                        .WithMany("Comments")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("PostIt.Posts.Service.Domain.Likes.Like", b =>
                 {
                     b.HasOne("PostIt.Posts.Service.Domain.Posts.Post", "Post")
@@ -136,8 +93,6 @@ namespace PostIt.Posts.Service.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("PostIt.Posts.Service.Domain.Posts.Post", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618

@@ -2,10 +2,8 @@ using System;
 using System.Linq;
 using AutoMapper;
 using BCrypt.Net;
-using Microsoft.AspNetCore.Http;
 using PostIt.Common.Identifiers;
 using PostIt.Common.Primitives.Results;
-using PostIt.Contracts.Posts.Requests.Comments;
 using PostIt.Contracts.Posts.Requests.Posts;
 using PostIt.Contracts.Users.Requests.Account;
 using PostIt.Contracts.Users.Requests.Account.ForgotPassword;
@@ -13,16 +11,10 @@ using PostIt.Contracts.Users.Requests.Account.Verification;
 using PostIt.Contracts.Users.Responses;
 using PostIt.Users.Service.Domain.Tokens;
 using PostIt.Users.Service.Domain.Users;
-using PostIt.Users.Service.Features.Account.Commands.Comment.CreateCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Comment.DeleteCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Comment.UpdateCommentOnPost;
-using PostIt.Users.Service.Features.Account.Commands.Follow.FollowUser;
-using PostIt.Users.Service.Features.Account.Commands.Follow.UnfollowUser;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
-using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
-using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
+using PostIt.Users.Service.Features.Account.Commands.Like.LikeToggle;
 using PostIt.Users.Service.Features.Account.Commands.Login;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.DeletePost;
@@ -63,14 +55,6 @@ public sealed class AccountProfile : Profile
                     r.Value!.Item1.Email,
                     r.Value!.Item1.EmailVerified,
                     r.Value!.Item1.Role.Value,
-                    r.Value!.Item1.Followings.Select(f =>
-                        new FollowResponse(
-                            f.FollowUserId.Value,
-                            f.FollowUsername)),
-                    r.Value!.Item1.Followers.Select(f =>
-                        new FollowResponse(
-                            f.FollowUserId.Value,
-                            f.FollowUsername)),
                     r.Value!.Item1.CreatedOnUtc)));
         CreateMap<Result<string>, RefreshCommand>()
             .ConvertUsing(r => new RefreshCommand(r.Value!));
@@ -82,17 +66,9 @@ public sealed class AccountProfile : Profile
                     r.Value!.Item1.Email,
                     r.Value!.Item1.EmailVerified,
                     r.Value!.Item1.Role.Value,
-                    r.Value!.Item1.Followings.Select(f =>
-                        new FollowResponse(
-                            f.FollowUserId.Value,
-                            f.FollowUsername)),
-                    r.Value!.Item1.Followers.Select(f =>
-                        new FollowResponse(
-                            f.FollowUserId.Value,
-                            f.FollowUsername)),
                     r.Value!.Item1.CreatedOnUtc)));
         CreateMap<Result<RegisterRequest>, CreateUserCommand>()
-           .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Password, HashType.SHA512, 13))));
+           .ConvertUsing(r => new CreateUserCommand(User.Create(r.Value!.Username, r.Value.Email, BCrypt.Net.BCrypt.EnhancedHashPassword(r.Value.Password, HashType.SHA512, 13), null)));
     }
 
     private void AddProfileMappings()
@@ -103,14 +79,6 @@ public sealed class AccountProfile : Profile
                 r.Value!.Email,
                 r.Value!.EmailVerified,
                 r.Value!.Role.Value,
-                r.Value!.Followings.Select(f =>
-                    new FollowResponse(
-                        f.FollowUserId.Value,
-                        f.FollowUsername)),
-                r.Value!.Followers.Select(f =>
-                    new FollowResponse(
-                        f.FollowUserId.Value,
-                        f.FollowUsername)),
                 r.Value!.CreatedOnUtc));
         CreateMap<Result<Tuple<string, EditProfileRequest>>, EditProfileCommand>()
             .ConvertUsing(r => new EditProfileCommand(r.Value!.Item1, r.Value.Item2.Username, r.Value.Item2.Email));
@@ -120,10 +88,6 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new GetProfileQuery(r.Value!));
         CreateMap<Result<string>, GetUserProfileQuery>()
             .ConvertUsing(r => new GetUserProfileQuery(r.Value!));
-        CreateMap<Result<Tuple<string, Guid>>, FollowUserCommand>()
-            .ConvertUsing(r => new FollowUserCommand(r.Value!.Item1, new UserId(r.Value.Item2)));
-        CreateMap<Result<Tuple<string, Guid>>, UnfollowUserCommand>()
-            .ConvertUsing(r => new UnfollowUserCommand(r.Value!.Item1, new UserId(r.Value.Item2)));
     }
 
     private void AddVerificationMappings()
@@ -163,29 +127,9 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new DeletePostCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2)));
-        CreateMap<Result<Tuple<string, Guid>>, LikePostCommand>()
-            .ConvertUsing(r => new LikePostCommand(
+        CreateMap<Result<Tuple<string, Guid>>, LikeToggleCommand>()
+            .ConvertUsing(r => new LikeToggleCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2)));
-        CreateMap<Result<Tuple<string, Guid>>, UnlikePostCommand>()
-            .ConvertUsing(r => new UnlikePostCommand(
-                r.Value!.Item1,
-                new PostId(r.Value.Item2)));
-        CreateMap<Result<Tuple<string, Guid, CreateCommentOnPostRequest>>, CreateCommentOnPostCommand>()
-            .ConvertUsing(r => new CreateCommentOnPostCommand(
-                r.Value!.Item1,
-                new PostId(r.Value!.Item2),
-                r.Value!.Item3.Comment));
-        CreateMap<Result<Tuple<string, Guid, Guid, UpdateCommentOnPostRequest>>, UpdateCommentOnPostCommand>()
-            .ConvertUsing(r => new UpdateCommentOnPostCommand(
-                r.Value!.Item1,
-                new PostId(r.Value!.Item2),
-                new CommentId(r.Value!.Item3),
-                r.Value!.Item4.Comment));
-        CreateMap<Result<Tuple<string, Guid, Guid>>, DeleteCommentOnPostCommand>()
-            .ConvertUsing(r => new DeleteCommentOnPostCommand(
-                r.Value!.Item1,
-                new PostId(r.Value!.Item2),
-                new CommentId(r.Value!.Item3)));
     }
 }

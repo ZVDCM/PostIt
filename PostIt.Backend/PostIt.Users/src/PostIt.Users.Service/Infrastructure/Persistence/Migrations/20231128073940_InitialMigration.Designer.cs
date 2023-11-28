@@ -12,7 +12,7 @@ using PostIt.Users.Service.Infrastructure.Persistence;
 namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231017111547_InitialMigration")]
+    [Migration("20231128073940_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -47,14 +47,14 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("836c6b23-6abc-4e10-bb9d-fc37cfcc8a71"),
+                            Id = new Guid("760ba719-fb6b-46fe-9920-b2ce201a4ca4"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "User"
                         },
                         new
                         {
-                            Id = new Guid("53201951-b216-45ce-81eb-7b49185602a2"),
+                            Id = new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "Admin"
@@ -99,13 +99,13 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ae4d03f7-ed9e-4c44-8cc1-1548e608d08b"),
-                            CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Id = new Guid("d76abc49-38cc-4493-90df-cf23560b77e5"),
+                            CreatedOnUtc = new DateTime(2023, 11, 28, 7, 39, 40, 681, DateTimeKind.Utc).AddTicks(664),
                             Email = "juandelacruz@gmail.com",
                             EmailVerified = true,
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "$2a$13$3GgQx5hM8kw7rdcoWc4ZM.Ar1919qR70CTlghiRUh8p/yz.hRcmwO",
-                            RoleId = new Guid("53201951-b216-45ce-81eb-7b49185602a2"),
+                            Password = "$2a$13$11yRBHkPVpZrgaXBHsuTjOd4yHVEEo2.bRUc0YqJWRwNIoNkCQwJW",
+                            RoleId = new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"),
                             Username = "JuanDelaCruz"
                         });
                 });
@@ -117,58 +117,6 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.OwnsMany("PostIt.Users.Service.Domain.Users.Follow", "Followers", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("FollowUserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("FollowUsername")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("UserId", "Id");
-
-                            b1.ToTable("Users_Followers");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
-
-                    b.OwnsMany("PostIt.Users.Service.Domain.Users.Follow", "Followings", b1 =>
-                        {
-                            b1.Property<Guid>("UserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int");
-
-                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
-
-                            b1.Property<Guid>("FollowUserId")
-                                .HasColumnType("uniqueidentifier");
-
-                            b1.Property<string>("FollowUsername")
-                                .IsRequired()
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("UserId", "Id");
-
-                            b1.ToTable("Users_Followings");
-
-                            b1.WithOwner()
-                                .HasForeignKey("UserId");
-                        });
 
                     b.OwnsMany("PostIt.Users.Service.Domain.Tokens.Token", "ForgotPasswordTokens", b1 =>
                         {
@@ -265,10 +213,6 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("UserId");
                         });
-
-                    b.Navigation("Followers");
-
-                    b.Navigation("Followings");
 
                     b.Navigation("ForgotPasswordTokens");
 

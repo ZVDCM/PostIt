@@ -8,6 +8,4 @@ public sealed record ProfileResponse(
     string Email,
     bool IsVerified,
     string Role,
-    IEnumerable<FollowResponse> Followings,
-    IEnumerable<FollowResponse> Followers,
     DateTime CreatedOnUtc);

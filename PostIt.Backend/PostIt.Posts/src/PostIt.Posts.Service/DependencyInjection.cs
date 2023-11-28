@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PostIt.Common;
 using PostIt.Common.Options.AllowedHosts;
-using PostIt.Posts.Service.Domain.Comments;
 using PostIt.Posts.Service.Domain.Likes;
 using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Infrastructure.Client;
@@ -49,7 +48,6 @@ public static class DependencyInjection
     {
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ILikeRepository, LikeRepository>();
-        services.AddScoped<ICommentRepository, CommentRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IUsersClient, UsersClient>();
         return services;

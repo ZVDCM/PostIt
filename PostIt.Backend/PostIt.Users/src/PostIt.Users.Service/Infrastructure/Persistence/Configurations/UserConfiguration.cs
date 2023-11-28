@@ -42,22 +42,6 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
                 v => new UserId(v));
         });
 
-        builder.OwnsMany(u => u.Followings, fb =>
-        {
-            fb.WithOwner().HasForeignKey(f => f.UserId);
-            fb.Property(f => f.FollowUserId).HasConversion(
-                u => u.Value,
-                v => new UserId(v));
-        });
-
-        builder.OwnsMany(u => u.Followers, fb =>
-        {
-            fb.WithOwner().HasForeignKey(f => f.UserId);
-            fb.Property(f => f.FollowUserId).HasConversion(
-               u => u.Value,
-               v => new UserId(v));
-        });
-
         var refreshTokenNavigation = builder.Metadata.FindNavigation(nameof(User.RefreshTokens));
         refreshTokenNavigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
 
@@ -66,11 +50,5 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
 
         var verificationTokenNavigation = builder.Metadata.FindNavigation(nameof(User.VerificationTokens));
         verificationTokenNavigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
-
-        var followingsNavigation = builder.Metadata.FindNavigation(nameof(User.Followings));
-        followingsNavigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
-
-        var followersNavigation = builder.Metadata.FindNavigation(nameof(User.Followers));
-        followersNavigation?.SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

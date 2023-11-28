@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using PostIt.Common.Primitives;
-using PostIt.Posts.Service.Domain.Comments;
 using PostIt.Posts.Service.Domain.Likes;
 using PostIt.Posts.Service.Domain.Posts;
 
@@ -18,7 +17,6 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<Post> Posts { get; set; } = null!;
     public DbSet<Like> Likes { get; set; } = null!;
-    public DbSet<Comment> Comments { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -10,5 +10,4 @@ public sealed record PostResponse(
     string Body,
     DateTime CreatedOnUtc,
     DateTime ModifiedOnUtc,
-    int LikesCount,
-    int CommentsCount);
+    int LikesCount);

@@ -52,48 +52,6 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users_Followers",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FollowUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowUsername = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users_Followers", x => new { x.UserId, x.Id });
-                    table.ForeignKey(
-                        name: "FK_Users_Followers_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Users_Followings",
-                columns: table => new
-                {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FollowUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    FollowUsername = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users_Followings", x => new { x.UserId, x.Id });
-                    table.ForeignKey(
-                        name: "FK_Users_Followings_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Users_ForgotPasswordTokens",
                 columns: table => new
                 {
@@ -167,14 +125,14 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "CreatedOnUtc", "ModifiedOnUtc", "Value" },
                 values: new object[,]
                 {
-                    { new Guid("53201951-b216-45ce-81eb-7b49185602a2"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" },
-                    { new Guid("836c6b23-6abc-4e10-bb9d-fc37cfcc8a71"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" }
+                    { new Guid("760ba719-fb6b-46fe-9920-b2ce201a4ca4"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" },
+                    { new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedOnUtc", "Email", "EmailVerified", "ModifiedOnUtc", "Password", "RoleId", "Username" },
-                values: new object[] { new Guid("ae4d03f7-ed9e-4c44-8cc1-1548e608d08b"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$3GgQx5hM8kw7rdcoWc4ZM.Ar1919qR70CTlghiRUh8p/yz.hRcmwO", new Guid("53201951-b216-45ce-81eb-7b49185602a2"), "JuanDelaCruz" });
+                values: new object[] { new Guid("d76abc49-38cc-4493-90df-cf23560b77e5"), new DateTime(2023, 11, 28, 7, 39, 40, 681, DateTimeKind.Utc).AddTicks(664), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$11yRBHkPVpZrgaXBHsuTjOd4yHVEEo2.bRUc0YqJWRwNIoNkCQwJW", new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"), "JuanDelaCruz" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -185,12 +143,6 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Users_Followers");
-
-            migrationBuilder.DropTable(
-                name: "Users_Followings");
-
             migrationBuilder.DropTable(
                 name: "Users_ForgotPasswordTokens");
 

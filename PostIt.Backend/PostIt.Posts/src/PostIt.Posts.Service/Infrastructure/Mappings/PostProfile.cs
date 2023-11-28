@@ -28,8 +28,7 @@ public sealed class PostProfile : Profile
                     p.Body,
                     p.CreatedOnUtc,
                     p.ModifiedOnUtc,
-                    p.Likes.Count,
-                    p.Comments.Count))));
+                    p.Likes.Count))));
         CreateMap<Result<Post>, PostResponse>()
             .ConvertUsing(r => new PostResponse(
                 r.Value!.Id.Value,
@@ -38,8 +37,6 @@ public sealed class PostProfile : Profile
                 r.Value!.Body,
                 r.Value!.CreatedOnUtc,
                 r.Value!.ModifiedOnUtc,
-                r.Value!.Likes.Count,
-                r.Value!.Comments.Count
-              ));
+                r.Value!.Likes.Count));
     }
 }

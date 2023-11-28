@@ -40,7 +40,8 @@ public static class PrepDb
         User user = User.Create(
             "JuanDelaCruz",
             "juandelacruz@gmail.com",
-            BCrypt.Net.BCrypt.EnhancedHashPassword("TestTest!23", HashType.SHA512, 13));
+            BCrypt.Net.BCrypt.EnhancedHashPassword("TestTest!23", HashType.SHA512, 13),
+            DateTime.UtcNow);
         user.UpdateRole(adminRole);
         user.VerifyEmail();
 

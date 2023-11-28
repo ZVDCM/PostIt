@@ -14,10 +14,6 @@ public sealed class User : Entity, IAggregate, IAuditable
     public string Username { get; private set; } = string.Empty;
     public string Email { get; private set; } = string.Empty;
     public string Password { get; private set; } = string.Empty;
-    private readonly List<Follow> _followings = new();
-    public IReadOnlyList<Follow> Followings => _followings;
-    private readonly List<Follow> _followers = new();
-    public IReadOnlyList<Follow> Followers => _followers;
     private readonly List<Token> _refreshTokens = new();
     public IReadOnlyList<Token> RefreshTokens => _refreshTokens;
     private readonly List<Token> _forgotPasswordTokens = new();
@@ -34,20 +30,27 @@ public sealed class User : Entity, IAggregate, IAuditable
         UserId id,
         string username,
         string email,
-        string password)
+        string password,
+        DateTime? dateTime = null)
     {
         Id = id;
         Username = username;
         Email = email;
         Password = password;
+
+        if (dateTime is not null)
+        {
+            CreatedOnUtc = dateTime.Value;
+        }
     }
 
-    public static User Create(string username, string email, string password)
+    public static User Create(string username, string email, string password, DateTime? createdOnUtc = null)
         => new(
             new UserId(Guid.NewGuid()),
             username,
             email,
-            password);
+            password,
+            createdOnUtc);
 
     public void Update(string username, string email, string password)
     {
@@ -55,12 +58,12 @@ public sealed class User : Entity, IAggregate, IAuditable
         Email = email;
         Password = password;
     }
-    
+
     public void EditProfile(string username, string email)
     {
         Username = username;
         Email = email;
-        
+
     }
 
     public void ChangePassword(string password)
@@ -98,32 +101,6 @@ public sealed class User : Entity, IAggregate, IAuditable
 
     public void UnverifyEmail()
         => EmailVerified = false;
-
-    public void FollowUser(User user)
-        => _followings.Add(Follow.Create(Id, user.Id, user.Username));
-
-    public void UnfollowUser(User user)
-    {
-        Follow? follow = GetFollowing(user.Id);
-        if (follow is null) return;
-        _followings.Remove(follow);
-    }
-
-    public Follow? GetFollowing(UserId userId)
-        => _followings.SingleOrDefault(f => f.UserId == userId);
-
-    public void UserFollowed(User user)
-        => _followers.Add(Follow.Create(Id, user.Id, user.Username));
-
-    public void UserUnfollowed(User user)
-    {
-        Follow? follow = GetFollower(user.Id);
-        if (follow is null) return;
-        _followers.Remove(follow);
-    }
-
-    public Follow? GetFollower(UserId userId)
-        => _followers.SingleOrDefault(f => f.UserId == userId);
 
     protected override IEnumerable<object> GetEqualityComponents()
     {

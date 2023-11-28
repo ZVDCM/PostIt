@@ -11,37 +11,43 @@ using Serilog;
 
 namespace PostIt.Posts.Service.Features.Likes.Consumers;
 
-public sealed class PostUnlikedConsumer : IConsumer<PostUnliked>
+public sealed class PostToggledConsumer : IConsumer<PostToggled>
 {
     private readonly ILikeRepository _likeRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
 
-    public PostUnlikedConsumer(ILikeRepository likeRepository, IUnitOfWork unitOfWork, ILogger logger)
+    public PostToggledConsumer(
+        ILikeRepository likeRepository,
+        IUnitOfWork unitOfWork,
+        ILogger logger)
     {
         _likeRepository = likeRepository;
         _unitOfWork = unitOfWork;
         _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<PostUnliked> context)
+    public async Task Consume(ConsumeContext<PostToggled> context)
     {
-        PostUnliked message = context.Message;
+        PostToggled message = context.Message;
         try
         {
             Like? like = await _likeRepository.GetLikeAsync(p => p.PostId == new PostId(message.PostId) && p.UserId == new UserId(message.UserId), CancellationToken.None);
-            if (like is null)
+            if (like is not null)
             {
-                _logger.Error(LikeErrors.LikeNotFound);
+                _likeRepository.Delete(like);
                 return;
+            }
+            else
+            {
+                like = Like.Create(new PostId(message.PostId), new UserId(message.UserId), message.Username);
+                await _likeRepository.CreateAsync(like, CancellationToken.None);
             };
-
-            _likeRepository.Delete(like);
             await _unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception e)
         {
-            _logger.Error(e, LikeErrors.LikeNotDeleted);
+            _logger.Error(e, LikeErrors.LikeNotCreated);
         }
     }
 }
