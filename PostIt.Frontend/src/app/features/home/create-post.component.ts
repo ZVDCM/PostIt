@@ -1,21 +1,15 @@
-import {
-    ChangeDetectionStrategy,
-    Component,
-    ElementRef,
-    ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { LoadingService } from '../../shared/services/loading.service';
-import { PostsHttpService } from 'src/app/features/home/posts/posts-http.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from '../../shared/constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IPost } from './create-post.model';
 import { CreatePostHttpService } from './create-post-http.service';
+import { IPost } from './create-post.model';
 
 @Component({
     selector: 'app-create-post',
@@ -129,7 +123,9 @@ import { CreatePostHttpService } from './create-post-http.service';
                 {{ onModalHide() }}
             </ng-template>
         </ng-container>
-        <ng-container *ngIf="createPost$ | async"></ng-container>
+        <ng-container *ngIf="createPost$ | async as post"
+            >{{ addPost(post) }}
+        </ng-container>
     `,
     styles: [
         `
@@ -163,7 +159,7 @@ import { CreatePostHttpService } from './create-post-http.service';
 })
 export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
-    public createPost$: Observable<void> = new Observable<void>();
+    public createPost$: Observable<IPost> = new Observable<IPost>();
     public showModal: boolean = false;
 
     public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
@@ -191,6 +187,10 @@ export class CreatePostComponent {
             return;
         }
         this.createPostHttp.createPost(this.formHelper.formGroup.value);
+    }
+
+    public addPost(post: IPost): void {
+        console.log(post);
     }
 
     private initCreatePostForm(): void {

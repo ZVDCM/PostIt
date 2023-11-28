@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MenuItem } from 'primeng/api';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { PostsHttpService } from './posts-http.service';
 
 @Component({
     selector: 'app-posts',
@@ -30,10 +29,7 @@ import { PostsHttpService } from './posts-http.service';
 export class PostsComponent {
     public items: MenuItem[] = [];
 
-    constructor(
-        public loading: LoadingService,
-        public postsHttp: PostsHttpService
-    ) {
+    constructor(public loading: LoadingService) {
         this.items = [
             { label: 'For you', routerLink: 'foryou' },
             { label: 'Following', routerLink: 'following' },

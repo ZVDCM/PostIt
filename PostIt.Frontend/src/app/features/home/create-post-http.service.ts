@@ -1,5 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {
+    ElementRef,
+    Injectable,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import { MessageService } from 'primeng/api';
 import {
     Observable,
@@ -7,6 +12,7 @@ import {
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
     takeUntil,
@@ -37,7 +43,7 @@ export class CreatePostHttpService {
         private _messageService: MessageService
     ) {}
 
-    public watchCreatePost$(): Observable<void> {
+    public watchCreatePost$(): Observable<IPost> {
         return this._createPost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
@@ -50,13 +56,14 @@ export class CreatePostHttpService {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() => {
+                    tap(() =>
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Change was successful',
-                        });
-                    })
+                            detail: 'Creation was successful',
+                        })
+                    ),
+                    map(() => post)
                 )
             ),
             catchError((err) =>
