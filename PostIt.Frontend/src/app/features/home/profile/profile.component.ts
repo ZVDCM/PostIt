@@ -34,36 +34,9 @@ import { MessageService } from 'primeng/api';
                     <i class="pi pi-calendar"></i>
                     Joined {{ user.createdOnUtc | date : 'MMM dd, yyyy' }}
                 </span>
-                <div class="flex justify-between items-center gap-4">
-                    <i
-                        class="pi pi-users text-slate-600"
-                        style="font-size: 1.3rem;"
-                    ></i>
-                    <div
-                        class="group flex items-center cursor-pointer hover:underline"
-                    >
-                        {{ user.followings.length | number }}
-                        &nbsp;
-                        <span
-                            class="text-slate-600 group-hover:text-[var(--primary-color)]"
-                        >
-                            Following
-                        </span>
-                    </div>
-                    <div
-                        class="group flex items-center cursor-pointer hover:underline"
-                    >
-                        {{ user.followers.length | number }}
-                        &nbsp;
-                        <span
-                            class="text-slate-600 group-hover:text-[var(--primary-color)]"
-                            >Followers
-                        </span>
-                    </div>
-                </div>
             </section>
         </header>
-        <section class="py-10 flex flex-col gap-4">
+        <section class="min-h-screen py-10 flex flex-col gap-4">
             <app-create-post />
         </section>
     </ng-container>`,

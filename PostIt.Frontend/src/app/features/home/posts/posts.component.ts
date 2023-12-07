@@ -1,24 +1,36 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { Observable } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
+import { IPostQueryPayload } from './posts.model';
+import { PostsHttpService } from './posts-http.service';
 
 @Component({
     selector: 'app-posts',
     template: `
-        <p-tabMenu [model]="items" [activeItem]="items[0]" pRipple></p-tabMenu>
-        <section class="py-10 flex flex-col gap-4">
+        <section class="min-h-screen flex flex-col gap-[2rem] pb-10">
             <app-create-post />
-            <router-outlet />
+            <div #posts *ngIf="getAllPosts$ | async as posts; else empty">
+                <app-post-item
+                    *ngFor="let post of posts.items"
+                    [post]="post"
+                    class="post-item"
+                />
+            </div>
+            <ng-template #empty>
+                {{  
+                    postsHttp.getAllPosts({
+                        page: 1,
+                    })
+                }}
+            </ng-template>
         </section>
     `,
     styles: [
         `
             :host {
-                ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem {
-                    @apply flex-1;
-
-                    a {
-                        @apply w-full flex justify-center items-center tracking-wider;
+                ::ng-deep .post-item:not(:last-child) {
+                    article {
+                        margin-bottom: 1rem;
                     }
                 }
             }
@@ -27,12 +39,13 @@ import { LoadingService } from 'src/app/shared/services/loading.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostsComponent {
-    public items: MenuItem[] = [];
+    public getAllPosts$: Observable<IPostQueryPayload> =
+        new Observable<IPostQueryPayload>();
 
-    constructor(public loading: LoadingService) {
-        this.items = [
-            { label: 'For you', routerLink: 'foryou' },
-            { label: 'Following', routerLink: 'following' },
-        ];
+    constructor(
+        public loading: LoadingService,
+        public postsHttp: PostsHttpService
+    ) {
+        this.getAllPosts$ = postsHttp.watchPosts$();
     }
 }

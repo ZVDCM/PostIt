@@ -565,7 +565,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
     styles: [
         `
             :host {
-                @apply h-full flex;
+                @apply min-h-full flex;
 
                 .nav-button {
                     @apply h-[3rem] flex items-center gap-4 text-gray-400 tracking-wider font-medium;

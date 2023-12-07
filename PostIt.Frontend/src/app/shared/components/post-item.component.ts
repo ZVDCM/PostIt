@@ -9,17 +9,25 @@ import { IPostItem } from 'src/app/features/home/posts/posts.model';
         >
             <header>
                 <div
-                    class="group flex items-center gap-2 font-bold text-[var(--primary-color)] cursor-pointer"
+                    class="flex items-center gap-2 font-bold text-[var(--primary-color)]"
                 >
-                    <i class="pi pi-at"></i>
-                    <span class="group-hover:underline">
-                        {{ post.username }}
-                    </span>
+                    <div class="group cursor-pointer">
+                        <i class="pi pi-at"></i>
+                        <span class="group-hover:underline">
+                            {{ post.username }}
+                        </span>
+                    </div>
                 </div>
-                <div class="flex text-slate-600">
-                    {{ post.createdOnUtc | date : 'MMM dd, yyyy' }}
-                    <p-divider layout="vertical"></p-divider>
-                    {{ post.modifiedOnUtc | date : 'MMM dd, yyyy' }}
+                <div class="flex min-h-min gap-2 text-slate-600">
+                    <div>
+                        <i class="pi pi-check"></i>
+                        {{ post.createdOnUtc | date : 'MMM dd, yyyy' }}
+                    </div>
+                    •
+                    <div>
+                        <i class="pi pi-pencil"></i>
+                        {{ post.modifiedOnUtc | date : 'MMM dd, yyyy' }}
+                    </div>
                 </div>
             </header>
             <p>{{ post.body }}</p>
