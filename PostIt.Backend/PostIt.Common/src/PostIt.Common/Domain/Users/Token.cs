@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using PostIt.Common.Identifiers;
 using PostIt.Common.Primitives;
 using PostIt.Common.Utils;
 
-namespace PostIt.Users.Service.Domain.Tokens;
+namespace PostIt.Common.Domain.Users;
 
 public sealed class Token : ValueObject
 {

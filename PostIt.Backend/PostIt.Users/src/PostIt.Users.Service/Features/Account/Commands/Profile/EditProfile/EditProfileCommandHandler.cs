@@ -2,10 +2,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
 using PostIt.Common.Abstractions.Commands;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Posts.Events.Users;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 

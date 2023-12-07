@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PostIt.Users.Service.Domain.Roles;
+using PostIt.Common.Domain.Roles;
 using PostIt.Users.Service.Infrastructure.Persistence;
 
 namespace PostIt.Users.Service.Infrastructure.Repositories;

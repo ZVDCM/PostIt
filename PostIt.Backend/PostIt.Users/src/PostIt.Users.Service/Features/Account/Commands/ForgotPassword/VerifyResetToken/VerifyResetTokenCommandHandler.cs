@@ -3,10 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using PostIt.Common.Abstractions.Commands;
 using PostIt.Common.Constants;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 
 namespace PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;

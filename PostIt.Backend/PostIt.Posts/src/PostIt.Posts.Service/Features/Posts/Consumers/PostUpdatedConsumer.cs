@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Posts;
+using PostIt.Common.Domain.Users;
 using PostIt.Contracts.Posts.Events;
 using PostIt.Posts.Service.Constants;
-using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;
 using Serilog;
 
@@ -34,7 +34,8 @@ public sealed class PostUpdatedConsumer : IConsumer<PostUpdated>
         PostUpdated message = context.Message;
         try
         {
-            Post? post = await _postRepository.GetPostAsync(p => p.Id == new PostId(message.PostId) && p.UserId == new UserId(message.UserId), CancellationToken.None);
+            Post? post = await _postRepository.GetPostAsync(p => p.Id == new PostId(message.PostId)
+                                                                 && p.UserId == new UserId(message.UserId), CancellationToken.None);
             if (post is null)
             {
                 _logger.Error("Post not found");

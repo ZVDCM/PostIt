@@ -1,10 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using PostIt.Common.Abstractions.Commands;
+using PostIt.Common.Constants;
+using PostIt.Common.Domain.Roles;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
 namespace PostIt.Users.Service.Features.Users.Commands.CreateUser;

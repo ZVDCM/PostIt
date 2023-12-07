@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
+using PostIt.Common.Domain.Users;
 
 namespace PostIt.Users.Service.Infrastructure.Email;
 

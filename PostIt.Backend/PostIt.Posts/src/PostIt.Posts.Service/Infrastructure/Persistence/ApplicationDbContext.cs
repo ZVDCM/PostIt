@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PostIt.Common.Domain.Likes;
+using PostIt.Common.Domain.Posts;
 using PostIt.Common.Primitives;
-using PostIt.Posts.Service.Domain.Likes;
-using PostIt.Posts.Service.Domain.Posts;
 
 namespace PostIt.Posts.Service.Infrastructure.Persistence;
 

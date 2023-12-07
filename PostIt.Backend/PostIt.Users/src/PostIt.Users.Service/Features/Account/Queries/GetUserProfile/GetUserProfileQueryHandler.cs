@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using PostIt.Common.Abstractions.Queries;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Features.Account.Queries.GetUserProfile;
 

@@ -5,10 +5,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Posts;
+using PostIt.Common.Domain.Users;
 using PostIt.Contracts.Posts.Events.Users;
 using PostIt.Posts.Service.Constants;
-using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;
 using Serilog;
 

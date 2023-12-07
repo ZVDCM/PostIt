@@ -7,16 +7,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using PostIt.Common.Constants;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
-using PostIt.Contracts.Posts.Requests.Posts;
+using PostIt.Contracts.Posts.Requests;
 using PostIt.Contracts.Users.Requests.Account;
 using PostIt.Contracts.Users.Requests.Account.ForgotPassword;
 using PostIt.Contracts.Users.Requests.Account.Verification;
 using PostIt.Contracts.Users.Responses;
 using PostIt.Users.Service.Attributes;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
@@ -31,7 +29,6 @@ using PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
 using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
-using PostIt.Users.Service.Features.Account.Queries.GetProfile;
 using PostIt.Users.Service.Features.Account.Queries.GetUserProfile;
 using PostIt.Users.Service.Features.Email.Command.EmailResetToken;
 using PostIt.Users.Service.Features.Email.Command.EmailVerificationToken;
@@ -98,19 +95,7 @@ public sealed class AccountController : ApiController
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(Created, HandleFailure);
 
-    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
     [HttpGet("profile")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetProfileAsync(CancellationToken cancellationToken)
-        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
-        .Map(Mapper.Map<GetProfileQuery>)
-        .Bind(query => Sender.Send(query, cancellationToken))
-        .Map(Mapper.Map<ProfileResponse>)
-        .Match(Ok, HandleFailure);
-
-    [HttpGet("profile/{username}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

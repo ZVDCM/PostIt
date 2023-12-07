@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PostIt.Common.Abstractions.Queries;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
-using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Features.Users.Queries.GetAllUsers;
 

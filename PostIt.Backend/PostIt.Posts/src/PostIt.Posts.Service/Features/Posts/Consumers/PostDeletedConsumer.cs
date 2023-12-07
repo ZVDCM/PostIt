@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Constants;
+using PostIt.Common.Domain.Posts;
+using PostIt.Common.Domain.Users;
 using PostIt.Contracts.Posts.Events;
 using PostIt.Posts.Service.Constants;
-using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;
 using Serilog;
 
@@ -41,7 +42,7 @@ public sealed class PostDeletedConsumer : IConsumer<PostDeleted>
                                         p.UserId == new UserId(message.UserId), CancellationToken.None),
                 _ => throw new NotSupportedException(),
             };
-            
+
             if (post is null)
             {
                 _logger.Error(PostErrors.PostNotFound);

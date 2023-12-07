@@ -1,14 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using BCrypt.Net;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Users.Requests;
 using PostIt.Contracts.Users.Responses;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Features.Users.Commands.CreateUser;
 using PostIt.Users.Service.Features.Users.Commands.DeleteUser;
 using PostIt.Users.Service.Features.Users.Commands.UpdateUser;

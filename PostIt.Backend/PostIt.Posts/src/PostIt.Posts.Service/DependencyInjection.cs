@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PostIt.Common;
+using PostIt.Common.Domain.Likes;
+using PostIt.Common.Domain.Posts;
 using PostIt.Common.Options.AllowedHosts;
-using PostIt.Posts.Service.Domain.Likes;
-using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Infrastructure.Client;
 using PostIt.Posts.Service.Infrastructure.Persistence;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;

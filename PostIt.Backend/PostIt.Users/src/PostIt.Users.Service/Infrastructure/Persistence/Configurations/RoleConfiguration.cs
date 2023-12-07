@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PostIt.Common.Identifiers;
-using PostIt.Users.Service.Domain.Roles;
+using PostIt.Common.Domain.Roles;
 
 namespace PostIt.Users.Service.Infrastructure.Persistence.Configurations;
 

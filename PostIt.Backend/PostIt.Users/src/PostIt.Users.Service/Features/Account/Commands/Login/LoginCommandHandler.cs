@@ -4,10 +4,9 @@ using System.Threading.Tasks;
 using BCrypt.Net;
 using PostIt.Common.Abstractions.Commands;
 using PostIt.Common.Constants;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 

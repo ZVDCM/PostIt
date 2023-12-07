@@ -1,9 +1,9 @@
 using System.Linq;
 using AutoMapper;
+using PostIt.Common.Domain.Likes;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Posts.Responses;
-using PostIt.Posts.Service.Domain.Likes;
 
 namespace PostIt.Posts.Service.Infrastructure.Mappings;
 

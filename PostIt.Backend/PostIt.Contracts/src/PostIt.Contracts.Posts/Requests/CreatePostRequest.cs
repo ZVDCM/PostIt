@@ -1,3 +1,3 @@
-namespace PostIt.Contracts.Posts.Requests.Posts;
+namespace PostIt.Contracts.Posts.Requests;
 
 public sealed record CreatePostRequest(string Body);

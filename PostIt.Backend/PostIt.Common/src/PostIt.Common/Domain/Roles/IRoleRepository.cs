@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PostIt.Users.Service.Domain.Roles;
+namespace PostIt.Common.Domain.Roles;
 
 public interface IRoleRepository
 {

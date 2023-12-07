@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Posts;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
-using PostIt.Posts.Service.Domain.Posts;
 
-namespace PostIt.Posts.Service.Domain.Likes;
+namespace PostIt.Common.Domain.Likes;
 
 public sealed class Like : Entity, IAuditable
 {

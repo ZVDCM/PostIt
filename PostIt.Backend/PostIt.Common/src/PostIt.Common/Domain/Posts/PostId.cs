@@ -1,5 +1,5 @@
 using System;
 
-namespace PostIt.Common.Identifiers;
+namespace PostIt.Common.Domain.Posts;
 
 public readonly record struct PostId(Guid Value);

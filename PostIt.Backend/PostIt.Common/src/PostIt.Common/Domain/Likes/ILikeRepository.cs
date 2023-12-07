@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PostIt.Posts.Service.Domain.Likes;
+namespace PostIt.Common.Domain.Likes;
 
 public interface ILikeRepository
 {

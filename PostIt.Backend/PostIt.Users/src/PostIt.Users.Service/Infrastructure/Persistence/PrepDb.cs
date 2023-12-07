@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Users;
+using PostIt.Common.Constants;
+using PostIt.Common.Domain.Roles;
+using PostIt.Common.Domain.Users;
 using Serilog;
 
 namespace PostIt.Users.Service.Infrastructure.Persistence;

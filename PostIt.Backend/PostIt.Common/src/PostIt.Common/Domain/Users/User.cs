@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Roles;
 using PostIt.Common.Primitives;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Tokens;
 
-namespace PostIt.Users.Service.Domain.Users;
+namespace PostIt.Common.Domain.Users;
 
 public sealed class User : Entity, IAggregate, IAuditable
 {

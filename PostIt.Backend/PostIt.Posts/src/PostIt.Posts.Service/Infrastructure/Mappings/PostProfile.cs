@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 using AutoMapper;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Posts;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Posts.Responses;
-using PostIt.Posts.Service.Domain.Posts;
 using PostIt.Posts.Service.Features.Posts.Queries.GetPostById;
 
 namespace PostIt.Posts.Service.Infrastructure.Mappings;

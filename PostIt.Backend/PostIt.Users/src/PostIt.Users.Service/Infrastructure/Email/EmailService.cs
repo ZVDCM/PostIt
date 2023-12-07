@@ -2,8 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentEmail.Core;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
+using PostIt.Common.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Email.Models;
 using Serilog;
 

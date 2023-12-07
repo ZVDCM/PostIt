@@ -2,10 +2,11 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MassTransit;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Likes;
+using PostIt.Common.Domain.Posts;
+using PostIt.Common.Domain.Users;
 using PostIt.Contracts.Posts.Events.Likes;
 using PostIt.Posts.Service.Constants;
-using PostIt.Posts.Service.Domain.Likes;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;
 using Serilog;
 
@@ -32,7 +33,8 @@ public sealed class PostToggledConsumer : IConsumer<PostToggled>
         PostToggled message = context.Message;
         try
         {
-            Like? like = await _likeRepository.GetLikeAsync(p => p.PostId == new PostId(message.PostId) && p.UserId == new UserId(message.UserId), CancellationToken.None);
+            Like? like = await _likeRepository.GetLikeAsync(p => p.PostId == new PostId(message.PostId)
+                                                                 && p.UserId == new UserId(message.UserId), CancellationToken.None);
             if (like is not null)
             {
                 _likeRepository.Delete(like);

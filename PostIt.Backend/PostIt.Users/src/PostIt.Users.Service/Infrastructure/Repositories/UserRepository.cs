@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using PostIt.Users.Service.Domain.Users;
+using PostIt.Common.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Persistence;
 
 namespace PostIt.Users.Service.Infrastructure.Repositories;

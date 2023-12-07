@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
-using PostIt.Users.Service.Domain.Users;
 
-namespace PostIt.Users.Service.Domain.Roles;
+namespace PostIt.Common.Domain.Roles;
 
 public sealed class Role : Entity, IAuditable
 {

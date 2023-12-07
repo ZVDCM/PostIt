@@ -1,4 +1,4 @@
-namespace PostIt.Users.Service.Domain.Roles;
+namespace PostIt.Common.Constants;
 
 public static class RoleConstants
 {

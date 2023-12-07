@@ -8,12 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
 using PostIt.Common.Utils;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication.Configurations.Options.Jwt;
 
 namespace PostIt.Users.Service.Infrastructure.Authentication;

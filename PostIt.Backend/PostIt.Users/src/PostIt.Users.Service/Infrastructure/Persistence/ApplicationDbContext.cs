@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using PostIt.Common.Domain.Roles;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Infrastructure.Persistence;
 public sealed class ApplicationDbContext : DbContext
@@ -16,7 +16,7 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<User> Users { get; set; } = null!;
     public DbSet<Role> Roles { get; set; } = null!;
-    
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

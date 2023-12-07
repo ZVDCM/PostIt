@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using PostIt.Common;
+using PostIt.Common.Domain.Roles;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Options.AllowedHosts;
-using PostIt.Users.Service.Domain.Roles;
-using PostIt.Users.Service.Domain.Users;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Authentication.Configurations.Options.Jwt;
 using PostIt.Users.Service.Infrastructure.Authentication.Configurations.Options.Token;

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -7,7 +6,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PostIt.Common.Constants;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives;
 using PostIt.Common.Primitives.Results;
 using PostIt.Contracts.Posts.Responses;

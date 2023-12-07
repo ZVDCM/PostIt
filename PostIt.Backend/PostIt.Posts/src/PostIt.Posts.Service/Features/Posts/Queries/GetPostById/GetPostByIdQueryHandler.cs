@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using PostIt.Common.Abstractions.Queries;
+using PostIt.Common.Domain.Posts;
 using PostIt.Common.Primitives.Results;
 using PostIt.Posts.Service.Constants;
-using PostIt.Posts.Service.Domain.Posts;
 
 namespace PostIt.Posts.Service.Features.Posts.Queries.GetPostById;
 

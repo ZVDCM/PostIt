@@ -5,11 +5,9 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using PostIt.Common.Identifiers;
+using PostIt.Common.Domain.Users;
 using PostIt.Common.Utils;
 using PostIt.Users.Service.Constants;
-using PostIt.Users.Service.Domain.Tokens;
-using PostIt.Users.Service.Domain.Users;
 
 namespace PostIt.Users.Service.Infrastructure.Authorization.AuthorizationHandler;
 
@@ -44,7 +42,7 @@ public sealed class AuthorizationHandler : AuthorizationHandler<AuthorizationReq
             case PolicyConstants.OneShotPolicy:
                 context.Succeed(authorizationRequirement);
                 return;
-                
+
             default:
                 throw new NotSupportedException();
         }
