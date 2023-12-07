@@ -125,14 +125,14 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "CreatedOnUtc", "ModifiedOnUtc", "Value" },
                 values: new object[,]
                 {
-                    { new Guid("760ba719-fb6b-46fe-9920-b2ce201a4ca4"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" },
-                    { new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" }
+                    { new Guid("959c5b4f-7228-416a-9ef3-f9e22b2c801d"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" },
+                    { new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedOnUtc", "Email", "EmailVerified", "ModifiedOnUtc", "Password", "RoleId", "Username" },
-                values: new object[] { new Guid("d76abc49-38cc-4493-90df-cf23560b77e5"), new DateTime(2023, 11, 28, 7, 39, 40, 681, DateTimeKind.Utc).AddTicks(664), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$11yRBHkPVpZrgaXBHsuTjOd4yHVEEo2.bRUc0YqJWRwNIoNkCQwJW", new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"), "JuanDelaCruz" });
+                values: new object[] { new Guid("20e625b0-4252-42c3-ab3e-59d845ce2956"), new DateTime(2023, 12, 7, 4, 3, 53, 614, DateTimeKind.Utc).AddTicks(742), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$CCxpqD91yFr9yoA0eSvgtu08ss0Xtw1Tx5tyUR3MPDUZN5LCSoUqm", new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"), "JuanDelaCruz" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

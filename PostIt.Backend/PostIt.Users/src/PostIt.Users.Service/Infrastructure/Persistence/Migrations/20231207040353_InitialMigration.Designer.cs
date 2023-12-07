@@ -12,7 +12,7 @@ using PostIt.Users.Service.Infrastructure.Persistence;
 namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231128073940_InitialMigration")]
+    [Migration("20231207040353_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -47,14 +47,14 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("760ba719-fb6b-46fe-9920-b2ce201a4ca4"),
+                            Id = new Guid("959c5b4f-7228-416a-9ef3-f9e22b2c801d"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "User"
                         },
                         new
                         {
-                            Id = new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"),
+                            Id = new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "Admin"
@@ -99,13 +99,13 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d76abc49-38cc-4493-90df-cf23560b77e5"),
-                            CreatedOnUtc = new DateTime(2023, 11, 28, 7, 39, 40, 681, DateTimeKind.Utc).AddTicks(664),
+                            Id = new Guid("20e625b0-4252-42c3-ab3e-59d845ce2956"),
+                            CreatedOnUtc = new DateTime(2023, 12, 7, 4, 3, 53, 614, DateTimeKind.Utc).AddTicks(742),
                             Email = "juandelacruz@gmail.com",
                             EmailVerified = true,
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "$2a$13$11yRBHkPVpZrgaXBHsuTjOd4yHVEEo2.bRUc0YqJWRwNIoNkCQwJW",
-                            RoleId = new Guid("edb97f9c-9627-446f-8b74-62721fbe361b"),
+                            Password = "$2a$13$CCxpqD91yFr9yoA0eSvgtu08ss0Xtw1Tx5tyUR3MPDUZN5LCSoUqm",
+                            RoleId = new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"),
                             Username = "JuanDelaCruz"
                         });
                 });

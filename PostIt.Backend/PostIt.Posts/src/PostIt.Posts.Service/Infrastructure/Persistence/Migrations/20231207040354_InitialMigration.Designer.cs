@@ -12,8 +12,8 @@ using PostIt.Posts.Service.Infrastructure.Persistence;
 namespace PostIt.Posts.Service.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20231128065332_InitialMigrations")]
-    partial class InitialMigrations
+    [Migration("20231207040354_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
