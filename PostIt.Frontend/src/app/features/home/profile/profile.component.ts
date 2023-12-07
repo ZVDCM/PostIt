@@ -17,7 +17,7 @@ import { MessageService } from 'primeng/api';
                     class="group flex items-center gap-4 cursor-pointer"
                     (click)="onUsernameClick(user.username)"
                 >
-                    <i class="pi pi-at mt-1" style="font-size: 1.3rem;"></i>
+                    <i class="pi pi-at mt-1" style="font-size: 1.5rem;"></i>
                     <h1
                         class="text-3xl font-extrabold tracking-wide whitespace-nowrap group-hover:text-[var(--primary-color)]"
                     >

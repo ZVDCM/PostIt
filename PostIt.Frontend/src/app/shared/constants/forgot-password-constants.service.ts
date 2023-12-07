@@ -7,11 +7,9 @@ import { IForm } from 'src/app/core/models/form.model';
 export class ForgotPasswordConstantsService {
     public readonly forgotPasswordRoute = '/forgotpassword';
     public readonly sendResetTokenEndpoint = '/account/send/resettoken';
-    public readonly verifyResetTokenRoute =
-        this.forgotPasswordRoute + '/verify/resettoken';
+    public readonly verifyResetTokenRoute = '/forgotpassword/verify/resettoken';
     public readonly verifyResetTokenEndpoint = '/account/verify/resettoken';
-    public readonly resetPasswordRoute =
-        this.forgotPasswordRoute + '/reset/password';
+    public readonly resetPasswordRoute = '/forgotpassword/reset/password';
     public readonly resetPasswordEndpoint = '/account/reset/password';
 
     public readonly forgotPasswordForm: IForm = {

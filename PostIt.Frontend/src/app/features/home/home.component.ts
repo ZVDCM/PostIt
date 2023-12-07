@@ -17,7 +17,7 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
-import { EditProfileHttpService } from './edit-profile-http.service';
+import { UpdateProfileHttpService } from './update-profile-http.service';
 import { ChangePasswordHttpService } from './change-password-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
@@ -71,6 +71,9 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                         pButton
                     >
                         Profile
+                    </button>
+                    <button class="nav-button" icon="pi pi-bell" pButton>
+                        Notifications
                     </button>
                     <div class="w-full mt-auto flex justify-start items-center">
                         <p-splitButton
@@ -321,7 +324,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                     [loading]="loading.isLoading"
                                     type="submit"
                                     styleClass="w-full"
-                                    label="Edit profile"
+                                    label="Update profile"
                                 ></p-button>
                                 <p-button
                                     *ngIf="!loading.isLoading; else cancel"
@@ -333,7 +336,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                 <ng-template #cancel>
                                     <p-button
                                         (click)="
-                                            editProfileHttp.cancelRequest()
+                                            updateProfileHttp.cancelRequest()
                                         "
                                         type="button"
                                         styleClass="w-full p-button-outlined p-button-danger"
@@ -554,7 +557,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
             </p-dialog>
         </ng-container>
         <ng-container *ngIf="refresh$ | async"></ng-container>
-        <ng-container *ngIf="editProfile$ | async"></ng-container>
+        <ng-container *ngIf="updateProfile$ | async"></ng-container>
         <ng-container *ngIf="loading$ | async"></ng-container>
         <ng-container *ngIf="tooltip$ | async"></ng-container>
         <ng-container *ngIf="logout$ | async"></ng-container>
@@ -602,7 +605,7 @@ export class HomeComponent implements AfterViewInit {
 
     public user$: Observable<IUser> = new Observable<IUser>();
     public refresh$: Observable<void> = new Observable<void>();
-    public editProfile$: Observable<void> = new Observable<void>();
+    public updateProfile$: Observable<void> = new Observable<void>();
     public logout$: Observable<void> = new Observable<void>();
     public loading$: Observable<boolean> = new Observable<boolean>();
     public tooltip$$: Subject<boolean> = new Subject<boolean>();
@@ -639,7 +642,7 @@ export class HomeComponent implements AfterViewInit {
         public homeConstants: HomeConstantsService,
         @Inject('profileFormHelper')
         public profileFormHelper: FormHelperService,
-        public editProfileHttp: EditProfileHttpService,
+        public updateProfileHttp: UpdateProfileHttpService,
         @Inject('passwordFormHelper')
         public passwordFormHelper: FormHelperService,
         public changePasswordHttp: ChangePasswordHttpService,
@@ -669,8 +672,8 @@ export class HomeComponent implements AfterViewInit {
                         disabled: user.isVerified,
                     },
                     {
-                        label: 'Edit Profile',
-                        icon: 'pi pi-user-edit',
+                        label: 'Update Profile',
+                        icon: 'pi pi-user-update',
                         command: () => {
                             this.activeForm = 1;
                             this.showModal = true;
@@ -696,7 +699,7 @@ export class HomeComponent implements AfterViewInit {
             })
         );
         this.refresh$ = this._refreshHttp.refresh$();
-        this.editProfile$ = this.editProfileHttp.watchEditProfile$();
+        this.updateProfile$ = this.updateProfileHttp.watchUpdateProfile$();
         this.logout$ = this._logoutHttp.watchLogout$();
         this.loading$ = loading.watchLoading$();
         this.tooltip$ = this.tooltip$$.asObservable();
@@ -810,7 +813,7 @@ export class HomeComponent implements AfterViewInit {
             return;
         }
 
-        this.editProfileHttp.editProfile(
+        this.updateProfileHttp.updateProfile(
             this.profileFormHelper.formGroup.value
         );
     }
@@ -833,7 +836,7 @@ export class HomeComponent implements AfterViewInit {
                 this.initVerificationForm();
                 break;
             case 1:
-                this.editProfileHttp.cancelRequest();
+                this.updateProfileHttp.cancelRequest();
                 this.initProfileForm(user);
                 break;
             case 2:
@@ -858,7 +861,7 @@ export class HomeComponent implements AfterViewInit {
             case 0:
                 return 'Verify Account';
             case 1:
-                return 'Edit Profile';
+                return 'Update Profile';
             case 2:
                 return 'Change Password';
             default:

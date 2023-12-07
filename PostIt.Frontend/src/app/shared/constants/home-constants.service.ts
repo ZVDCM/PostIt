@@ -6,12 +6,17 @@ import { IForm } from 'src/app/core/models/form.model';
 })
 export class HomeConstantsService {
     public readonly homeRoute = '/home';
-    public readonly postsRoute = this.homeRoute + '/posts';
+
+    public readonly postsRoute = '/home/posts';
     public readonly postsEndpoint = '/posts';
     public readonly createPostEndpoint = '/account/posts';
-    public readonly profileRoute = this.homeRoute + '/profile';
+    public readonly deletePostEndpoint = '/account/posts';
+    public readonly updatePostEndpoint = '/account/posts';
+
+    public readonly profileRoute = '/home/profile';
+
     public readonly logoutEndpoint = '/account/logout';
-    public readonly editProfileEndpoint = '/account/edit/profile';
+    public readonly updateProfileEndpoint = '/account/update/profile';
     public readonly changePasswordEndpoint = '/account/change/password';
     public readonly sendVerificationTokenEndpoint =
         '/account/send/verificationtoken';

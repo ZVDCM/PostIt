@@ -7,7 +7,6 @@ import {
     catchError,
     filter,
     finalize,
-    map,
     of,
     switchMap,
     takeUntil,
@@ -17,18 +16,16 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IPost } from './create-post.model';
-import { PostsHttpService } from './posts/posts-http.service';
+import { PostsHttpService } from './posts-http.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class CreatePostHttpService {
-    public showModal: boolean = false;
-    private readonly _url: string =
+export class DeletePostHttpService {
+    private _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.createPostEndpoint;
-    private _createPost$$: Subject<IPost> = new Subject<IPost>();
+        this._homeConstants.deletePostEndpoint;
+    private _deletePost$$: Subject<string> = new Subject<string>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -41,21 +38,20 @@ export class CreatePostHttpService {
         private _postsHttp: PostsHttpService
     ) {}
 
-    public watchCreatePost$(): Observable<void> {
-        return this._createPost$$.asObservable().pipe(
+    public watchDeletePost$(): Observable<void> {
+        return this._deletePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((post: IPost) =>
-                this.createPostUser(post).pipe(
+            switchMap((id: string) =>
+                this.deletePost$(id).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading(
                             this._postsHttp.getAllPosts({ page: 1 })!
                         );
                         this._progress.isCancelled = false;
-                        this.showModal = false;
                     }),
                     tap(() =>
                         this._messageService.add({
@@ -111,7 +107,7 @@ export class CreatePostHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchCreatePost$())
+                    switchMap(() => this.watchDeletePost$())
                 )
             ),
             finalize(() => {
@@ -131,11 +127,11 @@ export class CreatePostHttpService {
         }
     }
 
-    public createPost(post: IPost): void {
-        this._createPost$$.next(post);
+    public deletePost(id: string): void {
+        this._deletePost$$.next(id);
     }
 
-    private createPostUser(post: IPost): Observable<void> {
-        return this._httpClient.post<void>(this._url, post);
+    private deletePost$(id: string): Observable<void> {
+        return this._httpClient.delete<void>(`${this._url}/${id}`);
     }
 }

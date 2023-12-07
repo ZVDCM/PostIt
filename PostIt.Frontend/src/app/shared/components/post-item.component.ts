@@ -1,36 +1,73 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { MenuItem } from 'primeng/api';
+import { Observable } from 'rxjs';
+import { DeletePostHttpService } from 'src/app/features/home/posts/delete-post-http.service';
 import { IPostItem } from 'src/app/features/home/posts/posts.model';
 
 @Component({
     selector: 'app-post-item',
     template: `
         <article
-            class="flex flex-col gap-4 p-[2.45rem] bg-[var(--surface-card)]"
+            class="flex flex-col pt-[2.45rem] gap-4 bg-[var(--surface-card)]"
         >
-            <header>
-                <div
-                    class="flex items-center gap-2 font-bold text-[var(--primary-color)]"
-                >
-                    <div class="group cursor-pointer">
-                        <i class="pi pi-at"></i>
-                        <span class="group-hover:underline">
-                            {{ post.username }}
-                        </span>
+            <header class="flex px-[2.45rem]">
+                <div class="flex-grow">
+                    <div class="flex">
+                        <div
+                            class="flex gap-2 items-center group cursor-pointer font-bold text-[var(--primary-color)]"
+                        >
+                            <i class="h-[1rem] pi pi-at"></i>
+                            <span class="text-[1.1rem] group-hover:underline">
+                                {{ post.username }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex min-h-min gap-2 text-slate-600">
+                        <small>
+                            <i class="pi pi-check" style="font-size: .6rem"></i>
+                            {{ post.createdOnUtc | date : 'MMM dd, yyyy' }}
+                        </small>
+                        <small
+                            class="flex gap-2"
+                            *ngIf="hasBeenModified(post.modifiedOnUtc)"
+                        >
+                            •
+                            <div>
+                                <i
+                                    class="pi pi-pencil"
+                                    style="font-size: .6rem"
+                                ></i>
+                                {{ post.modifiedOnUtc | date : 'MMM dd, yyyy' }}
+                            </div>
+                        </small>
                     </div>
                 </div>
-                <div class="flex min-h-min gap-2 text-slate-600">
-                    <div>
-                        <i class="pi pi-check"></i>
-                        {{ post.createdOnUtc | date : 'MMM dd, yyyy' }}
-                    </div>
-                    •
-                    <div>
-                        <i class="pi pi-pencil"></i>
-                        {{ post.modifiedOnUtc | date : 'MMM dd, yyyy' }}
-                    </div>
+                <div>
+                    <p-menu #menu [model]="items" [popup]="true"></p-menu>
+                    <button
+                        pButton
+                        type="button"
+                        class="p-button-text relative"
+                        (click)="menu.toggle($event)"
+                        icon="pi pi-bars"
+                    ></button>
                 </div>
             </header>
-            <p>{{ post.body }}</p>
+            <div class="px-[2.45rem]">
+                <p>{{ post.body }}</p>
+                <p class="mt-[2rem] text-slate-600">
+                    <i class="pi pi-thumbs-up"></i> {{ post.likesCount }}
+                </p>
+            </div>
+            <button
+                pButton
+                pRipple
+                class="p-button-text flex justify-center items-center gap-4"
+                style="border-radius: 0; border-top: 1px solid var(--surface-border)"
+            >
+                <i class="pi pi-thumbs-up"></i>
+                <span> Like </span>
+            </button>
         </article>
     `,
     styles: [],
@@ -39,6 +76,24 @@ import { IPostItem } from 'src/app/features/home/posts/posts.model';
 export class PostItemComponent {
     @Input()
     public post: IPostItem = {} as IPostItem;
+    public items: MenuItem[] = [];
 
-    constructor() {}
+    constructor(private _deletePostHttp: DeletePostHttpService) {
+        this.items = [
+            {
+                label: 'Update',
+                icon: 'pi pi-pencil',
+                command: () => {},
+            },
+            {
+                label: 'Delete',
+                icon: 'pi pi-trash',
+                command: () => _deletePostHttp.deletePost(this.post.postId),
+            },
+        ];
+    }
+
+    public hasBeenModified(modifiedOnUtc: Date) {
+        return modifiedOnUtc > new Date(0);
+    }
 }

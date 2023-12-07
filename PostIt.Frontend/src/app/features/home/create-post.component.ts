@@ -23,7 +23,7 @@ import { IPost } from './create-post.model';
             ></i>
             <input
                 [readOnly]="true"
-                (click)="showModal = true"
+                (click)="createPostHttp.showModal = true"
                 pInputText
                 id="create-post"
                 placeholder="Got something on your mind? Post It!"
@@ -34,8 +34,8 @@ import { IPost } from './create-post.model';
         </section>
         <ng-container *ngIf="user$ | async as user">
             <p-dialog
-                *ngIf="showModal; else hideModal"
-                [(visible)]="showModal"
+                *ngIf="createPostHttp.showModal; else hideModal"
+                [(visible)]="createPostHttp.showModal"
                 [modal]="true"
                 [resizable]="false"
                 [draggable]="false"
@@ -102,7 +102,7 @@ import { IPost } from './create-post.model';
                             ></p-button>
                             <p-button
                                 *ngIf="!loading.isLoading; else cancel"
-                                (click)="showModal = false"
+                                (click)="createPostHttp.showModal = false"
                                 type="button"
                                 styleClass="w-full p-button-outlined p-button-secondary"
                                 label="Cancel"
@@ -123,9 +123,7 @@ import { IPost } from './create-post.model';
                 {{ onModalHide() }}
             </ng-template>
         </ng-container>
-        <ng-container *ngIf="createPost$ | async as post"
-            >{{ addPost(post) }}
-        </ng-container>
+        <ng-container *ngIf="createPost$ | async"></ng-container>
     `,
     styles: [
         `
@@ -159,8 +157,7 @@ import { IPost } from './create-post.model';
 })
 export class CreatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
-    public createPost$: Observable<IPost> = new Observable<IPost>();
-    public showModal: boolean = false;
+    public createPost$: Observable<void> = new Observable<void>();
 
     public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
 
@@ -177,7 +174,7 @@ export class CreatePostComponent {
     }
 
     public onModalHide(): void {
-        this.showModal = false;
+        this.createPostHttp.showModal = false;
         this.initCreatePostForm();
     }
 
@@ -187,10 +184,6 @@ export class CreatePostComponent {
             return;
         }
         this.createPostHttp.createPost(this.formHelper.formGroup.value);
-    }
-
-    public addPost(post: IPost): void {
-        console.log(post);
     }
 
     private initCreatePostForm(): void {

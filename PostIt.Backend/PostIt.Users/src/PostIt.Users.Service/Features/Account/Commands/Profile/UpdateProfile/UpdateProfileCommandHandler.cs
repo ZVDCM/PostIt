@@ -9,16 +9,16 @@ using PostIt.Users.Service.Constants;
 using PostIt.Users.Service.Infrastructure.Authentication;
 using PostIt.Users.Service.Infrastructure.Persistence.UnitOfWork;
 
-namespace PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
+namespace PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
 
-public sealed class EditProfileCommandHandler : ICommandHandler<EditProfileCommand, Result<User>>
+public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileCommand, Result<User>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtService _jwtService;
     private readonly IPublishEndpoint _publishEndpoint;
 
-    public EditProfileCommandHandler(
+    public UpdateProfileCommandHandler(
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IJwtService jwtService,
@@ -30,7 +30,7 @@ public sealed class EditProfileCommandHandler : ICommandHandler<EditProfileComma
         _userRepository = userRepository;
     }
 
-    public async Task<Result<User>> Handle(EditProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Result<User>> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
     {
         Result<User> result = await _jwtService.GetUserAsync(request.AccessToken, cancellationToken);
         if (result.IsFailure) return Result.Failure<User>(result.Error);
@@ -43,7 +43,7 @@ public sealed class EditProfileCommandHandler : ICommandHandler<EditProfileComma
         string oldUsername = user.Username;
         string oldEmail = user.Email;
 
-        user.EditProfile(request.Username, request.Email);
+        user.UpdateProfile(request.Username, request.Email);
 
         if (!string.Equals(oldEmail, request.Email)) user.UnverifyEmail();
 

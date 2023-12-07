@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IUpdateProfile } from './edit-profile.model';
+import { IUpdateProfile } from './update-profile.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { IUserPayload } from 'src/app/core/state/user/user.model';
 import { MessageService } from 'primeng/api';
@@ -25,10 +25,10 @@ import { ProgressService } from 'src/app/shared/services/progress.service';
 @Injectable({
     providedIn: 'root',
 })
-export class EditProfileHttpService {
+export class UpdateProfileHttpService {
     private readonly _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.editProfileEndpoint;
+        this._homeConstants.updateProfileEndpoint;
     private _updateProfile$$: Subject<IUpdateProfile> =
         new Subject<IUpdateProfile>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
@@ -43,14 +43,14 @@ export class EditProfileHttpService {
         private _messageService: MessageService
     ) {}
 
-    public watchEditProfile$(): Observable<void> {
+    public watchUpdateProfile$(): Observable<void> {
         return this._updateProfile$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
             switchMap((user: IUpdateProfile) =>
-                this.editProfileUser(user).pipe(
+                this.updateProfile$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
@@ -67,7 +67,7 @@ export class EditProfileHttpService {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Edit was successful',
+                            detail: 'Update was successful',
                         });
                     })
                 )
@@ -109,7 +109,7 @@ export class EditProfileHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchEditProfile$())
+                    switchMap(() => this.watchUpdateProfile$())
                 )
             ),
             finalize(() => {
@@ -129,11 +129,11 @@ export class EditProfileHttpService {
         }
     }
 
-    public editProfile(user: IUpdateProfile): void {
+    public updateProfile(user: IUpdateProfile): void {
         this._updateProfile$$.next(user);
     }
 
-    private editProfileUser(user: IUpdateProfile): Observable<IUserPayload> {
+    private updateProfile$(user: IUpdateProfile): Observable<IUserPayload> {
         return this._httpClient.put<IUserPayload>(this._url, user);
     }
 }

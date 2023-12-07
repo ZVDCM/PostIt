@@ -12,6 +12,7 @@ import { DialogModule } from 'primeng/dialog';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { DividerModule } from 'primeng/divider';
+import { MenuModule } from 'primeng/menu';
 
 import { LoadingComponent } from './components/loading.component';
 import { FooterComponent } from './components/footer.component';
@@ -42,6 +43,7 @@ import { UserSearchItemComponent } from './components/user-search-item.component
         TooltipModule,
         InputTextareaModule,
         DividerModule,
+        MenuModule,
     ],
     exports: [
         LoadingComponent,
@@ -62,6 +64,7 @@ import { UserSearchItemComponent } from './components/user-search-item.component
         TooltipModule,
         InputTextareaModule,
         DividerModule,
+        MenuModule,
     ],
 })
 export class SharedModule {}

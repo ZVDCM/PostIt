@@ -25,7 +25,7 @@ using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.DeletePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.UpdatePost;
 using PostIt.Users.Service.Features.Account.Commands.Profile.ChangePassword;
-using PostIt.Users.Service.Features.Account.Commands.Profile.EditProfile;
+using PostIt.Users.Service.Features.Account.Commands.Profile.UpdateProfile;
 using PostIt.Users.Service.Features.Account.Commands.Refresh;
 using PostIt.Users.Service.Features.Account.Commands.Verify.CreateVerificationToken;
 using PostIt.Users.Service.Features.Account.Commands.Verify.VerifyVerificationTokenCommand;
@@ -192,16 +192,16 @@ public sealed class AccountController : ApiController
         .Match(Ok, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPut("edit/profile")]
+    [HttpPut("update/profile")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> EditProfileAsync(EditProfileRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateProfileAsync(UpdateProfileRequest request, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => request is not null, Errors.BadRequest)
         .Join(request)
-        .Map(Mapper.Map<EditProfileCommand>)
+        .Map(Mapper.Map<UpdateProfileCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Map(Mapper.Map<ProfileResponse>)
         .Match(Ok, HandleFailure);

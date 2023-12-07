@@ -57,7 +57,7 @@ public sealed class User : Entity, IAggregate, IAuditable
         Password = password;
     }
 
-    public void EditProfile(string username, string email)
+    public void UpdateProfile(string username, string email)
     {
         Username = username;
         Email = email;
