@@ -4,7 +4,6 @@ using PostIt.Common;
 using PostIt.Common.Domain.Likes;
 using PostIt.Common.Domain.Posts;
 using PostIt.Common.Options.AllowedHosts;
-using PostIt.Posts.Service.Infrastructure.Client;
 using PostIt.Posts.Service.Infrastructure.Persistence;
 using PostIt.Posts.Service.Infrastructure.Persistence.UnitOfWork;
 using PostIt.Posts.Service.Infrastructure.Repositories;
@@ -23,8 +22,7 @@ public static class DependencyInjection
             .AddMediatr()
             .AddValidators()
             .AddRabbitMq()
-            .AddServices()
-            .AddClient<UsersClient>();
+            .AddServices();
 
         return services;
     }
@@ -49,7 +47,6 @@ public static class DependencyInjection
         services.AddScoped<IPostRepository, PostRepository>();
         services.AddScoped<ILikeRepository, LikeRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped<IUsersClient, UsersClient>();
         return services;
     }
 }
