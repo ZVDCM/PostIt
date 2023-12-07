@@ -57,7 +57,7 @@ export class DeletePostHttpService {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Creation was successful',
+                            detail: 'Deletion was successful',
                         })
                     )
                 )

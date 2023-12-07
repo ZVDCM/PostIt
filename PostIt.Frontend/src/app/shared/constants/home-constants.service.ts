@@ -70,7 +70,15 @@ export class HomeConstantsService {
 
     public readonly createPostForm: IForm = {
         body: {
-            id: 'txt-post-body',
+            id: 'txt-create-post-body',
+            name: 'body',
+            label: 'Body',
+            hint: 'Body must not be empty',
+        },
+    };
+    public readonly updatePostForm: IForm = {
+        body: {
+            id: 'txt-update-post-body',
             name: 'body',
             label: 'Body',
             hint: 'Body must not be empty',

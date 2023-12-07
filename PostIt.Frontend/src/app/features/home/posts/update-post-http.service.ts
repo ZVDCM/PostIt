@@ -6,16 +6,28 @@ import { ServerConstantsService } from 'src/app/shared/constants/server-constant
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
 import { PostsHttpService } from './posts-http.service';
-import { Observable, Subject, catchError, filter, finalize, of, switchMap, takeUntil, tap } from 'rxjs';
+import {
+    Observable,
+    Subject,
+    catchError,
+    filter,
+    finalize,
+    of,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs';
+import { IUpdatePost } from './posts.model';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UpdatePostHttpService {
+    public showModal: boolean = false;
     private _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.deletePostEndpoint;
-    private _deletePost$$: Subject<string> = new Subject<string>();
+        this._homeConstants.updatePostEndpoint;
+    private _updatePost$$: Subject<IUpdatePost> = new Subject<IUpdatePost>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -28,26 +40,27 @@ export class UpdatePostHttpService {
         private _postsHttp: PostsHttpService
     ) {}
 
-    public watchDeletePost$(): Observable<void> {
-        return this._deletePost$$.asObservable().pipe(
+    public watchUpdatePost$(): Observable<void> {
+        return this._updatePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((id: string) =>
-                this.deletePost$(id).pipe(
+            switchMap((post: IUpdatePost) =>
+                this.updatePost$(post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading(
                             this._postsHttp.getAllPosts({ page: 1 })!
                         );
                         this._progress.isCancelled = false;
+                        this.showModal = false;
                     }),
                     tap(() =>
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Creation was successful',
+                            detail: 'Update was successful',
                         })
                     )
                 )
@@ -97,7 +110,7 @@ export class UpdatePostHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchDeletePost$())
+                    switchMap(() => this.watchUpdatePost$())
                 )
             ),
             finalize(() => {
@@ -117,11 +130,13 @@ export class UpdatePostHttpService {
         }
     }
 
-    public updatePost(id: string): void {
-        this._deletePost$$.next(id);
+    public updatePost(post: IUpdatePost): void {
+        this._updatePost$$.next(post);
     }
 
-    private deletePost$(id: string): Observable<void> {
-        return this._httpClient.delete<void>(`${this._url}/${id}`);
+    private updatePost$(post: IUpdatePost): Observable<void> {
+        return this._httpClient.put<void>(`${this._url}/${post.id}`, {
+            body: post.body,
+        });
     }
 }

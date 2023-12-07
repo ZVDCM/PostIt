@@ -1,6 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    EventEmitter,
+    Input,
+    Output,
+} from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { Observable } from 'rxjs';
 import { DeletePostHttpService } from 'src/app/features/home/posts/delete-post-http.service';
 import { IPostItem } from 'src/app/features/home/posts/posts.model';
 
@@ -16,7 +21,7 @@ import { IPostItem } from 'src/app/features/home/posts/posts.model';
                         <div
                             class="flex gap-2 items-center group cursor-pointer font-bold text-[var(--primary-color)]"
                         >
-                            <i class="h-[1rem] pi pi-at"></i>
+                            <i class="pi pi-at" style="font-size: .9rem;"></i>
                             <span class="text-[1.1rem] group-hover:underline">
                                 {{ post.username }}
                             </span>
@@ -78,12 +83,15 @@ export class PostItemComponent {
     public post: IPostItem = {} as IPostItem;
     public items: MenuItem[] = [];
 
+    @Output()
+    public updatePost: EventEmitter<IPostItem> = new EventEmitter<IPostItem>();
+
     constructor(private _deletePostHttp: DeletePostHttpService) {
         this.items = [
             {
                 label: 'Update',
                 icon: 'pi pi-pencil',
-                command: () => {},
+                command: () => this.updatePost.emit(this.post),
             },
             {
                 label: 'Delete',

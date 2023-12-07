@@ -9,7 +9,6 @@ import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CreatePostHttpService } from './create-post-http.service';
-import { IPost } from './create-post.model';
 
 @Component({
     selector: 'app-create-post',
@@ -47,7 +46,7 @@ import { IPost } from './create-post.model';
                     <header class="flex items-center gap-2">
                         <i
                             class="pi pi-at mt-1 text-[var(--primary-color)]"
-                            style="font-size: 1rem;"
+                            style="font-size: .9rem;"
                         ></i>
                         <h1
                             class="text-base font-bold tracking-wide whitespace-nowrap group-hover:text-[var(--primary-color)]"

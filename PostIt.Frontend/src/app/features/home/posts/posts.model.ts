@@ -23,3 +23,7 @@ export interface IPostQueryPayload {
     hasNextPage: boolean;
 }
 
+export interface IUpdatePost {
+    id: string;
+    body: string;
+}
