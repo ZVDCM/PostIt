@@ -25,7 +25,8 @@ import { LogoutHttpService } from './logout-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Router } from '@angular/router';
-import { VerifyAccountHttpService } from './verify-account-http.service';
+import { VerifyVerificationTokenHttpService } from './verify-verification-token-http.service';
+import { SendVerificationTokenHttpService } from './send-verification-token-http.service';
 
 @Component({
     selector: 'app-home',
@@ -181,7 +182,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                                     : 'var(--primary-color)'
                                             }"
                                             (click)="
-                                                verifyAccountHttp.sendVerificationToken()
+                                                sendVerificationTokenHttp.sendVerificationToken()
                                             "
                                             >get token</span
                                         ></label
@@ -233,7 +234,7 @@ import { VerifyAccountHttpService } from './verify-account-http.service';
                                 <ng-template #cancel>
                                     <p-button
                                         (click)="
-                                            verifyAccountHttp.cancelRequest()
+                                            verifyVerificationTokenHttp.cancelRequest()
                                         "
                                         type="button"
                                         styleClass="w-full p-button-outlined p-button-danger"
@@ -648,7 +649,8 @@ export class HomeComponent implements AfterViewInit {
         public changePasswordHttp: ChangePasswordHttpService,
         @Inject('verifyAccount')
         public verifyAccountFormHelper: FormHelperService,
-        public verifyAccountHttp: VerifyAccountHttpService,
+        public verifyVerificationTokenHttp: VerifyVerificationTokenHttpService,
+        public sendVerificationTokenHttp: SendVerificationTokenHttpService,
         public loading: LoadingService,
         public location: Location,
         private _passwordHelper: PasswordHelperService,
@@ -704,9 +706,9 @@ export class HomeComponent implements AfterViewInit {
         this.loading$ = loading.watchLoading$();
         this.tooltip$ = this.tooltip$$.asObservable();
         this.sendVerificationToken$ =
-            this.verifyAccountHttp.watchSendVerificationToken$();
+            this.sendVerificationTokenHttp.watchSendVerificationToken$();
         this.verifyVerificationToken$ =
-            this.verifyAccountHttp.watchVerifyVerificationToken$();
+            this.verifyVerificationTokenHttp.watchVerifyVerificationToken$();
         this.changePassword$ = this.changePasswordHttp.watchChangePassword$();
 
         this.initVerificationForm();
@@ -794,7 +796,7 @@ export class HomeComponent implements AfterViewInit {
             return;
         }
 
-        this.verifyAccountHttp.verifyVerificationToken(
+        this.verifyVerificationTokenHttp.verifyVerificationToken(
             this.verifyAccountFormHelper.formGroup.value
         );
     }
@@ -832,7 +834,7 @@ export class HomeComponent implements AfterViewInit {
     public onModalHide(user: IUser) {
         switch (this.activeForm) {
             case 0:
-                this.verifyAccountHttp.cancelRequest();
+                this.verifyVerificationTokenHttp.cancelRequest();
                 this.initVerificationForm();
                 break;
             case 1:

@@ -48,7 +48,7 @@ export class LoginHttpService {
                 this._progress.isCancelled = true;
             }),
             switchMap((user: ILogin) =>
-                this.loginUser(user).pipe(
+                this.login$(user).pipe(
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
@@ -115,7 +115,7 @@ export class LoginHttpService {
         this._login$$.next(user);
     }
 
-    private loginUser(user: ILogin): Observable<IAuthPayload> {
+    private login$(user: ILogin): Observable<IAuthPayload> {
         return this._httpClient.post<IAuthPayload>(this._url, user, {
             withCredentials: true,
         });

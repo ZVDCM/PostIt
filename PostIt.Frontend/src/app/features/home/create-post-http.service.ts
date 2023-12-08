@@ -50,11 +50,10 @@ export class CreatePostHttpService {
                 this.createPostUser(post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
-                        this._loading.endLoading(
-                            this._postsHttp.getAllPosts({ page: 1 })!
-                        );
+                        this._loading.endLoading();
                         this._progress.isCancelled = false;
                         this.showModal = false;
+                        this._postsHttp.getAllPosts({ page: 1 })!;
                     }),
                     tap(() =>
                         this._messageService.add({

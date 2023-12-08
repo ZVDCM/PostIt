@@ -1,95 +1,67 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-    Observable,
-    Subject,
-    catchError,
-    filter,
-    finalize,
-    of,
-    switchMap,
-    takeUntil,
-    tap,
-} from 'rxjs';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IRegister } from './register.model';
 import { MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
+import { Observable, Subject, catchError, filter, finalize, of, switchMap, takeUntil, tap } from 'rxjs';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { RegisterConstantsService } from 'src/app/shared/constants/register-constants.service';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class RegisterHttpService {
-    private readonly _url: string =
+export class SendVerificationTokenHttpService {
+    private readonly _sendUrl: string =
         this._serverConstants.serverApi +
-        this._registerConstants.registerEndpoint;
-    private _register$$: Subject<IRegister> = new Subject<IRegister>();
+        this._homeConstants.sendVerificationTokenEndpoint;
     private _cancelRequest$$: Subject<void> = new Subject<void>();
+    private _sendVerificationToken$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _router: Router,
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _loginConstants: LoginConstantsService,
-        private _registerConstants: RegisterConstantsService,
-        private _messageService: MessageService,
+        private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
-        private _progress: ProgressService
+        private _progress: ProgressService,
+        private _messageService: MessageService
     ) {}
 
-    public watchRegister$(): Observable<void> {
-        return this._register$$.asObservable().pipe(
-            tap((_) => {
+    public watchSendVerificationToken$(): Observable<void> {
+        return this._sendVerificationToken$$.asObservable().pipe(
+            tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IRegister) =>
-                this.register$(user).pipe(
+            switchMap((_) =>
+                this.sendVerificationToken$().pipe(
                     takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'was successful',
+                            detail: 'Token sent successfully',
                         });
-                    }),
-                    tap((_) => {
-                        this._router.navigate([
-                            this._loginConstants.loginRoute,
-                        ]);
                     })
                 )
             ),
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
                         switch (err.status) {
-                            case 400: {
+                            case 401: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
                                     detail: 'Invalid form data',
-                                });
-                                break;
-                            }
-                            case 409: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Email already in use',
                                 });
                                 break;
                             }
@@ -98,14 +70,14 @@ export class RegisterHttpService {
                                     severity: 'error',
                                     summary: 'Error',
                                     detail:
-                                        err.error?.detail ??
+                                        err.error.detail ??
                                         'Something went wrong',
                                 });
                                 break;
                             }
                         }
                     }),
-                    switchMap(() => this.watchRegister$())
+                    switchMap(() => this.watchSendVerificationToken$())
                 )
             ),
             finalize(() => {
@@ -125,11 +97,11 @@ export class RegisterHttpService {
         }
     }
 
-    public register(user: IRegister): void {
-        this._register$$.next(user);
+    public sendVerificationToken(): void {
+        this._sendVerificationToken$$.next();
     }
 
-    private register$(user: IRegister): Observable<void> {
-        return this._httpClient.post<void>(this._url, user);
+    private sendVerificationToken$(): Observable<void> {
+        return this._httpClient.post<void>(this._sendUrl, {});
     }
 }

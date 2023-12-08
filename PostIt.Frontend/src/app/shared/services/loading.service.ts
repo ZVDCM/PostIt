@@ -22,16 +22,9 @@ export class LoadingService {
         this._loading$$.next(true);
     }
 
-    public endLoading(fn?: () => void): void {
+    public endLoading(): void {
         this.isLoading = false;
         this._progress.endProgress();
-        timer(this.millisecondsDelay)
-            .pipe(
-                tap(() => {
-                    this._loading$$.next(false);
-                }),
-                tap(() => fn && fn())
-            )
-            .subscribe();
+        this._loading$$.next(false);
     }
 }

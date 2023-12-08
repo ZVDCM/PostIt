@@ -67,8 +67,16 @@ import { IPostItem } from 'src/app/features/home/posts/posts.model';
             <button
                 pButton
                 pRipple
-                class="p-button-text flex justify-center items-center gap-4"
-                style="border-radius: 0; border-top: 1px solid var(--surface-border)"
+                class="flex justify-center items-center gap-4"
+                [ngClass]="{
+                    'p-button-primary': isLiked,
+                    'p-button-text': !isLiked
+                }"
+                (click)="isLiked = !isLiked"
+                style="border-radius: 0"
+                [ngStyle]="{
+                    'border-top': isLiked ? '':'1px solid var(--surface-border)',
+                }"
             >
                 <i class="pi pi-thumbs-up"></i>
                 <span> Like </span>
@@ -79,6 +87,7 @@ import { IPostItem } from 'src/app/features/home/posts/posts.model';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PostItemComponent {
+    public isLiked: boolean = false;
     @Input()
     public post: IPostItem = {} as IPostItem;
     public items: MenuItem[] = [];
