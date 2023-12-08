@@ -10,8 +10,6 @@ export interface IUser {
     email: string;
     isVerified: boolean;
     role: string;
-    followings: IFollow[];
-    followers: IFollow[];
     createdOnUtc: Date;
 }
 

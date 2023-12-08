@@ -8,13 +8,15 @@ import { HomeRoutingModule } from './home-routing.module';
 import { ProfileComponent } from './profile/profile.component';
 import { PostsComponent } from './posts/posts.component';
 import { CreatePostComponent } from './create-post.component';
+import { UpdatePostComponent } from './update-post.component';
 
 @NgModule({
     declarations: [
         HomeComponent,
         ProfileComponent,
         PostsComponent,
-        CreatePostComponent
+        CreatePostComponent,
+        UpdatePostComponent
     ],
     imports: [CommonModule, HttpClientModule, HomeRoutingModule, SharedModule],
     exports: [HomeRoutingModule],

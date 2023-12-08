@@ -5,39 +5,22 @@ import {
     Input,
     Output,
 } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { IPostItem, IUpdatePost } from './posts/posts.model';
+import { selectUser } from 'src/app/core/state/user/user.selectors';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { PostsHttpService } from './posts/posts-http.service';
+import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
+import { UpdatePostHttpService } from './posts/update-post-http.service';
+import { IFormItem } from 'src/app/core/models/form.model';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
-import { LoadingService } from '../../shared/services/loading.service';
 import { Store } from '@ngrx/store';
-import { selectUser } from 'src/app/core/state/user/user.selectors';
-import { HomeConstantsService } from '../../shared/constants/home-constants.service';
-import { IFormItem } from 'src/app/core/models/form.model';
-import { FormHelperService } from '../../shared/utils/form-helper.service';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CreatePostHttpService } from './posts/create-post-http.service';
-import { IPost } from './posts/posts.model';
 
 @Component({
-    selector: 'app-create-post',
+    selector: 'app-update-post',
     template: `
-        <section
-            class="flex justify-between items-center gap-4 p-[2.45rem] bg-[var(--surface-card)]"
-        >
-            <i
-                class="pi pi-at text-[var(--primary-color)]"
-                style="font-size: 2rem"
-            ></i>
-            <input
-                [readOnly]="true"
-                (click)="showModal = true"
-                pInputText
-                id="create-post"
-                placeholder="Got something on your mind? Post It!"
-                type="text"
-                class="w-full cursor-pointer"
-                style="border: none"
-            />
-        </section>
         <ng-container *ngIf="user$ | async as user">
             <p-dialog
                 *ngIf="showModal; else hideModal"
@@ -46,7 +29,7 @@ import { IPost } from './posts/posts.model';
                 [resizable]="false"
                 [draggable]="false"
                 [closeOnEscape]="false"
-                header="Create Post"
+                header="Update Post"
                 styleClass="w-full max-w-lg"
             >
                 <div class="flex flex-col gap-2">
@@ -79,7 +62,7 @@ import { IPost } from './posts/posts.model';
                                 "
                                 class="w-full resize-none"
                                 style="font-size: x-large;"
-                                placeholder="Got something on your mind? Post It!"
+                                placeholder="Changed your mind? Update your post!"
                                 pInputTextarea
                             ></textarea>
                             <small
@@ -104,7 +87,7 @@ import { IPost } from './posts/posts.model';
                                 [loading]="loading.isLoading"
                                 type="submit"
                                 styleClass="w-full"
-                                label="Create post"
+                                label="Update post"
                             ></p-button>
                             <p-button
                                 *ngIf="!loading.isLoading; else cancel"
@@ -115,7 +98,7 @@ import { IPost } from './posts/posts.model';
                             ></p-button>
                             <ng-template #cancel>
                                 <p-button
-                                    (click)="createPostHttp.cancelRequest()"
+                                    (click)="updatePostHttp.cancelRequest()"
                                     type="button"
                                     styleClass="w-full p-button-outlined p-button-danger"
                                     label="Cancel"
@@ -130,60 +113,41 @@ import { IPost } from './posts/posts.model';
             </ng-template>
         </ng-container>
     `,
-    styles: [
-        `
-            :host {
-                ::ng-deep p-fileUpload {
-                    .p-fileupload-content {
-                        @apply hidden;
-                    }
-
-                    .p-fileupload-buttonbar {
-                        @apply border-0 h-min w-min p-0;
-
-                        .p-button {
-                            @apply m-0 p-4;
-
-                            .p-button-icon {
-                                @apply m-0;
-                            }
-
-                            .p-button-label {
-                                @apply hidden;
-                            }
-                        }
-                    }
-                }
-            }
-        `,
-    ],
+    styles: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [FormHelperService],
 })
-export class CreatePostComponent {
+export class UpdatePostComponent {
     public user$: Observable<IUser> = new Observable<IUser>();
-    public bodyField: IFormItem = this.homeConstants.createPostForm['body'];
-    public showModal: boolean = false;
+    public updatePost$: Observable<void> = new Observable<void>();
+    public bodyField: IFormItem = this.homeConstants.updatePostForm['body'];
 
+    @Input()
+    public showModal: boolean = false;
+    @Input()
+    public post: IPostItem = {} as IPostItem;
     @Output()
-    public createPost: EventEmitter<IPost> = new EventEmitter<IPost>();
+    public updatePost: EventEmitter<[string, IUpdatePost]> = new EventEmitter<
+        [string, IUpdatePost]
+    >();
     @Output()
     public hideModal: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(
-        public homeConstants: HomeConstantsService,
         public loading: LoadingService,
-        public createPostHttp: CreatePostHttpService,
+        public homeConstants: HomeConstantsService,
+        public postsHttp: PostsHttpService,
         public formHelper: FormHelperService,
+        public updatePostHttp: UpdatePostHttpService,
+
         private _store: Store
     ) {
         this.user$ = _store.select(selectUser);
-        this.initCreatePostForm();
+        this.updatePost$ = updatePostHttp.watchUpdatePost$();
     }
 
     public onModalHide(): void {
         this.hideModal.emit();
-        this.initCreatePostForm();
+        this.initUpdatePostForm();
     }
 
     public onSubmit(): void {
@@ -191,14 +155,17 @@ export class CreatePostComponent {
             this.formHelper.validateAllFormInputs();
             return;
         }
-        this.createPost.emit(this.formHelper.formGroup.value);
+        this.updatePost.emit([
+            this.post.postId,
+            this.formHelper.formGroup.value,
+        ]);
         this.hideModal.emit();
     }
 
-    private initCreatePostForm(): void {
+    private initUpdatePostForm(): void {
         this.formHelper.setFormGroup(
             new FormGroup({
-                [this.bodyField.name]: new FormControl('', [
+                [this.bodyField.name]: new FormControl(this.post.body, [
                     Validators.required,
                 ]),
             })

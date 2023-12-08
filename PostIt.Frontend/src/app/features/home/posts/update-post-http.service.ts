@@ -23,11 +23,12 @@ import { IUpdatePost } from './posts.model';
     providedIn: 'root',
 })
 export class UpdatePostHttpService {
-    public showModal: boolean = false;
     private _url: string =
         this._serverConstants.serverApi +
         this._homeConstants.updatePostEndpoint;
-    private _updatePost$$: Subject<IUpdatePost> = new Subject<IUpdatePost>();
+    private _updatePost$$: Subject<[string, IUpdatePost]> = new Subject<
+        [string, IUpdatePost]
+    >();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -46,15 +47,12 @@ export class UpdatePostHttpService {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((post: IUpdatePost) =>
-                this.updatePost$(post).pipe(
+            switchMap(([postId, post]: [string, IUpdatePost]) =>
+                this.updatePost$(postId, post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
-                        this._loading.endLoading(
-                            this._postsHttp.getAllPosts({ page: 1 })!
-                        );
+                        this._loading.endLoading();
                         this._progress.isCancelled = false;
-                        this.showModal = false;
                     }),
                     tap(() =>
                         this._messageService.add({
@@ -130,13 +128,11 @@ export class UpdatePostHttpService {
         }
     }
 
-    public updatePost(post: IUpdatePost): void {
-        this._updatePost$$.next(post);
+    public updatePost(postId: string, post: IUpdatePost): void {
+        this._updatePost$$.next([postId, post]);
     }
 
-    private updatePost$(post: IUpdatePost): Observable<void> {
-        return this._httpClient.put<void>(`${this._url}/${post.id}`, {
-            body: post.body,
-        });
+    private updatePost$(postId: string, post: IUpdatePost): Observable<void> {
+        return this._httpClient.put<void>(`${this._url}/${postId}`, post);
     }
 }

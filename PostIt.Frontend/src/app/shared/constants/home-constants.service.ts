@@ -9,6 +9,7 @@ export class HomeConstantsService {
 
     public readonly postsRoute = '/home/posts';
     public readonly postsEndpoint = '/posts';
+    public readonly userPostsEndpoint = '/posts/users';
     public readonly createPostEndpoint = '/account/posts';
     public readonly deletePostEndpoint = '/account/posts';
     public readonly updatePostEndpoint = '/account/posts';

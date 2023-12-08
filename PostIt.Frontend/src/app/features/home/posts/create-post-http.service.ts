@@ -16,14 +16,13 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IPost } from './create-post.model';
-import { PostsHttpService } from './posts/posts-http.service';
+import { PostsHttpService } from './posts-http.service';
+import { IPost } from './posts.model';
 
 @Injectable({
     providedIn: 'root',
 })
 export class CreatePostHttpService {
-    public showModal: boolean = false;
     private readonly _url: string =
         this._serverConstants.serverApi +
         this._homeConstants.createPostEndpoint;
@@ -52,8 +51,6 @@ export class CreatePostHttpService {
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
-                        this.showModal = false;
-                        this._postsHttp.getAllPosts({ page: 1 })!;
                     }),
                     tap(() =>
                         this._messageService.add({

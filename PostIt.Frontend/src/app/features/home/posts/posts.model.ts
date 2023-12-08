@@ -24,6 +24,9 @@ export interface IPostQueryPayload {
 }
 
 export interface IUpdatePost {
-    id: string;
+    body: string;
+}
+
+export interface IPost {
     body: string;
 }

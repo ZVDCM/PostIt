@@ -73,9 +73,6 @@ import { SendVerificationTokenHttpService } from './send-verification-token-http
                     >
                         Profile
                     </button>
-                    <button class="nav-button" icon="pi pi-bell" pButton>
-                        Notifications
-                    </button>
                     <div class="w-full mt-auto flex justify-start items-center">
                         <p-splitButton
                             [menuStyle]="{ width: '100%' }"
@@ -661,7 +658,7 @@ export class HomeComponent implements AfterViewInit {
         private _clipboard: Clipboard,
         private _router: Router
     ) {
-        this.user$ = this._store.select(selectUser).pipe(
+        this.user$ = _store.select(selectUser).pipe(
             tap((user: IUser) => {
                 this.items = [
                     {
@@ -675,7 +672,7 @@ export class HomeComponent implements AfterViewInit {
                     },
                     {
                         label: 'Update Profile',
-                        icon: 'pi pi-user-update',
+                        icon: 'pi pi-user-edit',
                         command: () => {
                             this.activeForm = 1;
                             this.showModal = true;
