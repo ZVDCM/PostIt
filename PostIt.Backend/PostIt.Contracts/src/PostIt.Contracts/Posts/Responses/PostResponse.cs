@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace PostIt.Contracts.Posts.Responses;
 
@@ -9,4 +10,5 @@ public sealed record PostResponse(
     string Body,
     DateTime CreatedOnUtc,
     DateTime ModifiedOnUtc,
-    int LikesCount);
+    int LikesCount,
+    IEnumerable<LikeResponse> Likes);

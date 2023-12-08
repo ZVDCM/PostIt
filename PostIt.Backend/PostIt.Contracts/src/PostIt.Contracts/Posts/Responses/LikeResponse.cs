@@ -7,5 +7,4 @@ public sealed record LikeResponse(
     Guid PostId,
     Guid UserId,
     string Username,
-    DateTime CreatedOnUtc,
-    DateTime ModifiedOnUtc);
+    DateTime CreatedOnUtc);

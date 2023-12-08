@@ -21,7 +21,6 @@ public sealed class LikeProfile : Profile
                     l.PostId.Value,
                     l.UserId.Value,
                     l.Username,
-                    l.CreatedOnUtc,
-                    l.ModifiedOnUtc))));
+                    l.CreatedOnUtc))));
     }
 }
