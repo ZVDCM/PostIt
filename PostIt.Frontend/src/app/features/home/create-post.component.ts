@@ -14,8 +14,8 @@ import { HomeConstantsService } from '../../shared/constants/home-constants.serv
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CreatePostHttpService } from './posts/create-post-http.service';
-import { IPost } from './posts/posts.model';
+import { CreatePostHttpService } from '../../shared/services/create-post-http.service';
+import { IPost } from '../../core/models/posts.model';
 
 @Component({
     selector: 'app-create-post',

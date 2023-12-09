@@ -6,17 +6,17 @@ import {
     IPostItem,
     IPostQueryPayload,
     IUpdatePost,
-} from './posts.model';
-import { PostsHttpService } from './posts-http.service';
-import { DeletePostHttpService } from './delete-post-http.service';
+} from '../../../core/models/posts.model';
+import { PostsHttpService } from '../../../shared/services/posts-http.service';
+import { DeletePostHttpService } from '../../../shared/services/delete-post-http.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from './update-post-http.service';
+import { UpdatePostHttpService } from '../../../shared/services/update-post-http.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { CreatePostHttpService } from './create-post-http.service';
+import { CreatePostHttpService } from '../../../shared/services/create-post-http.service';
 
 @Component({
     selector: 'app-posts',

@@ -6,13 +6,13 @@ import {
     Output,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IPostItem, IUpdatePost } from './posts/posts.model';
+import { IPostItem, IUpdatePost } from '../../core/models/posts.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { PostsHttpService } from './posts/posts-http.service';
+import { PostsHttpService } from '../../shared/services/posts-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from './posts/update-post-http.service';
+import { UpdatePostHttpService } from '../../shared/services/update-post-http.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';

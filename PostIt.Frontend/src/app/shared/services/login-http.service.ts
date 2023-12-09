@@ -1,95 +1,89 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ILogin, IAuthPayload } from '../../core/models/auth.model';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
-    takeUntil,
     tap,
 } from 'rxjs';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IRegister } from './register.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { Store } from '@ngrx/store';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
+import { UserActions } from 'src/app/core/state/user/user.actions';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { RegisterConstantsService } from 'src/app/shared/constants/register-constants.service';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
-@Injectable({
-    providedIn: 'root',
-})
-export class RegisterHttpService {
+@Injectable({ providedIn: 'root' })
+export class LoginHttpService {
     private readonly _url: string =
-        this._serverConstants.serverApi +
-        this._registerConstants.registerEndpoint;
-    private _register$$: Subject<IRegister> = new Subject<IRegister>();
-    private _cancelRequest$$: Subject<void> = new Subject<void>();
+        this._serverConstants.serverApi + this._loginConstants.loginEndpoint;
+    private _login$$: Subject<ILogin> = new Subject<ILogin>();
 
     constructor(
-        private _router: Router,
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _loginConstants: LoginConstantsService,
-        private _registerConstants: RegisterConstantsService,
-        private _messageService: MessageService,
+        private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
-        private _progress: ProgressService
+        private _progress: ProgressService,
+        private _messageService: MessageService,
+        private _router: Router,
+        private _store: Store
     ) {}
 
-    public watchRegister$(): Observable<void> {
-        return this._register$$.asObservable().pipe(
-            tap((_) => {
+    public watchLogin$(): Observable<void> {
+        return this._login$$.asObservable().pipe(
+            tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IRegister) =>
-                this.register$(user).pipe(
-                    takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+            switchMap((user: ILogin) =>
+                this.login$(user).pipe(
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap((_) => {
-                        this._messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'was successful',
-                        });
+                    map((data: IAuthPayload) => {
+                        this._store.dispatch(
+                            AccessTokenActions.setAccessToken({
+                                accessToken: data.accessToken,
+                            })
+                        );
+                        this._store.dispatch(
+                            UserActions.setUser({
+                                user: data.user,
+                            })
+                        );
                     }),
-                    tap((_) => {
-                        this._router.navigate([
-                            this._loginConstants.loginRoute,
-                        ]);
+                    tap(() => {
+                        this._router.navigate([this._homeConstants.homeRoute]);
                     })
                 )
             ),
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
                         switch (err.status) {
-                            case 400: {
+                            case 401: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid form data',
-                                });
-                                break;
-                            }
-                            case 409: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Email already in use',
+                                    detail: 'Invalid user credentials',
                                 });
                                 break;
                             }
@@ -105,7 +99,7 @@ export class RegisterHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchRegister$())
+                    switchMap(() => this.watchLogin$())
                 )
             ),
             finalize(() => {
@@ -117,19 +111,13 @@ export class RegisterHttpService {
         );
     }
 
-    public cancelRequest(): void {
-        if (this._loading.isLoading) {
-            this._progress.isCancelled = null;
-            this._loading.endLoading();
-            this._cancelRequest$$.next();
-        }
+    public login(user: ILogin): void {
+        this._login$$.next(user);
     }
 
-    public register(user: IRegister): void {
-        this._register$$.next(user);
-    }
-
-    private register$(user: IRegister): Observable<void> {
-        return this._httpClient.post<void>(this._url, user);
+    private login$(user: ILogin): Observable<IAuthPayload> {
+        return this._httpClient.post<IAuthPayload>(this._url, user, {
+            withCredentials: true,
+        });
     }
 }

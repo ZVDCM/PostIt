@@ -4,7 +4,7 @@ import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
-import { ResetPasswordHttpService } from './reset-password-http.service';
+import { ResetPasswordHttpService } from '../../../shared/services/reset-password-http.service';
 import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { Observable } from 'rxjs';

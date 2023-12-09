@@ -1,59 +1,74 @@
 import { Injectable } from '@angular/core';
-import { IPostQuery, IPostQueryPayload } from '../posts/posts.model';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
     takeUntil,
     tap,
 } from 'rxjs';
-import {
-    HttpClient,
-    HttpErrorResponse,
-    HttpParams,
-} from '@angular/common/http';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { IUpdateProfile } from '../../core/models/update-profile.model';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { IUserPayload } from 'src/app/core/state/user/user.model';
+import { MessageService } from 'primeng/api';
+import { Store } from '@ngrx/store';
+import { UserActions } from 'src/app/core/state/user/user.actions';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UserPostsHttpService {
-    private _url: string =
-        this._serverConstants.serverApi + this._homeConstants.userPostsEndpoint;
-    private _posts$$: Subject<[string, IPostQuery]> = new Subject<
-        [string, IPostQuery]
-    >();
+export class UpdateProfileHttpService {
+    private readonly _url: string =
+        this._serverConstants.serverApi +
+        this._homeConstants.updateProfileEndpoint;
+    private _updateProfile$$: Subject<IUpdateProfile> =
+        new Subject<IUpdateProfile>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _homeConstants: HomeConstantsService,
+        private _store: Store,
         private _loading: LoadingService,
         private _progress: ProgressService,
         private _messageService: MessageService
     ) {}
 
-    public watchUserPosts$(): Observable<IPostQueryPayload> {
-        return this._posts$$.asObservable().pipe(
+    public watchUpdateProfile$(): Observable<void> {
+        return this._updateProfile$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap(([userId, query]: [string, IPostQuery]) =>
-                this.getAllUserPosts$(userId, query).pipe(
+            switchMap((user: IUpdateProfile) =>
+                this.updateProfile$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
+                    }),
+                    map((data: IUserPayload) => {
+                        this._store.dispatch(
+                            UserActions.setUser({
+                                user: data,
+                            })
+                        );
+                    }),
+                    tap(() => {
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Update was successful',
+                        });
                     })
                 )
             ),
@@ -66,6 +81,22 @@ export class UserPostsHttpService {
                     }),
                     tap((err) => {
                         switch (err.status) {
+                            case 400: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid form data',
+                                });
+                                break;
+                            }
+                            case 409: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Email already in use',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -78,7 +109,7 @@ export class UserPostsHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchUserPosts$())
+                    switchMap(() => this.watchUpdateProfile$())
                 )
             ),
             finalize(() => {
@@ -98,23 +129,11 @@ export class UserPostsHttpService {
         }
     }
 
-    public getAllUserPosts(userId: string, query: IPostQuery): void {
-        this._posts$$.next([userId, query]);
+    public updateProfile(user: IUpdateProfile): void {
+        this._updateProfile$$.next(user);
     }
 
-    private getAllUserPosts$(
-        userId: string,
-        query: IPostQuery
-    ): Observable<IPostQueryPayload> {
-        let params = new HttpParams().set('pageSize', '1000');
-
-        for (const [key, value] of Object.entries(query)) {
-            params = params.set(key, value.toString());
-        }
-
-        return this._httpClient.get<IPostQueryPayload>(
-            `${this._url}/${userId}`,
-            { params }
-        );
+    private updateProfile$(user: IUpdateProfile): Observable<IUserPayload> {
+        return this._httpClient.put<IUserPayload>(this._url, user);
     }
 }

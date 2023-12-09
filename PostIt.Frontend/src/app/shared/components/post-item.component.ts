@@ -6,8 +6,8 @@ import {
     Output,
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { DeletePostHttpService } from 'src/app/features/home/posts/delete-post-http.service';
-import { IPostItem } from 'src/app/features/home/posts/posts.model';
+import { DeletePostHttpService } from 'src/app/shared/services/delete-post-http.service';
+import { IPostItem } from 'src/app/core/models/posts.model';
 
 @Component({
     selector: 'app-post-item',

@@ -1,9 +1,6 @@
-import {
-    HttpClient,
-    HttpErrorResponse,
-    HttpParams,
-} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import {
     Observable,
     Subject,
@@ -19,16 +16,17 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IPostQuery, IPostQueryPayload } from './posts.model';
-import { MessageService } from 'primeng/api';
+import { IChangePassword } from '../../core/models/change-password.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class PostsHttpService {
-    private _url: string =
-        this._serverConstants.serverApi + this._homeConstants.postsEndpoint;
-    private _posts$$: Subject<IPostQuery> = new Subject<IPostQuery>();
+export class ChangePasswordHttpService {
+    private readonly _url =
+        this._serverConstants.serverApi +
+        this._homeConstants.changePasswordEndpoint;
+    private _changePassword$$: Subject<IChangePassword> =
+        new Subject<IChangePassword>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -40,18 +38,25 @@ export class PostsHttpService {
         private _messageService: MessageService
     ) {}
 
-    public watchPosts$(): Observable<IPostQueryPayload> {
-        return this._posts$$.asObservable().pipe(
+    public watchChangePassword$(): Observable<void> {
+        return this._changePassword$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((query: IPostQuery) =>
-                this.getAllPosts$(query).pipe(
+            switchMap((user: IChangePassword) =>
+                this.changePasswordUser(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
+                    }),
+                    tap(() => {
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Change was successful',
+                        });
                     })
                 )
             ),
@@ -63,7 +68,32 @@ export class PostsHttpService {
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
+                        console.log(err);
                         switch (err.status) {
+                            case 400: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid form data',
+                                });
+                                break;
+                            }
+                            case 401: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'User unauthorized',
+                                });
+                                break;
+                            }
+                            case 403: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid user credentials',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -76,7 +106,7 @@ export class PostsHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchPosts$())
+                    switchMap(() => this.watchChangePassword$())
                 )
             ),
             finalize(() => {
@@ -96,17 +126,11 @@ export class PostsHttpService {
         }
     }
 
-    public getAllPosts(query: IPostQuery): void {
-        this._posts$$.next(query);
+    public changePassword(user: IChangePassword): void {
+        this._changePassword$$.next(user);
     }
 
-    private getAllPosts$(query: IPostQuery): Observable<IPostQueryPayload> {
-        let params = new HttpParams().set('pageSize', '1000');
-
-        for (const [key, value] of Object.entries(query)) {
-            params = params.set(key, value.toString());
-        }
-
-        return this._httpClient.get<IPostQueryPayload>(this._url, { params });
+    private changePasswordUser(user: IChangePassword): Observable<void> {
+        return this._httpClient.put<void>(this._url, user);
     }
 }

@@ -1,33 +1,23 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import {
-    Observable,
-    Subject,
-    catchError,
-    filter,
-    finalize,
-    of,
-    switchMap,
-    takeUntil,
-    tap,
-} from 'rxjs';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { Observable, Subject, catchError, filter, finalize, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import { IVerifyVerificationToken } from '../../core/models/verify-verification-token.model';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { PostsHttpService } from './posts-http.service';
-import { IPost } from './posts.model';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
 })
-export class CreatePostHttpService {
-    private readonly _url: string =
+export class VerifyVerificationTokenHttpService {
+    private readonly _verifyUrl: string =
         this._serverConstants.serverApi +
-        this._homeConstants.createPostEndpoint;
-    private _createPost$$: Subject<IPost> = new Subject<IPost>();
+        this._homeConstants.verifyVerificationTokenEndpoint;
     private _cancelRequest$$: Subject<void> = new Subject<void>();
+    private _verifyVerificationToken$$: Subject<IVerifyVerificationToken> =
+        new Subject<IVerifyVerificationToken>();
 
     constructor(
         private _httpClient: HttpClient,
@@ -35,30 +25,30 @@ export class CreatePostHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService,
-        private _postsHttp: PostsHttpService
+        private _messageService: MessageService
     ) {}
 
-    public watchCreatePost$(): Observable<void> {
-        return this._createPost$$.asObservable().pipe(
+
+    public watchVerifyVerificationToken$(): Observable<void> {
+        return this._verifyVerificationToken$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((post: IPost) =>
-                this.createPostUser(post).pipe(
+            switchMap((user: IVerifyVerificationToken) =>
+                this.verifyVerificationToken$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() =>
+                    map(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Creation was successful',
-                        })
-                    )
+                            detail: 'Account verification successful',
+                        });
+                    })
                 )
             ),
             catchError((err) =>
@@ -94,6 +84,14 @@ export class CreatePostHttpService {
                                 });
                                 break;
                             }
+                            case 404: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Token not found',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -106,7 +104,7 @@ export class CreatePostHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchCreatePost$())
+                    switchMap(() => this.watchVerifyVerificationToken$())
                 )
             ),
             finalize(() => {
@@ -126,11 +124,13 @@ export class CreatePostHttpService {
         }
     }
 
-    public createPost(post: IPost): void {
-        this._createPost$$.next(post);
+    public verifyVerificationToken(user: IVerifyVerificationToken): void {
+        this._verifyVerificationToken$$.next(user);
     }
 
-    private createPostUser(post: IPost): Observable<void> {
-        return this._httpClient.post<void>(this._url, post);
+    private verifyVerificationToken$(
+        user: IVerifyVerificationToken
+    ): Observable<void> {
+        return this._httpClient.put<void>(this._verifyUrl, user);
     }
 }

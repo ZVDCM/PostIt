@@ -8,7 +8,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { ForgotPasswordComponent } from './forgot-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { VerifyResetTokenComponent } from './verify-reset-token/verify-reset-token.component';
-import { OneShotAuthService } from './one-shot-auth.service';
+import { OneShotAuthService } from '../../shared/services/one-shot-auth.service';
 
 @NgModule({
     declarations: [

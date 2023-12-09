@@ -16,17 +16,17 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IChangePassword } from './change-password.model';
+import { PostsHttpService } from './posts-http.service';
+import { IPost } from '../../core/models/posts.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ChangePasswordHttpService {
-    private readonly _url =
+export class CreatePostHttpService {
+    private readonly _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.changePasswordEndpoint;
-    private _changePassword$$: Subject<IChangePassword> =
-        new Subject<IChangePassword>();
+        this._homeConstants.createPostEndpoint;
+    private _createPost$$: Subject<IPost> = new Subject<IPost>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -35,29 +35,30 @@ export class ChangePasswordHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
+        private _postsHttp: PostsHttpService
     ) {}
 
-    public watchChangePassword$(): Observable<void> {
-        return this._changePassword$$.asObservable().pipe(
+    public watchCreatePost$(): Observable<void> {
+        return this._createPost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IChangePassword) =>
-                this.changePasswordUser(user).pipe(
+            switchMap((post: IPost) =>
+                this.createPostUser(post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() => {
+                    tap(() =>
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Change was successful',
-                        });
-                    })
+                            detail: 'Creation was successful',
+                        })
+                    )
                 )
             ),
             catchError((err) =>
@@ -68,7 +69,6 @@ export class ChangePasswordHttpService {
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
-                        console.log(err);
                         switch (err.status) {
                             case 400: {
                                 this._messageService.add({
@@ -106,7 +106,7 @@ export class ChangePasswordHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchChangePassword$())
+                    switchMap(() => this.watchCreatePost$())
                 )
             ),
             finalize(() => {
@@ -126,11 +126,11 @@ export class ChangePasswordHttpService {
         }
     }
 
-    public changePassword(user: IChangePassword): void {
-        this._changePassword$$.next(user);
+    public createPost(post: IPost): void {
+        this._createPost$$.next(post);
     }
 
-    private changePasswordUser(user: IChangePassword): Observable<void> {
-        return this._httpClient.put<void>(this._url, user);
+    private createPostUser(post: IPost): Observable<void> {
+        return this._httpClient.post<void>(this._url, post);
     }
 }

@@ -1,74 +1,67 @@
 import { Injectable } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { ProgressService } from 'src/app/shared/services/progress.service';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
-    map,
     of,
     switchMap,
     takeUntil,
     tap,
 } from 'rxjs';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IUpdateProfile } from './update-profile.model';
+import { ISendResetToken } from '../../core/models/send-reset-token.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { IUserPayload } from 'src/app/core/state/user/user.model';
-import { MessageService } from 'primeng/api';
-import { Store } from '@ngrx/store';
-import { UserActions } from 'src/app/core/state/user/user.actions';
-import { LoadingService } from 'src/app/shared/services/loading.service';
-import { ProgressService } from 'src/app/shared/services/progress.service';
+import { Router } from '@angular/router';
+import { OneShotAuthService } from './one-shot-auth.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UpdateProfileHttpService {
-    private readonly _url: string =
+export class SendResetTokenHttpService {
+    private readonly _url =
         this._serverConstants.serverApi +
-        this._homeConstants.updateProfileEndpoint;
-    private _updateProfile$$: Subject<IUpdateProfile> =
-        new Subject<IUpdateProfile>();
+        this._forgotPasswordConstants.sendResetTokenEndpoint;
+    private _sendResetToken$$: Subject<ISendResetToken> =
+        new Subject<ISendResetToken>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _homeConstants: HomeConstantsService,
-        private _store: Store,
+        private _forgotPasswordConstants: ForgotPasswordConstantsService,
+        private _oneShot: OneShotAuthService,
+        private _httpClient: HttpClient,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
+        private _router: Router
     ) {}
 
-    public watchUpdateProfile$(): Observable<void> {
-        return this._updateProfile$$.asObservable().pipe(
+    public watchSendResetToken$(): Observable<void> {
+        return this._sendResetToken$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IUpdateProfile) =>
-                this.updateProfile$(user).pipe(
+            switchMap((user: ISendResetToken) =>
+                this.sendResetTokenUser(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    map((data: IUserPayload) => {
-                        this._store.dispatch(
-                            UserActions.setUser({
-                                user: data,
-                            })
-                        );
+                    tap(() => {
+                        this._oneShot.email = user.email;
                     }),
                     tap(() => {
-                        this._messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'Update was successful',
-                        });
+                        this._router.navigate([
+                            this._forgotPasswordConstants.verifyResetTokenRoute,
+                        ]);
                     })
                 )
             ),
@@ -89,14 +82,6 @@ export class UpdateProfileHttpService {
                                 });
                                 break;
                             }
-                            case 409: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Email already in use',
-                                });
-                                break;
-                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -109,7 +94,7 @@ export class UpdateProfileHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchUpdateProfile$())
+                    switchMap(() => this.watchSendResetToken$())
                 )
             ),
             finalize(() => {
@@ -129,11 +114,11 @@ export class UpdateProfileHttpService {
         }
     }
 
-    public updateProfile(user: IUpdateProfile): void {
-        this._updateProfile$$.next(user);
+    public sendResetToken(user: ISendResetToken): void {
+        this._sendResetToken$$.next(user);
     }
 
-    private updateProfile$(user: IUpdateProfile): Observable<IUserPayload> {
-        return this._httpClient.put<IUserPayload>(this._url, user);
+    private sendResetTokenUser(user: ISendResetToken): Observable<void> {
+        return this._httpClient.post<void>(this._url, user);
     }
 }

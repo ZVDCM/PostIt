@@ -17,7 +17,7 @@ import {
     takeUntil,
     tap,
 } from 'rxjs';
-import { IUpdatePost } from './posts.model';
+import { IUpdatePost } from '../../core/models/posts.model';
 
 @Injectable({
     providedIn: 'root',

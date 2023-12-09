@@ -10,16 +10,16 @@ import {
     IPostItem,
     IPostQueryPayload,
     IUpdatePost,
-} from '../posts/posts.model';
-import { UserPostsHttpService } from './user-posts-http.service';
+} from '../../../core/models/posts.model';
+import { UserPostsHttpService } from '../../../shared/services/user-posts-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from '../posts/update-post-http.service';
-import { DeletePostHttpService } from '../posts/delete-post-http.service';
+import { UpdatePostHttpService } from '../../../shared/services/update-post-http.service';
+import { DeletePostHttpService } from '../../../shared/services/delete-post-http.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { CreatePostHttpService } from '../posts/create-post-http.service';
+import { CreatePostHttpService } from '../../../shared/services/create-post-http.service';
 
 @Component({
     selector: 'app-profile',
