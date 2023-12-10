@@ -1,73 +1,65 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { LoadingService } from 'src/app/shared/services/loading.service';
-import { ProgressService } from 'src/app/shared/services/progress.service';
+import { MessageService } from 'primeng/api';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
-    map,
     of,
     switchMap,
     takeUntil,
     tap,
 } from 'rxjs';
-import { IVerifyResetToken } from '../../core/models/verify-reset-token.model';
-import { MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
-import { IAuthPayload } from '../../core/models/auth.model';
-import { OneShotAuthService } from './one-shot-auth.service';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { ProgressService } from 'src/app/shared/services/progress.service';
+import { IChangePassword } from '../../../core/models/change-password.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class VerifyResetTokenHttpService {
+export class ChangePasswordHttpService {
     private readonly _url =
         this._serverConstants.serverApi +
-        this._forgotPasswordConstants.verifyResetTokenEndpoint;
-    private _verifyResetToken$$: Subject<IVerifyResetToken> =
-        new Subject<IVerifyResetToken>();
+        this._homeConstants.changePasswordEndpoint;
+    private _changePassword$$: Subject<IChangePassword> =
+        new Subject<IChangePassword>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _forgotPasswordConstants: ForgotPasswordConstantsService,
+        private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService,
-        private _oneShot: OneShotAuthService,
-        private _router: Router
+        private _messageService: MessageService
     ) {}
 
-    public watchVerifyResetToken$(): Observable<void> {
-        return this._verifyResetToken$$.asObservable().pipe(
+    public watchChangePassword$(): Observable<void> {
+        return this._changePassword$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IVerifyResetToken) => {
-                return this.verifyResetTokenUser(user).pipe(
+            switchMap((user: IChangePassword) =>
+                this._changePassword$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    map((data: IAuthPayload) => {
-                        this._oneShot.accessToken = data.accessToken;
-                        this._oneShot.user = data.user;
-                    }),
                     tap(() => {
-                        this._router.navigate([
-                            this._forgotPasswordConstants.resetPasswordRoute,
-                        ]);
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Change was successful',
+                        });
                     })
-                );
-            }),
+                )
+            ),
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
@@ -76,6 +68,7 @@ export class VerifyResetTokenHttpService {
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
+                        console.log(err);
                         switch (err.status) {
                             case 400: {
                                 this._messageService.add({
@@ -89,15 +82,15 @@ export class VerifyResetTokenHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid Reset Token',
+                                    detail: 'User unauthorized',
                                 });
                                 break;
                             }
-                            case 404: {
+                            case 403: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Token not found',
+                                    detail: 'Invalid user credentials',
                                 });
                                 break;
                             }
@@ -113,7 +106,7 @@ export class VerifyResetTokenHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchVerifyResetToken$())
+                    switchMap(() => this.watchChangePassword$())
                 )
             ),
             finalize(() => {
@@ -133,13 +126,11 @@ export class VerifyResetTokenHttpService {
         }
     }
 
-    public verifyResetToken(user: IVerifyResetToken): void {
-        this._verifyResetToken$$.next({ ...user, email: this._oneShot.email });
+    public changePassword(user: IChangePassword): void {
+        this._changePassword$$.next(user);
     }
 
-    public verifyResetTokenUser(
-        user: IVerifyResetToken
-    ): Observable<IAuthPayload> {
-        return this._httpClient.post<IAuthPayload>(this._url, user);
+    private _changePassword$(user: IChangePassword): Observable<void> {
+        return this._httpClient.put<void>(this._url, user);
     }
 }

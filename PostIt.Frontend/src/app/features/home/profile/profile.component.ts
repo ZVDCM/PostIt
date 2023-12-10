@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, map, switchMap } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { Clipboard } from '@angular/cdk/clipboard';
@@ -9,17 +9,17 @@ import {
     IPost,
     IPostItem,
     IPostQueryPayload,
-    IUpdatePost,
 } from '../../../core/models/posts.model';
-import { UserPostsHttpService } from '../../../shared/services/user-posts-http.service';
+import { UserPostsHttpService } from '../../../shared/services/posts/user-posts-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from '../../../shared/services/update-post-http.service';
-import { DeletePostHttpService } from '../../../shared/services/delete-post-http.service';
+import { UpdatePostHttpService } from '../../../shared/services/posts/update-post-http.service';
+import { DeletePostHttpService } from '../../../shared/services/posts/delete-post-http.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { CreatePostHttpService } from '../../../shared/services/create-post-http.service';
+import { CreatePostHttpService } from '../../../shared/services/posts/create-post-http.service';
+import { LikePostHttpService } from 'src/app/shared/services/posts/likes/like-post-http.service';
+import { UnlikePostHttpService } from 'src/app/shared/services/posts/likes/unlike-post-http.service';
 
 @Component({
     selector: 'app-profile',
@@ -102,12 +102,13 @@ import { CreatePostHttpService } from '../../../shared/services/create-post-http
         <app-update-post
             [showModal]="showUpdateModal"
             (hideModal)="showUpdateModal = false"
-            [post]="targetPost"
             (updatePost)="updatePost($event)"
         />
         <ng-container *ngIf="createPost$ | async"></ng-container>
         <ng-container *ngIf="updatePost$ | async"></ng-container>
         <ng-container *ngIf="deletePost$ | async"></ng-container>
+        <ng-container *ngIf="likePost$ | async"></ng-container>
+        <ng-container *ngIf="unlikePost$ | async"></ng-container>
     `,
     styles: [
         `
@@ -146,13 +147,14 @@ import { CreatePostHttpService } from '../../../shared/services/create-post-http
 })
 export class ProfileComponent {
     public showUpdateModal: boolean = false;
-    public targetPost: IPostItem = {} as IPostItem;
     public user$: Observable<IUser> = new Observable<IUser>();
     public getAllUserPosts$: Observable<IPostQueryPayload> =
         new Observable<IPostQueryPayload>();
     public createPost$: Observable<void> = new Observable<void>();
     public updatePost$: Observable<void> = new Observable<void>();
     public deletePost$: Observable<void> = new Observable<void>();
+    public likePost$: Observable<void> = new Observable<void>();
+    public unlikePost$: Observable<void> = new Observable<void>();
 
     public bodyField: IFormItem = this.homeConstants.updatePostForm['body'];
 
@@ -164,15 +166,69 @@ export class ProfileComponent {
         private _createPostHttp: CreatePostHttpService,
         private _updatePostHttp: UpdatePostHttpService,
         private _deletePostHttp: DeletePostHttpService,
+        private _likePostHttp: LikePostHttpService,
+        private _unlikePostHttp: UnlikePostHttpService,
         private _store: Store,
         private _clipboard: Clipboard,
         private _messageService: MessageService
     ) {
         this.user$ = _store.select(selectUser);
         this.getAllUserPosts$ = userPostsHttp.watchUserPosts$();
-        this.createPost$ = _createPostHttp.watchCreatePost$();
-        this.updatePost$ = _updatePostHttp.watchUpdatePost$();
-        this.deletePost$ = _deletePostHttp.watchDeletePost$();
+        this.createPost$ = _createPostHttp
+            .watchCreatePost$()
+            .pipe(
+                switchMap(() =>
+                    this.user$.pipe(
+                        map((user) =>
+                            userPostsHttp.getAllUserPosts(user.id, { page: 1 })
+                        )
+                    )
+                )
+            );
+        this.updatePost$ = _updatePostHttp
+            .watchUpdatePost$()
+            .pipe(
+                switchMap(() =>
+                    this.user$.pipe(
+                        map((user) =>
+                            userPostsHttp.getAllUserPosts(user.id, { page: 1 })
+                        )
+                    )
+                )
+            );
+        this.deletePost$ = _deletePostHttp
+            .watchDeletePost$()
+            .pipe(
+                switchMap(() =>
+                    this.user$.pipe(
+                        map((user) =>
+                            userPostsHttp.getAllUserPosts(user.id, { page: 1 })
+                        )
+                    )
+                )
+            );
+        this.likePost$ = _likePostHttp
+            .watchLikePost$()
+            .pipe(
+                switchMap(() =>
+                    this.user$.pipe(
+                        map((user) =>
+                            userPostsHttp.getAllUserPosts(user.id, { page: 1 })
+                        )
+                    )
+                )
+            );
+        this.unlikePost$ = _unlikePostHttp
+            .watchUnlikePost$()
+            .pipe(
+                switchMap(() =>
+                    this.user$.pipe(
+                        map((user) =>
+                            userPostsHttp.getAllUserPosts(user.id, { page: 1 })
+                        )
+                    )
+                )
+            );
     }
 
     public onUsernameClick(username: string): void {
@@ -185,16 +241,19 @@ export class ProfileComponent {
     }
 
     public showModal(post: IPostItem): void {
-        this.targetPost = post;
+        this._updatePostHttp.post = post;
         this.showUpdateModal = true;
-        console.log(1);
     }
 
     public createPost(post: IPost): void {
         this._createPostHttp.createPost(post);
     }
 
-    public updatePost([postId, post]: [string, IUpdatePost]): void {
-        this._updatePostHttp.updatePost(postId, post);
+    public updatePost(body: string): void {
+        if (this._updatePostHttp.post.body === body) {
+            this.showUpdateModal = false;
+            return;
+        }
+        this._updatePostHttp.updatePost(body);
     }
 }

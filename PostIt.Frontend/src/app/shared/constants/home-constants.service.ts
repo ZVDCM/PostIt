@@ -13,6 +13,10 @@ export class HomeConstantsService {
     public readonly createPostEndpoint = '/account/posts';
     public readonly deletePostEndpoint = '/account/posts';
     public readonly updatePostEndpoint = '/account/posts';
+    public readonly LikePostEndpoint = (id: string) =>
+        `/account/posts/${id}/like`;
+    public readonly unlikePostEndpoint = (id: string) =>
+        `/account/posts/${id}/unlike`;
 
     public readonly profileRoute = '/home/profile';
 

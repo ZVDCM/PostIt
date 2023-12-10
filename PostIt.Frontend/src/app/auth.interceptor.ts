@@ -9,8 +9,8 @@ import {
 import { Observable, catchError, filter, map, of, switchMap, tap } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectAccessToken } from './core/state/access-token/access-token.selectors';
-import { RefreshHttpService } from './shared/services/refresh-http.service';
-import { OneShotAuthService } from './shared/services/one-shot-auth.service';
+import { RefreshHttpService } from './shared/services/users/refresh-http.service';
+import { OneShotAuthService } from './shared/services/users/forget-password/one-shot-auth.service';
 
 @Injectable({
     providedIn: 'root',

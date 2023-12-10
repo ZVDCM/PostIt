@@ -1,8 +1,5 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { MessageService } from 'primeng/api';
+import { IPostQuery, IPostQueryPayload } from '../../../core/models/posts.model';
 import {
     Observable,
     Subject,
@@ -11,60 +8,53 @@ import {
     finalize,
     of,
     switchMap,
+    takeUntil,
     tap,
 } from 'rxjs';
-import { AccessTokenActions } from 'src/app/core/state/access-token/access-token.actions';
-import { UserActions } from 'src/app/core/state/user/user.actions';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import {
+    HttpClient,
+    HttpErrorResponse,
+    HttpParams,
+} from '@angular/common/http';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
 })
-export class LogoutHttpService {
-    private readonly _url: string =
-        this._serverConstants.serverApi + this._homeConstants.logoutEndpoint;
-    private _logout$$: Subject<void> = new Subject<void>();
-
-    public isLoading: boolean = false;
-    public isCancelled: boolean = false;
+export class UserPostsHttpService {
+    private _url: string =
+        this._serverConstants.serverApi + this._homeConstants.userPostsEndpoint;
+    private _posts$$: Subject<[string, IPostQuery]> = new Subject<
+        [string, IPostQuery]
+    >();
+    private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _router: Router,
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
         private _homeConstants: HomeConstantsService,
-        private _loginConstants: LoginConstantsService,
-        private _store: Store,
         private _loading: LoadingService,
         private _progress: ProgressService,
         private _messageService: MessageService
     ) {}
 
-    public watchLogout$(): Observable<void> {
-        return this._logout$$.asObservable().pipe(
+    public watchUserPosts$(): Observable<IPostQueryPayload> {
+        return this._posts$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((_) =>
-                this.logoutUser().pipe(
+            switchMap(([userId, query]: [string, IPostQuery]) =>
+                this._getAllUserPosts$(userId, query).pipe(
+                    takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
-                    }),
-                    tap(() => {
-                        this._store.dispatch(
-                            AccessTokenActions.removeAccessToken()
-                        );
-                        this._store.dispatch(UserActions.removeUser());
-                    }),
-                    tap(() =>
-                        this._router.navigate([this._loginConstants.loginRoute])
-                    )
+                    })
                 )
             ),
             catchError((err) =>
@@ -80,28 +70,51 @@ export class LogoutHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: err.error?.detail ?? "Something went wrong",
+                                    detail:
+                                        err.error?.detail ??
+                                        'Something went wrong',
                                 });
                                 break;
                             }
                         }
                     }),
-                    switchMap(() => this.watchLogout$())
+                    switchMap(() => this.watchUserPosts$())
                 )
             ),
             finalize(() => {
                 if (this._progress.isCancelled) {
+                    this._progress.isCancelled = null;
                     this._loading.endLoading();
                 }
             })
         );
     }
 
-    public logout(): void {
-        this._logout$$.next();
+    public cancelRequest(): void {
+        if (this._loading.isLoading) {
+            this._progress.isCancelled = null;
+            this._loading.endLoading();
+            this._cancelRequest$$.next();
+        }
     }
 
-    public logoutUser(): Observable<void> {
-        return this._httpClient.post<void>(this._url, {});
+    public getAllUserPosts(userId: string, query: IPostQuery): void {
+        this._posts$$.next([userId, query]);
+    }
+
+    private _getAllUserPosts$(
+        userId: string,
+        query: IPostQuery
+    ): Observable<IPostQueryPayload> {
+        let params = new HttpParams().set('pageSize', '1000');
+
+        for (const [key, value] of Object.entries(query)) {
+            params = params.set(key, value.toString());
+        }
+
+        return this._httpClient.get<IPostQueryPayload>(
+            `${this._url}/${userId}`,
+            { params }
+        );
     }
 }

@@ -14,7 +14,7 @@ import { HomeConstantsService } from '../../shared/constants/home-constants.serv
 import { IFormItem } from 'src/app/core/models/form.model';
 import { FormHelperService } from '../../shared/utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CreatePostHttpService } from '../../shared/services/create-post-http.service';
+import { CreatePostHttpService } from '../../shared/services/posts/create-post-http.service';
 import { IPost } from '../../core/models/posts.model';
 
 @Component({
@@ -167,8 +167,6 @@ export class CreatePostComponent {
 
     @Output()
     public createPost: EventEmitter<IPost> = new EventEmitter<IPost>();
-    @Output()
-    public hideModal: EventEmitter<void> = new EventEmitter<void>();
 
     constructor(
         public homeConstants: HomeConstantsService,
@@ -182,7 +180,7 @@ export class CreatePostComponent {
     }
 
     public onModalHide(): void {
-        this.hideModal.emit();
+        this.showModal = false;
         this.initCreatePostForm();
     }
 
@@ -192,7 +190,7 @@ export class CreatePostComponent {
             return;
         }
         this.createPost.emit(this.formHelper.formGroup.value);
-        this.hideModal.emit();
+        this.showModal = false;
     }
 
     private initCreatePostForm(): void {

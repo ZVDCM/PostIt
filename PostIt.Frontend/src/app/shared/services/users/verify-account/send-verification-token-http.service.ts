@@ -1,23 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Observable, Subject, catchError, filter, finalize, map, of, switchMap, takeUntil, tap } from 'rxjs';
-import { IVerifyVerificationToken } from '../../core/models/verify-verification-token.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { Injectable } from '@angular/core';
+import { MessageService } from 'primeng/api';
+import { Observable, Subject, catchError, filter, finalize, of, switchMap, takeUntil, tap } from 'rxjs';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
 })
-export class VerifyVerificationTokenHttpService {
-    private readonly _verifyUrl: string =
+export class SendVerificationTokenHttpService {
+    private readonly _sendUrl: string =
         this._serverConstants.serverApi +
-        this._homeConstants.verifyVerificationTokenEndpoint;
+        this._homeConstants.sendVerificationTokenEndpoint;
     private _cancelRequest$$: Subject<void> = new Subject<void>();
-    private _verifyVerificationToken$$: Subject<IVerifyVerificationToken> =
-        new Subject<IVerifyVerificationToken>();
+    private _sendVerificationToken$$: Subject<void> = new Subject<void>();
 
     constructor(
         private _httpClient: HttpClient,
@@ -28,25 +26,24 @@ export class VerifyVerificationTokenHttpService {
         private _messageService: MessageService
     ) {}
 
-
-    public watchVerifyVerificationToken$(): Observable<void> {
-        return this._verifyVerificationToken$$.asObservable().pipe(
+    public watchSendVerificationToken$(): Observable<void> {
+        return this._sendVerificationToken$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IVerifyVerificationToken) =>
-                this.verifyVerificationToken$(user).pipe(
+            switchMap((_) =>
+                this._sendVerificationToken$().pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    map(() => {
+                    tap(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Account verification successful',
+                            detail: 'Token sent successfully',
                         });
                     })
                 )
@@ -60,35 +57,11 @@ export class VerifyVerificationTokenHttpService {
                     }),
                     tap((err) => {
                         switch (err.status) {
-                            case 400: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Invalid form data',
-                                });
-                                break;
-                            }
                             case 401: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'User unauthorized',
-                                });
-                                break;
-                            }
-                            case 403: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Invalid user credentials',
-                                });
-                                break;
-                            }
-                            case 404: {
-                                this._messageService.add({
-                                    severity: 'error',
-                                    summary: 'Error',
-                                    detail: 'Token not found',
+                                    detail: 'Invalid form data',
                                 });
                                 break;
                             }
@@ -97,14 +70,14 @@ export class VerifyVerificationTokenHttpService {
                                     severity: 'error',
                                     summary: 'Error',
                                     detail:
-                                        err.error?.detail ??
+                                        err.error.detail ??
                                         'Something went wrong',
                                 });
                                 break;
                             }
                         }
                     }),
-                    switchMap(() => this.watchVerifyVerificationToken$())
+                    switchMap(() => this.watchSendVerificationToken$())
                 )
             ),
             finalize(() => {
@@ -124,13 +97,11 @@ export class VerifyVerificationTokenHttpService {
         }
     }
 
-    public verifyVerificationToken(user: IVerifyVerificationToken): void {
-        this._verifyVerificationToken$$.next(user);
+    public sendVerificationToken(): void {
+        this._sendVerificationToken$$.next();
     }
 
-    private verifyVerificationToken$(
-        user: IVerifyVerificationToken
-    ): Observable<void> {
-        return this._httpClient.put<void>(this._verifyUrl, user);
+    private _sendVerificationToken$(): Observable<void> {
+        return this._httpClient.post<void>(this._sendUrl, {});
     }
 }

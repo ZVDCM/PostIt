@@ -5,18 +5,19 @@ import {
     IPost,
     IPostItem,
     IPostQueryPayload,
-    IUpdatePost,
 } from '../../../core/models/posts.model';
-import { PostsHttpService } from '../../../shared/services/posts-http.service';
-import { DeletePostHttpService } from '../../../shared/services/delete-post-http.service';
+import { PostsHttpService } from '../../../shared/services/posts/posts-http.service';
+import { DeletePostHttpService } from '../../../shared/services/posts/delete-post-http.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from '../../../shared/services/update-post-http.service';
+import { UpdatePostHttpService } from '../../../shared/services/posts/update-post-http.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { CreatePostHttpService } from '../../../shared/services/create-post-http.service';
+import { CreatePostHttpService } from '../../../shared/services/posts/create-post-http.service';
+import { LikePostHttpService } from 'src/app/shared/services/posts/likes/like-post-http.service';
+import { UnlikePostHttpService } from 'src/app/shared/services/posts/likes/unlike-post-http.service';
 
 @Component({
     selector: 'app-posts',
@@ -59,12 +60,13 @@ import { CreatePostHttpService } from '../../../shared/services/create-post-http
         <app-update-post
             [showModal]="showUpdateModal"
             (hideModal)="showUpdateModal = false"
-            [post]="targetPost"
             (updatePost)="updatePost($event)"
         />
         <ng-container *ngIf="createPost$ | async"></ng-container>
         <ng-container *ngIf="updatePost$ | async"></ng-container>
         <ng-container *ngIf="deletePost$ | async"></ng-container>
+        <ng-container *ngIf="likePost$ | async"></ng-container>
+        <ng-container *ngIf="unlikePost$ | async"></ng-container>
     `,
     styles: [
         `
@@ -81,13 +83,14 @@ import { CreatePostHttpService } from '../../../shared/services/create-post-http
 })
 export class PostsComponent {
     public showUpdateModal: boolean = false;
-    public targetPost: IPostItem = {} as IPostItem;
     public user$: Observable<IUser> = new Observable<IUser>();
     public getAllPosts$: Observable<IPostQueryPayload> =
         new Observable<IPostQueryPayload>();
     public createPost$: Observable<void> = new Observable<void>();
     public updatePost$: Observable<void> = new Observable<void>();
     public deletePost$: Observable<void> = new Observable<void>();
+    public likePost$: Observable<void> = new Observable<void>();
+    public unlikePost$: Observable<void> = new Observable<void>();
 
     public bodyField: IFormItem = this.homeConstants.updatePostForm['body'];
 
@@ -99,6 +102,8 @@ export class PostsComponent {
         private _createPostHttp: CreatePostHttpService,
         private _updatePostHttp: UpdatePostHttpService,
         private _deletePostHttp: DeletePostHttpService,
+        private _likePostHttp: LikePostHttpService,
+        private _unlikePostHttp: UnlikePostHttpService,
         private _store: Store
     ) {
         this.user$ = _store.select(selectUser);
@@ -118,10 +123,20 @@ export class PostsComponent {
                 postsHttp.getAllPosts({ page: 1 });
             })
         );
+        this.likePost$ = _likePostHttp.watchLikePost$().pipe(
+            tap(() => {
+                postsHttp.getAllPosts({ page: 1 });
+            })
+        );
+        this.unlikePost$ = _unlikePostHttp.watchUnlikePost$().pipe(
+            tap(() => {
+                postsHttp.getAllPosts({ page: 1 });
+            })
+        );
     }
 
     public showModal(post: IPostItem): void {
-        this.targetPost = post;
+        this._updatePostHttp.post = post;
         this.showUpdateModal = true;
     }
 
@@ -129,7 +144,11 @@ export class PostsComponent {
         this._createPostHttp.createPost(post);
     }
 
-    public updatePost([postId, post]: [string, IUpdatePost]): void {
-        this._updatePostHttp.updatePost(postId, post);
+    public updatePost(body: string): void {
+        if (this._updatePostHttp.post.body === body) {
+            this.showUpdateModal = false;
+            return;
+        }
+        this._updatePostHttp.updatePost(body);
     }
 }

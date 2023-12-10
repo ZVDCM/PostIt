@@ -1,5 +1,6 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { IPostQuery, IPostQueryPayload } from '../../core/models/posts.model';
+import { MessageService } from 'primeng/api';
 import {
     Observable,
     Subject,
@@ -11,26 +12,21 @@ import {
     takeUntil,
     tap,
 } from 'rxjs';
-import {
-    HttpClient,
-    HttpErrorResponse,
-    HttpParams,
-} from '@angular/common/http';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { MessageService } from 'primeng/api';
+import { PostsHttpService } from './posts-http.service';
+import { IPost } from '../../../core/models/posts.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UserPostsHttpService {
-    private _url: string =
-        this._serverConstants.serverApi + this._homeConstants.userPostsEndpoint;
-    private _posts$$: Subject<[string, IPostQuery]> = new Subject<
-        [string, IPostQuery]
-    >();
+export class CreatePostHttpService {
+    private readonly _url: string =
+        this._serverConstants.serverApi +
+        this._homeConstants.createPostEndpoint;
+    private _createPost$$: Subject<IPost> = new Subject<IPost>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -39,22 +35,29 @@ export class UserPostsHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
     ) {}
 
-    public watchUserPosts$(): Observable<IPostQueryPayload> {
-        return this._posts$$.asObservable().pipe(
+    public watchCreatePost$(): Observable<void> {
+        return this._createPost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap(([userId, query]: [string, IPostQuery]) =>
-                this.getAllUserPosts$(userId, query).pipe(
+            switchMap((post: IPost) =>
+                this._createPost$(post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
-                    })
+                    }),
+                    tap(() =>
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Creation was successful',
+                        })
+                    )
                 )
             ),
             catchError((err) =>
@@ -66,6 +69,30 @@ export class UserPostsHttpService {
                     }),
                     tap((err) => {
                         switch (err.status) {
+                            case 400: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid form data',
+                                });
+                                break;
+                            }
+                            case 401: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'User unauthorized',
+                                });
+                                break;
+                            }
+                            case 403: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid user credentials',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -78,7 +105,7 @@ export class UserPostsHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchUserPosts$())
+                    switchMap(() => this.watchCreatePost$())
                 )
             ),
             finalize(() => {
@@ -98,23 +125,11 @@ export class UserPostsHttpService {
         }
     }
 
-    public getAllUserPosts(userId: string, query: IPostQuery): void {
-        this._posts$$.next([userId, query]);
+    public createPost(post: IPost): void {
+        this._createPost$$.next(post);
     }
 
-    private getAllUserPosts$(
-        userId: string,
-        query: IPostQuery
-    ): Observable<IPostQueryPayload> {
-        let params = new HttpParams().set('pageSize', '1000');
-
-        for (const [key, value] of Object.entries(query)) {
-            params = params.set(key, value.toString());
-        }
-
-        return this._httpClient.get<IPostQueryPayload>(
-            `${this._url}/${userId}`,
-            { params }
-        );
+    private _createPost$(post: IPost): Observable<void> {
+        return this._httpClient.post<void>(this._url, post);
     }
 }

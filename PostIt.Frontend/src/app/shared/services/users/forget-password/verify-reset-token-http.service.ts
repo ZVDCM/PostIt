@@ -1,77 +1,77 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { LoadingService } from 'src/app/shared/services/loading.service';
+import { ProgressService } from 'src/app/shared/services/progress.service';
 import {
     Observable,
     Subject,
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
     takeUntil,
     tap,
 } from 'rxjs';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IRegister } from '../../core/models/register.model';
+import { IVerifyResetToken } from '../../../../core/models/verify-reset-token.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { LoadingService } from 'src/app/shared/services/loading.service';
-import { ProgressService } from 'src/app/shared/services/progress.service';
-import { RegisterConstantsService } from 'src/app/shared/constants/register-constants.service';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { IAuthPayload } from '../../../../core/models/auth.model';
+import { OneShotAuthService } from './one-shot-auth.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class RegisterHttpService {
-    private readonly _url: string =
+export class VerifyResetTokenHttpService {
+    private readonly _url =
         this._serverConstants.serverApi +
-        this._registerConstants.registerEndpoint;
-    private _register$$: Subject<IRegister> = new Subject<IRegister>();
+        this._forgotPasswordConstants.verifyResetTokenEndpoint;
+    private _verifyResetToken$$: Subject<IVerifyResetToken> =
+        new Subject<IVerifyResetToken>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _router: Router,
         private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _loginConstants: LoginConstantsService,
-        private _registerConstants: RegisterConstantsService,
-        private _messageService: MessageService,
+        private _forgotPasswordConstants: ForgotPasswordConstantsService,
         private _loading: LoadingService,
-        private _progress: ProgressService
+        private _progress: ProgressService,
+        private _messageService: MessageService,
+        private _oneShot: OneShotAuthService,
+        private _router: Router
     ) {}
 
-    public watchRegister$(): Observable<void> {
-        return this._register$$.asObservable().pipe(
-            tap((_) => {
+    public watchVerifyResetToken$(): Observable<void> {
+        return this._verifyResetToken$$.asObservable().pipe(
+            tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IRegister) =>
-                this.register$(user).pipe(
+            switchMap((user: IVerifyResetToken) => {
+                return this._verifyResetToken$(user).pipe(
                     takeUntil(this._cancelRequest$$),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap((_) => {
-                        this._messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'was successful',
-                        });
+                    map((data: IAuthPayload) => {
+                        this._oneShot.accessToken = data.accessToken;
+                        this._oneShot.user = data.user;
                     }),
-                    tap((_) => {
+                    tap(() => {
                         this._router.navigate([
-                            this._loginConstants.loginRoute,
+                            this._forgotPasswordConstants.resetPasswordRoute,
                         ]);
                     })
-                )
-            ),
+                );
+            }),
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    tap((_) => {
+                    tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
@@ -85,11 +85,19 @@ export class RegisterHttpService {
                                 });
                                 break;
                             }
-                            case 409: {
+                            case 401: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Email already in use',
+                                    detail: 'Invalid Reset Token',
+                                });
+                                break;
+                            }
+                            case 404: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Token not found',
                                 });
                                 break;
                             }
@@ -105,7 +113,7 @@ export class RegisterHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchRegister$())
+                    switchMap(() => this.watchVerifyResetToken$())
                 )
             ),
             finalize(() => {
@@ -125,11 +133,13 @@ export class RegisterHttpService {
         }
     }
 
-    public register(user: IRegister): void {
-        this._register$$.next(user);
+    public verifyResetToken(user: IVerifyResetToken): void {
+        this._verifyResetToken$$.next({ ...user, email: this._oneShot.email });
     }
 
-    private register$(user: IRegister): Observable<void> {
-        return this._httpClient.post<void>(this._url, user);
+    public _verifyResetToken$(
+        user: IVerifyResetToken
+    ): Observable<IAuthPayload> {
+        return this._httpClient.post<IAuthPayload>(this._url, user);
     }
 }

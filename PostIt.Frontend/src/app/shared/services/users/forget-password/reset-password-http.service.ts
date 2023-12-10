@@ -1,11 +1,12 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
+import { IResetPassword } from '../../../../core/models/reset-password.model';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
+import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { PostsHttpService } from './posts-http.service';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
 import {
     Observable,
     Subject,
@@ -17,50 +18,55 @@ import {
     takeUntil,
     tap,
 } from 'rxjs';
-import { IUpdatePost } from '../../core/models/posts.model';
+import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class UpdatePostHttpService {
-    private _url: string =
+export class ResetPasswordHttpService {
+    private readonly _url =
         this._serverConstants.serverApi +
-        this._homeConstants.updatePostEndpoint;
-    private _updatePost$$: Subject<[string, IUpdatePost]> = new Subject<
-        [string, IUpdatePost]
-    >();
+        this._forgotPasswordConstants.resetPasswordEndpoint;
+    private _resetPassword$$: Subject<IResetPassword> =
+        new Subject<IResetPassword>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _httpClient: HttpClient,
         private _serverConstants: ServerConstantsService,
-        private _homeConstants: HomeConstantsService,
+        private _loginConstants: LoginConstantsService,
+        private _forgotPasswordConstants: ForgotPasswordConstantsService,
+        private _httpClient: HttpClient,
         private _loading: LoadingService,
         private _progress: ProgressService,
         private _messageService: MessageService,
-        private _postsHttp: PostsHttpService
+        private _router: Router
     ) {}
 
-    public watchUpdatePost$(): Observable<void> {
-        return this._updatePost$$.asObservable().pipe(
+    public watchResetPassword$(): Observable<void> {
+        return this._resetPassword$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap(([postId, post]: [string, IUpdatePost]) =>
-                this.updatePost$(postId, post).pipe(
+            switchMap((user: IResetPassword) =>
+                this._resetPassword$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() =>
+                    tap(() => {
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Update was successful',
-                        })
-                    )
+                            detail: 'Password reset successful',
+                        });
+                    }),
+                    tap(() => {
+                        this._router.navigate([
+                            this._loginConstants.loginRoute,
+                        ]);
+                    })
                 )
             ),
             catchError((err) =>
@@ -108,7 +114,7 @@ export class UpdatePostHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchUpdatePost$())
+                    switchMap(() => this.watchResetPassword$())
                 )
             ),
             finalize(() => {
@@ -128,11 +134,15 @@ export class UpdatePostHttpService {
         }
     }
 
-    public updatePost(postId: string, post: IUpdatePost): void {
-        this._updatePost$$.next([postId, post]);
+    public resetPassword(user: IResetPassword): void {
+        this._resetPassword$$.next(user);
     }
 
-    private updatePost$(postId: string, post: IUpdatePost): Observable<void> {
-        return this._httpClient.put<void>(`${this._url}/${postId}`, post);
+    private _resetPassword$(user: IResetPassword): Observable<void> {
+        return this._httpClient.put<void>(this._url, user, {
+            headers: {
+                oneShot: 'true',
+            },
+        });
     }
 }

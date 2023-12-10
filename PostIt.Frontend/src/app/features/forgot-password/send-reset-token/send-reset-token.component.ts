@@ -6,7 +6,7 @@ import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { SendResetTokenHttpService } from '../../../shared/services/send-reset-token-http.service';
+import { SendResetTokenHttpService } from '../../../shared/services/users/forget-password/send-reset-token-http.service';
 
 @Component({
     selector: 'app-send-reset-token',

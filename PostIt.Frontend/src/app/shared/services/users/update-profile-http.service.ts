@@ -13,7 +13,7 @@ import {
 } from 'rxjs';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { IUpdateProfile } from '../../core/models/update-profile.model';
+import { IUpdateProfile } from '../../../core/models/update-profile.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { IUserPayload } from 'src/app/core/state/user/user.model';
 import { MessageService } from 'primeng/api';
@@ -50,7 +50,7 @@ export class UpdateProfileHttpService {
                 this._progress.isCancelled = true;
             }),
             switchMap((user: IUpdateProfile) =>
-                this.updateProfile$(user).pipe(
+                this._updateProfile$(user).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
@@ -133,7 +133,7 @@ export class UpdateProfileHttpService {
         this._updateProfile$$.next(user);
     }
 
-    private updateProfile$(user: IUpdateProfile): Observable<IUserPayload> {
+    private _updateProfile$(user: IUpdateProfile): Observable<IUserPayload> {
         return this._httpClient.put<IUserPayload>(this._url, user);
     }
 }

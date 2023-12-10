@@ -1,21 +1,29 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { Observable, Subject, catchError, filter, finalize, of, switchMap, takeUntil, tap } from 'rxjs';
-import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { LoadingService } from 'src/app/shared/services/loading.service';
-import { ProgressService } from 'src/app/shared/services/progress.service';
+import {
+    Observable,
+    Subject,
+    catchError,
+    filter,
+    finalize,
+    of,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs';
+import { ProgressService } from '../../progress.service';
+import { LoadingService } from '../../loading.service';
+import { HomeConstantsService } from '../../../constants/home-constants.service';
+import { ServerConstantsService } from '../../../constants/server-constants.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class SendVerificationTokenHttpService {
-    private readonly _sendUrl: string =
-        this._serverConstants.serverApi +
-        this._homeConstants.sendVerificationTokenEndpoint;
+export class UnlikePostHttpService {
+    private readonly _url: string = this._serverConstants.serverApi;
+    private _unlikePost$$: Subject<string> = new Subject<string>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
-    private _sendVerificationToken$$: Subject<void> = new Subject<void>();
 
     constructor(
         private _httpClient: HttpClient,
@@ -26,25 +34,18 @@ export class SendVerificationTokenHttpService {
         private _messageService: MessageService
     ) {}
 
-    public watchSendVerificationToken$(): Observable<void> {
-        return this._sendVerificationToken$$.asObservable().pipe(
+    public watchUnlikePost$(): Observable<void> {
+        return this._unlikePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((_) =>
-                this.sendVerificationToken$().pipe(
+            switchMap((id: string) =>
+                this._unlikePost$(id).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
-                    }),
-                    tap(() => {
-                        this._messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'Token sent successfully',
-                        });
                     })
                 )
             ),
@@ -57,11 +58,27 @@ export class SendVerificationTokenHttpService {
                     }),
                     tap((err) => {
                         switch (err.status) {
-                            case 401: {
+                            case 400: {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
                                     detail: 'Invalid form data',
+                                });
+                                break;
+                            }
+                            case 401: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'User unauthorized',
+                                });
+                                break;
+                            }
+                            case 403: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid user credentials',
                                 });
                                 break;
                             }
@@ -70,14 +87,14 @@ export class SendVerificationTokenHttpService {
                                     severity: 'error',
                                     summary: 'Error',
                                     detail:
-                                        err.error.detail ??
+                                        err.error?.detail ??
                                         'Something went wrong',
                                 });
                                 break;
                             }
                         }
                     }),
-                    switchMap(() => this.watchSendVerificationToken$())
+                    switchMap(() => this.watchUnlikePost$())
                 )
             ),
             finalize(() => {
@@ -97,11 +114,14 @@ export class SendVerificationTokenHttpService {
         }
     }
 
-    public sendVerificationToken(): void {
-        this._sendVerificationToken$$.next();
+    public unlikePost(id: string): void {
+        this._unlikePost$$.next(id);
     }
 
-    private sendVerificationToken$(): Observable<void> {
-        return this._httpClient.post<void>(this._sendUrl, {});
+    private _unlikePost$(id: string): Observable<void> {
+        return this._httpClient.post<void>(
+            this._url + this._homeConstants.unlikePostEndpoint(id),
+            {}
+        );
     }
 }

@@ -17,16 +17,16 @@ import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { PasswordHelperService } from 'src/app/shared/utils/password-helper.service';
-import { UpdateProfileHttpService } from '../../shared/services/update-profile-http.service';
-import { ChangePasswordHttpService } from '../../shared/services/change-password-http.service';
+import { UpdateProfileHttpService } from '../../shared/services/users/update-profile-http.service';
+import { ChangePasswordHttpService } from '../../shared/services/users/change-password-http.service';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
-import { RefreshHttpService } from 'src/app/shared/services/refresh-http.service';
-import { LogoutHttpService } from '../../shared/services/logout-http.service';
+import { RefreshHttpService } from 'src/app/shared/services/users/refresh-http.service';
+import { LogoutHttpService } from '../../shared/services/users/logout-http.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Router } from '@angular/router';
-import { VerifyVerificationTokenHttpService } from '../../shared/services/verify-verification-token-http.service';
-import { SendVerificationTokenHttpService } from '../../shared/services/send-verification-token-http.service';
+import { VerifyVerificationTokenHttpService } from '../../shared/services/users/verify-account/verify-verification-token-http.service';
+import { SendVerificationTokenHttpService } from '../../shared/services/users/verify-account/send-verification-token-http.service';
 
 @Component({
     selector: 'app-home',

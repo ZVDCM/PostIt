@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="PostIt.Common" Version="1.0.81" />
+    <PackageReference Include="PostIt.Common" Version="1.0.83" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="PostIt.Contracts" Version="1.0.6" />
+    <PackageReference Include="PostIt.Contracts" Version="1.0.9" />
   </ItemGroup>
 
 </Project>

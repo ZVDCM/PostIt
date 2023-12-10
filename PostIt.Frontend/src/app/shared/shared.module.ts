@@ -18,17 +18,9 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { LoadingComponent } from './components/loading.component';
 import { FooterComponent } from './components/footer.component';
 import { PostItemComponent } from './components/post-item.component';
-import { PostSearchItemComponent } from './components/post-search-item.component';
-import { UserSearchItemComponent } from './components/user-search-item.component';
 
 @NgModule({
-    declarations: [
-        LoadingComponent,
-        FooterComponent,
-        PostItemComponent,
-        PostSearchItemComponent,
-        UserSearchItemComponent,
-    ],
+    declarations: [LoadingComponent, FooterComponent, PostItemComponent],
     imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -51,8 +43,6 @@ import { UserSearchItemComponent } from './components/user-search-item.component
         LoadingComponent,
         FooterComponent,
         PostItemComponent,
-        PostSearchItemComponent,
-        UserSearchItemComponent,
         InputTextModule,
         CheckboxModule,
         ButtonModule,

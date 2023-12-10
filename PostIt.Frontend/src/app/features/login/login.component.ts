@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
-import { LoginHttpService } from '../../shared/services/login-http.service';
+import { LoginHttpService } from '../../shared/services/users/login-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { FormControl, FormGroup } from '@angular/forms';

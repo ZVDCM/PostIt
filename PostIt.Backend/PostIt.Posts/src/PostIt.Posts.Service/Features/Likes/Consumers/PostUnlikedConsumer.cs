@@ -12,13 +12,13 @@ using Serilog;
 
 namespace PostIt.Posts.Service.Features.Likes.Consumers;
 
-public sealed class PostToggledConsumer : IConsumer<PostToggled>
+public sealed class PostUnlikedConsumer : IConsumer<PostUnLiked>
 {
     private readonly ILikeRepository _likeRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger _logger;
 
-    public PostToggledConsumer(
+    public PostUnlikedConsumer(
         ILikeRepository likeRepository,
         IUnitOfWork unitOfWork,
         ILogger logger)
@@ -28,9 +28,9 @@ public sealed class PostToggledConsumer : IConsumer<PostToggled>
         _logger = logger;
     }
 
-    public async Task Consume(ConsumeContext<PostToggled> context)
+    public async Task Consume(ConsumeContext<PostUnLiked> context)
     {
-        PostToggled message = context.Message;
+        PostUnLiked message = context.Message;
         try
         {
             Like? like = await _likeRepository.GetLikeAsync(p => p.PostId == new PostId(message.PostId)
@@ -38,13 +38,7 @@ public sealed class PostToggledConsumer : IConsumer<PostToggled>
             if (like is not null)
             {
                 _likeRepository.Delete(like);
-                return;
             }
-            else
-            {
-                like = Like.Create(new PostId(message.PostId), new UserId(message.UserId), message.Username);
-                await _likeRepository.CreateAsync(like, CancellationToken.None);
-            };
             await _unitOfWork.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception e)

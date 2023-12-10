@@ -1,6 +1,7 @@
 using System;
 using AutoMapper;
 using BCrypt.Net;
+using PostIt.Common.Domain.Likes;
 using PostIt.Common.Domain.Posts;
 using PostIt.Common.Domain.Users;
 using PostIt.Common.Primitives.Results;
@@ -12,7 +13,8 @@ using PostIt.Contracts.Users.Responses;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
-using PostIt.Users.Service.Features.Account.Commands.Like.LikeToggle;
+using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
+using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
 using PostIt.Users.Service.Features.Account.Commands.Login;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
 using PostIt.Users.Service.Features.Account.Commands.Post.DeletePost;
@@ -125,8 +127,12 @@ public sealed class AccountProfile : Profile
             .ConvertUsing(r => new DeletePostCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2)));
-        CreateMap<Result<Tuple<string, Guid>>, LikeToggleCommand>()
-            .ConvertUsing(r => new LikeToggleCommand(
+        CreateMap<Result<Tuple<string, Guid>>, LikePostCommand>()
+            .ConvertUsing(r => new LikePostCommand(
+                r.Value!.Item1,
+                new PostId(r.Value.Item2)));
+        CreateMap<Result<Tuple<string, Guid>>, UnlikePostCommand>()
+            .ConvertUsing(r => new UnlikePostCommand(
                 r.Value!.Item1,
                 new PostId(r.Value.Item2)));
     }

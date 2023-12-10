@@ -24,8 +24,8 @@ public sealed class PostRepository : IPostRepository
         => _context.Posts.Remove(post);
 
     public async Task<Post?> GetPostAsync(Expression<Func<Post, bool>> predicate, CancellationToken cancellationToken)
-        => await _context.Posts.SingleOrDefaultAsync(predicate, cancellationToken);
+        => await _context.Posts.Include(p => p.Likes).SingleOrDefaultAsync(predicate, cancellationToken);
 
     public IQueryable<Post> QueryAllPosts()
-        => _context.Posts.AsSplitQuery();
+        => _context.Posts.Include(p => p.Likes).AsSplitQuery();
 }

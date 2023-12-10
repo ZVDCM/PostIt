@@ -1,13 +1,21 @@
 import {
+    AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
+    ElementRef,
     EventEmitter,
     Input,
     Output,
+    ViewChild,
 } from '@angular/core';
 import { MenuItem } from 'primeng/api';
-import { DeletePostHttpService } from 'src/app/shared/services/delete-post-http.service';
+import { DeletePostHttpService } from 'src/app/shared/services/posts/delete-post-http.service';
 import { IPostItem } from 'src/app/core/models/posts.model';
+import { LikePostHttpService } from '../services/posts/likes/like-post-http.service';
+import { debounceTime, fromEvent, tap } from 'rxjs';
+import { FormControl } from '@angular/forms';
+import { UnlikePostHttpService } from '../services/posts/likes/unlike-post-http.service';
 
 @Component({
     selector: 'app-post-item',
@@ -17,15 +25,13 @@ import { IPostItem } from 'src/app/core/models/posts.model';
         >
             <header class="flex px-[2.45rem]">
                 <div class="flex-grow">
-                    <div class="flex">
-                        <div
-                            class="flex gap-2 items-center group cursor-pointer font-bold text-[var(--primary-color)]"
-                        >
-                            <i class="pi pi-at" style="font-size: .9rem;"></i>
-                            <span class="text-[1.1rem] group-hover:underline">
-                                {{ post.username }}
-                            </span>
-                        </div>
+                    <div
+                        class="flex gap-2 items-center font-bold text-[var(--primary-color)]"
+                    >
+                        <i class="pi pi-at" style="font-size: .9rem;"></i>
+                        <span class="text-[1.1rem]">
+                            {{ post.username }}
+                        </span>
                     </div>
                     <div class="flex min-h-min gap-2 text-slate-600">
                         <small>
@@ -72,11 +78,11 @@ import { IPostItem } from 'src/app/core/models/posts.model';
                     'p-button-primary': isLiked,
                     'p-button-text': !isLiked
                 }"
-                (click)="isLiked = !isLiked"
                 style="border-radius: 0"
                 [ngStyle]="{
                     'border-top': isLiked ? '':'1px solid var(--surface-border)',
                 }"
+                (click)="like()"
             >
                 <i class="pi pi-thumbs-up"></i>
                 <span> Like </span>
@@ -86,7 +92,8 @@ import { IPostItem } from 'src/app/core/models/posts.model';
     styles: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PostItemComponent {
+export class PostItemComponent implements AfterViewInit {
+    private _clickControl = new FormControl();
     public isLiked: boolean = false;
     @Input()
     public post: IPostItem = {} as IPostItem;
@@ -95,7 +102,19 @@ export class PostItemComponent {
     @Output()
     public updatePost: EventEmitter<IPostItem> = new EventEmitter<IPostItem>();
 
-    constructor(private _deletePostHttp: DeletePostHttpService) {
+    constructor(
+        public likePostHttp: LikePostHttpService,
+        public unlikePostHttp: UnlikePostHttpService,
+        private _deletePostHttp: DeletePostHttpService,
+        private _cdr: ChangeDetectorRef
+    ) {
+        this._clickControl.valueChanges
+            .pipe(debounceTime(500))
+            .subscribe(() => {
+                this.isLiked
+                    ? this.likePostHttp.likePost(this.post.postId)
+                    : this.unlikePostHttp.unlikePost(this.post.postId);
+            });
         this.items = [
             {
                 label: 'Update',
@@ -108,6 +127,18 @@ export class PostItemComponent {
                 command: () => _deletePostHttp.deletePost(this.post.postId),
             },
         ];
+    }
+
+    ngAfterViewInit(): void {
+        this.post.likes.forEach(
+            (like) => like.userId === this.post.userId && (this.isLiked = true)
+        );
+        this._cdr.detectChanges();
+    }
+
+    public like() {
+        this.isLiked = !this.isLiked;
+        this._clickControl.setValue(Date.now());
     }
 
     public hasBeenModified(modifiedOnUtc: Date) {

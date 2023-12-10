@@ -1,3 +1,11 @@
+export interface ILikeItem {
+    likeId: string;
+    postId: string;
+    userId: string;
+    username: string;
+    createdOnUtc: Date;
+}
+
 export interface IPostItem {
     postId: string;
     userId: string;
@@ -6,7 +14,7 @@ export interface IPostItem {
     createdOnUtc: Date;
     modifiedOnUtc: Date;
     likesCount: number;
-    commentsCount: number;
+    likes: ILikeItem[];
 }
 
 export interface IPostQuery {
@@ -24,6 +32,7 @@ export interface IPostQueryPayload {
 }
 
 export interface IUpdatePost {
+    id: string;
     body: string;
 }
 

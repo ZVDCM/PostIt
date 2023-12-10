@@ -6,17 +6,17 @@ import {
     Output,
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IPostItem, IUpdatePost } from '../../core/models/posts.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
-import { PostsHttpService } from '../../shared/services/posts-http.service';
+import { PostsHttpService } from '../../shared/services/posts/posts-http.service';
 import { FormHelperService } from 'src/app/shared/utils/form-helper.service';
-import { UpdatePostHttpService } from '../../shared/services/update-post-http.service';
+import { UpdatePostHttpService } from '../../shared/services/posts/update-post-http.service';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { Store } from '@ngrx/store';
+import { IPostItem } from 'src/app/core/models/posts.model';
 
 @Component({
     selector: 'app-update-post',
@@ -32,6 +32,7 @@ import { Store } from '@ngrx/store';
                 header="Update Post"
                 styleClass="w-full max-w-lg"
             >
+                {{ setPost() }}
                 <div class="flex flex-col gap-2">
                     <header class="flex items-center gap-2">
                         <i
@@ -60,6 +61,7 @@ import { Store } from '@ngrx/store';
                                         .getFormControl(bodyField.name)!
                                         .markAsDirty()
                                 "
+                                (input)="isEditing = true"
                                 class="w-full resize-none"
                                 style="font-size: x-large;"
                                 placeholder="Changed your mind? Update your post!"
@@ -117,18 +119,16 @@ import { Store } from '@ngrx/store';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdatePostComponent {
+    public post: IPostItem = {} as IPostItem;
     public user$: Observable<IUser> = new Observable<IUser>();
     public updatePost$: Observable<void> = new Observable<void>();
     public bodyField: IFormItem = this.homeConstants.updatePostForm['body'];
+    public isEditing: boolean = false;
 
     @Input()
     public showModal: boolean = false;
-    @Input()
-    public post: IPostItem = {} as IPostItem;
     @Output()
-    public updatePost: EventEmitter<[string, IUpdatePost]> = new EventEmitter<
-        [string, IUpdatePost]
-    >();
+    public updatePost: EventEmitter<string> = new EventEmitter<string>();
     @Output()
     public hideModal: EventEmitter<void> = new EventEmitter<void>();
 
@@ -138,15 +138,21 @@ export class UpdatePostComponent {
         public postsHttp: PostsHttpService,
         public formHelper: FormHelperService,
         public updatePostHttp: UpdatePostHttpService,
-
         private _store: Store
     ) {
         this.user$ = _store.select(selectUser);
-        this.updatePost$ = updatePostHttp.watchUpdatePost$();
+    }
+
+    public setPost(): void {
+        if (this.isEditing) return;
+        this.post = this.updatePostHttp.post;
+        this.initUpdatePostForm();
     }
 
     public onModalHide(): void {
         this.hideModal.emit();
+        this.isEditing = false;
+        this.post = {} as IPostItem;
         this.initUpdatePostForm();
     }
 
@@ -155,10 +161,9 @@ export class UpdatePostComponent {
             this.formHelper.validateAllFormInputs();
             return;
         }
-        this.updatePost.emit([
-            this.post.postId,
-            this.formHelper.formGroup.value,
-        ]);
+        this.updatePost.emit(
+            this.formHelper.formGroup.value[this.bodyField.name]
+        );
         this.hideModal.emit();
     }
 

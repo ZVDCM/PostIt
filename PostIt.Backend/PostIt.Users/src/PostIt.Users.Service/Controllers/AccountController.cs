@@ -18,7 +18,8 @@ using PostIt.Users.Service.Attributes;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.CreateForgotPasswordToken;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.ResetPassword;
 using PostIt.Users.Service.Features.Account.Commands.ForgotPassword.VerifyResetToken;
-using PostIt.Users.Service.Features.Account.Commands.Like.LikeToggle;
+using PostIt.Users.Service.Features.Account.Commands.Like.LikePost;
+using PostIt.Users.Service.Features.Account.Commands.Like.UnlikePost;
 using PostIt.Users.Service.Features.Account.Commands.Login;
 using PostIt.Users.Service.Features.Account.Commands.Logout;
 using PostIt.Users.Service.Features.Account.Commands.Post.CreatePost;
@@ -253,16 +254,30 @@ public sealed class AccountController : ApiController
         .Match(NoContent, HandleFailure);
 
     [SessionUser(RoleConstants.Admin, RoleConstants.User)]
-    [HttpPost("posts/{id:guid}/togglelike")]
+    [HttpPost("posts/{id:guid}/like")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> ToggleLikeAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> LikePostAsync(Guid id, CancellationToken cancellationToken)
         => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
         .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
         .Join(id)
-        .Map(Mapper.Map<LikeToggleCommand>)
+        .Map(Mapper.Map<LikePostCommand>)
+        .Bind(command => Sender.Send(command, cancellationToken))
+        .Match(NoContent, HandleFailure);
+        
+    [SessionUser(RoleConstants.Admin, RoleConstants.User)]
+    [HttpPost("posts/{id:guid}/unlike")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> UnlikePostAsync(Guid id, CancellationToken cancellationToken)
+        => await Result.Create(GetAccessToken(_jwtOptions.CookieName), Errors.Unauthorized)
+        .Ensure(_ => id != Guid.Empty, Errors.BadRequest)
+        .Join(id)
+        .Map(Mapper.Map<UnlikePostCommand>)
         .Bind(command => Sender.Send(command, cancellationToken))
         .Match(NoContent, HandleFailure);
 

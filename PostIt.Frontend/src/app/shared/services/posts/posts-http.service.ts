@@ -10,6 +10,7 @@ import {
     catchError,
     filter,
     finalize,
+    map,
     of,
     switchMap,
     takeUntil,
@@ -19,7 +20,7 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IPostQuery, IPostQueryPayload } from '../../core/models/posts.model';
+import { IPostQuery, IPostQueryPayload } from '../../../core/models/posts.model';
 import { MessageService } from 'primeng/api';
 
 @Injectable({
@@ -47,7 +48,7 @@ export class PostsHttpService {
                 this._progress.isCancelled = true;
             }),
             switchMap((query: IPostQuery) =>
-                this.getAllPosts$(query).pipe(
+                this._getAllPosts$(query).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
@@ -100,13 +101,28 @@ export class PostsHttpService {
         this._posts$$.next(query);
     }
 
-    private getAllPosts$(query: IPostQuery): Observable<IPostQueryPayload> {
+    private _getAllPosts$(query: IPostQuery): Observable<IPostQueryPayload> {
         let params = new HttpParams().set('pageSize', '1000');
 
         for (const [key, value] of Object.entries(query)) {
             params = params.set(key, value.toString());
         }
 
-        return this._httpClient.get<IPostQueryPayload>(this._url, { params });
+        return this._httpClient
+            .get<IPostQueryPayload>(this._url, { params })
+            .pipe(
+                map((payload) => {
+                    payload.items.map((item) => {
+                        item.createdOnUtc = new Date(item.createdOnUtc);
+                        item.modifiedOnUtc = new Date(item.modifiedOnUtc);
+                        item.likes.map((like) => {
+                            like.createdOnUtc = new Date(like.createdOnUtc);
+                            return like;
+                        });
+                        return item;
+                    });
+                    return payload;
+                })
+            );
     }
 }

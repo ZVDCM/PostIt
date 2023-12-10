@@ -1,12 +1,5 @@
-import { Injectable } from '@angular/core';
-import { IResetPassword } from '../../core/models/reset-password.model';
-import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
-import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { LoadingService } from 'src/app/shared/services/loading.service';
-import { ProgressService } from 'src/app/shared/services/progress.service';
-import { MessageService } from 'primeng/api';
-import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
 import {
     Observable,
     Subject,
@@ -18,55 +11,42 @@ import {
     takeUntil,
     tap,
 } from 'rxjs';
-import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
+import { ServerConstantsService } from '../../../constants/server-constants.service';
+import { HomeConstantsService } from '../../../constants/home-constants.service';
+import { LoadingService } from '../../loading.service';
+import { ProgressService } from '../../progress.service';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ResetPasswordHttpService {
-    private readonly _url =
-        this._serverConstants.serverApi +
-        this._forgotPasswordConstants.resetPasswordEndpoint;
-    private _resetPassword$$: Subject<IResetPassword> =
-        new Subject<IResetPassword>();
+export class LikePostHttpService {
+    private readonly _url: string = this._serverConstants.serverApi;
+    private _likePost$$: Subject<string> = new Subject<string>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _serverConstants: ServerConstantsService,
-        private _loginConstants: LoginConstantsService,
-        private _forgotPasswordConstants: ForgotPasswordConstantsService,
         private _httpClient: HttpClient,
+        private _serverConstants: ServerConstantsService,
+        private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
         private _messageService: MessageService,
-        private _router: Router
     ) {}
 
-    public watchResetPassword$(): Observable<void> {
-        return this._resetPassword$$.asObservable().pipe(
+    public watchLikePost$(): Observable<void> {
+        return this._likePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IResetPassword) =>
-                this.resetPasswordUser(user).pipe(
+            switchMap((id: string) =>
+                this._likePost$(id).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() => {
-                        this._messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'Password reset successful',
-                        });
-                    }),
-                    tap(() => {
-                        this._router.navigate([
-                            this._loginConstants.loginRoute,
-                        ]);
-                    })
                 )
             ),
             catchError((err) =>
@@ -114,7 +94,7 @@ export class ResetPasswordHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchResetPassword$())
+                    switchMap(() => this.watchLikePost$())
                 )
             ),
             finalize(() => {
@@ -134,15 +114,14 @@ export class ResetPasswordHttpService {
         }
     }
 
-    public resetPassword(user: IResetPassword): void {
-        this._resetPassword$$.next(user);
+    public likePost(id: string): void {
+        this._likePost$$.next(id);
     }
 
-    private resetPasswordUser(user: IResetPassword): Observable<void> {
-        return this._httpClient.put<void>(this._url, user, {
-            headers: {
-                oneShot: 'true',
-            },
-        });
+    private _likePost$(id: string): Observable<void> {
+        return this._httpClient.post<void>(
+            this._url + this._homeConstants.LikePostEndpoint(id),
+            {}
+        );
     }
 }

@@ -1,6 +1,7 @@
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
+import { HomeConstantsService } from 'src/app/shared/constants/home-constants.service';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
@@ -15,54 +16,48 @@ import {
     takeUntil,
     tap,
 } from 'rxjs';
-import { ISendResetToken } from '../../core/models/send-reset-token.model';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { OneShotAuthService } from './one-shot-auth.service';
+import { IPostItem, IUpdatePost } from '../../../core/models/posts.model';
 
 @Injectable({
     providedIn: 'root',
 })
-export class SendResetTokenHttpService {
-    private readonly _url =
+export class UpdatePostHttpService {
+    public post: IPostItem = {} as IPostItem;
+    private _url: string =
         this._serverConstants.serverApi +
-        this._forgotPasswordConstants.sendResetTokenEndpoint;
-    private _sendResetToken$$: Subject<ISendResetToken> =
-        new Subject<ISendResetToken>();
+        this._homeConstants.updatePostEndpoint;
+    private _updatePost$$: Subject<IUpdatePost> = new Subject<IUpdatePost>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
-        private _serverConstants: ServerConstantsService,
-        private _forgotPasswordConstants: ForgotPasswordConstantsService,
-        private _oneShot: OneShotAuthService,
         private _httpClient: HttpClient,
+        private _serverConstants: ServerConstantsService,
+        private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService,
-        private _router: Router
+        private _messageService: MessageService
     ) {}
 
-    public watchSendResetToken$(): Observable<void> {
-        return this._sendResetToken$$.asObservable().pipe(
+    public watchUpdatePost$(): Observable<void> {
+        return this._updatePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: ISendResetToken) =>
-                this.sendResetTokenUser(user).pipe(
+            switchMap((post: IUpdatePost) =>
+                this._updatePost$(post).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() => {
-                        this._oneShot.email = user.email;
-                    }),
-                    tap(() => {
-                        this._router.navigate([
-                            this._forgotPasswordConstants.verifyResetTokenRoute,
-                        ]);
-                    })
+                    tap(() =>
+                        this._messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Update was successful',
+                        })
+                    )
                 )
             ),
             catchError((err) =>
@@ -82,6 +77,22 @@ export class SendResetTokenHttpService {
                                 });
                                 break;
                             }
+                            case 401: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'User unauthorized',
+                                });
+                                break;
+                            }
+                            case 403: {
+                                this._messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail: 'Invalid user credentials',
+                                });
+                                break;
+                            }
                             default: {
                                 this._messageService.add({
                                     severity: 'error',
@@ -94,7 +105,7 @@ export class SendResetTokenHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchSendResetToken$())
+                    switchMap(() => this.watchUpdatePost$())
                 )
             ),
             finalize(() => {
@@ -114,11 +125,13 @@ export class SendResetTokenHttpService {
         }
     }
 
-    public sendResetToken(user: ISendResetToken): void {
-        this._sendResetToken$$.next(user);
+    public updatePost(body: string): void {
+        this._updatePost$$.next({ id: this.post.postId, body });
     }
 
-    private sendResetTokenUser(user: ISendResetToken): Observable<void> {
-        return this._httpClient.post<void>(this._url, user);
+    private _updatePost$(post: IUpdatePost): Observable<void> {
+        return this._httpClient.put<void>(`${this._url}/${post.id}`, {
+            body: post.body,
+        });
     }
 }

@@ -5,7 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LoginConstantsService } from 'src/app/shared/constants/login-constants.service';
 import { ForgotPasswordConstantsService } from 'src/app/shared/constants/forgot-password-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
-import { VerifyResetTokenHttpService } from '../../../shared/services/verify-reset-token-http.service';
+import { VerifyResetTokenHttpService } from '../../../shared/services/users/forget-password/verify-reset-token-http.service';
 import { Observable } from 'rxjs';
 
 @Component({

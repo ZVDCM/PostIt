@@ -16,17 +16,16 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { IChangePassword } from '../../core/models/change-password.model';
+import { PostsHttpService } from './posts-http.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class ChangePasswordHttpService {
-    private readonly _url =
+export class DeletePostHttpService {
+    private _url: string =
         this._serverConstants.serverApi +
-        this._homeConstants.changePasswordEndpoint;
-    private _changePassword$$: Subject<IChangePassword> =
-        new Subject<IChangePassword>();
+        this._homeConstants.deletePostEndpoint;
+    private _deletePost$$: Subject<string> = new Subject<string>();
     private _cancelRequest$$: Subject<void> = new Subject<void>();
 
     constructor(
@@ -35,29 +34,29 @@ export class ChangePasswordHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
     ) {}
 
-    public watchChangePassword$(): Observable<void> {
-        return this._changePassword$$.asObservable().pipe(
+    public watchDeletePost$(): Observable<void> {
+        return this._deletePost$$.asObservable().pipe(
             tap(() => {
                 this._loading.startLoading();
                 this._progress.isCancelled = true;
             }),
-            switchMap((user: IChangePassword) =>
-                this.changePasswordUser(user).pipe(
+            switchMap((id: string) =>
+                this._deletePost$(id).pipe(
                     takeUntil(this._cancelRequest$$),
                     tap(() => {
                         this._loading.endLoading();
                         this._progress.isCancelled = false;
                     }),
-                    tap(() => {
+                    tap(() =>
                         this._messageService.add({
                             severity: 'success',
                             summary: 'Success',
-                            detail: 'Change was successful',
-                        });
-                    })
+                            detail: 'Deletion was successful',
+                        })
+                    )
                 )
             ),
             catchError((err) =>
@@ -68,7 +67,6 @@ export class ChangePasswordHttpService {
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
-                        console.log(err);
                         switch (err.status) {
                             case 400: {
                                 this._messageService.add({
@@ -106,7 +104,7 @@ export class ChangePasswordHttpService {
                             }
                         }
                     }),
-                    switchMap(() => this.watchChangePassword$())
+                    switchMap(() => this.watchDeletePost$())
                 )
             ),
             finalize(() => {
@@ -126,11 +124,11 @@ export class ChangePasswordHttpService {
         }
     }
 
-    public changePassword(user: IChangePassword): void {
-        this._changePassword$$.next(user);
+    public deletePost(id: string): void {
+        this._deletePost$$.next(id);
     }
 
-    private changePasswordUser(user: IChangePassword): Observable<void> {
-        return this._httpClient.put<void>(this._url, user);
+    private _deletePost$(id: string): Observable<void> {
+        return this._httpClient.delete<void>(`${this._url}/${id}`);
     }
 }
