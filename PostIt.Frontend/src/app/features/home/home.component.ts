@@ -113,20 +113,6 @@ import { SendVerificationTokenHttpService } from '../../shared/services/send-ver
                 <router-outlet />
             </div>
             <aside class="h-screen sticky top-0 flex-1">
-                <div class="flex flex-col p-10">
-                    <div class="p-inputgroup">
-                        <input
-                            id="txt-search"
-                            pInputText
-                            placeholder="Search"
-                        />
-                        <button
-                            type="button"
-                            pButton
-                            icon="pi pi-search"
-                        ></button>
-                    </div>
-                </div>
                 <div
                     class="absolute bottom-0 right-0 flex flex-col items-end p-12 font-extrabold text-slate-600"
                 >

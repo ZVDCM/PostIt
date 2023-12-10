@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialMigrations : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -125,14 +125,14 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "CreatedOnUtc", "ModifiedOnUtc", "Value" },
                 values: new object[,]
                 {
-                    { new Guid("959c5b4f-7228-416a-9ef3-f9e22b2c801d"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" },
-                    { new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" }
+                    { new Guid("08bfec3c-8763-4ff6-98ef-b12246140698"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Admin" },
+                    { new Guid("17d74908-5b97-4fc4-b457-0cc446bddcf3"), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "User" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "CreatedOnUtc", "Email", "EmailVerified", "ModifiedOnUtc", "Password", "RoleId", "Username" },
-                values: new object[] { new Guid("20e625b0-4252-42c3-ab3e-59d845ce2956"), new DateTime(2023, 12, 7, 4, 3, 53, 614, DateTimeKind.Utc).AddTicks(742), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$CCxpqD91yFr9yoA0eSvgtu08ss0Xtw1Tx5tyUR3MPDUZN5LCSoUqm", new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"), "JuanDelaCruz" });
+                values: new object[] { new Guid("a08bab99-b928-4595-9815-2978e066f3e1"), new DateTime(2023, 12, 9, 9, 17, 21, 713, DateTimeKind.Utc).AddTicks(2071), "juandelacruz@gmail.com", true, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "$2a$13$GNGDzKv/n7JfFw1pMGIcneCC0Fehy7JEnMY/NcTKWPFxelsyqP0KK", new Guid("08bfec3c-8763-4ff6-98ef-b12246140698"), "JuanDelaCruz" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",

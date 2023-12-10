@@ -22,7 +22,7 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("PostIt.Users.Service.Domain.Roles.Role", b =>
+            modelBuilder.Entity("PostIt.Common.Domain.Roles.Role", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -44,21 +44,21 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("959c5b4f-7228-416a-9ef3-f9e22b2c801d"),
+                            Id = new Guid("17d74908-5b97-4fc4-b457-0cc446bddcf3"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "User"
                         },
                         new
                         {
-                            Id = new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"),
+                            Id = new Guid("08bfec3c-8763-4ff6-98ef-b12246140698"),
                             CreatedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Value = "Admin"
                         });
                 });
 
-            modelBuilder.Entity("PostIt.Users.Service.Domain.Users.User", b =>
+            modelBuilder.Entity("PostIt.Common.Domain.Users.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
@@ -96,26 +96,26 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("20e625b0-4252-42c3-ab3e-59d845ce2956"),
-                            CreatedOnUtc = new DateTime(2023, 12, 7, 4, 3, 53, 614, DateTimeKind.Utc).AddTicks(742),
+                            Id = new Guid("a08bab99-b928-4595-9815-2978e066f3e1"),
+                            CreatedOnUtc = new DateTime(2023, 12, 9, 9, 17, 21, 713, DateTimeKind.Utc).AddTicks(2071),
                             Email = "juandelacruz@gmail.com",
                             EmailVerified = true,
                             ModifiedOnUtc = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Password = "$2a$13$CCxpqD91yFr9yoA0eSvgtu08ss0Xtw1Tx5tyUR3MPDUZN5LCSoUqm",
-                            RoleId = new Guid("cc4d406f-e97a-45f4-bce1-4d133ef32f8f"),
+                            Password = "$2a$13$GNGDzKv/n7JfFw1pMGIcneCC0Fehy7JEnMY/NcTKWPFxelsyqP0KK",
+                            RoleId = new Guid("08bfec3c-8763-4ff6-98ef-b12246140698"),
                             Username = "JuanDelaCruz"
                         });
                 });
 
-            modelBuilder.Entity("PostIt.Users.Service.Domain.Users.User", b =>
+            modelBuilder.Entity("PostIt.Common.Domain.Users.User", b =>
                 {
-                    b.HasOne("PostIt.Users.Service.Domain.Roles.Role", "Role")
+                    b.HasOne("PostIt.Common.Domain.Roles.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("PostIt.Users.Service.Domain.Tokens.Token", "ForgotPasswordTokens", b1 =>
+                    b.OwnsMany("PostIt.Common.Domain.Users.Token", "ForgotPasswordTokens", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uniqueidentifier");
@@ -147,7 +147,7 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.OwnsMany("PostIt.Users.Service.Domain.Tokens.Token", "RefreshTokens", b1 =>
+                    b.OwnsMany("PostIt.Common.Domain.Users.Token", "RefreshTokens", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uniqueidentifier");
@@ -179,7 +179,7 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("UserId");
                         });
 
-                    b.OwnsMany("PostIt.Users.Service.Domain.Tokens.Token", "VerificationTokens", b1 =>
+                    b.OwnsMany("PostIt.Common.Domain.Users.Token", "VerificationTokens", b1 =>
                         {
                             b1.Property<Guid>("UserId")
                                 .HasColumnType("uniqueidentifier");
@@ -220,7 +220,7 @@ namespace PostIt.Users.Service.Infrastructure.Persistence.Migrations
                     b.Navigation("VerificationTokens");
                 });
 
-            modelBuilder.Entity("PostIt.Users.Service.Domain.Roles.Role", b =>
+            modelBuilder.Entity("PostIt.Common.Domain.Roles.Role", b =>
                 {
                     b.Navigation("Users");
                 });

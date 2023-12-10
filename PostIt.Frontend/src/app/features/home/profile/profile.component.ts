@@ -72,6 +72,30 @@ import { CreatePostHttpService } from '../../../shared/services/create-post-http
                             page: 1,
                         })
                     }}
+                    <div class="mb-[1rem] p-[2.45rem] bg-[var(--surface-card)]">
+                        <p-skeleton
+                            width="10rem"
+                            styleClass="mb-2"
+                        ></p-skeleton>
+                        <p-skeleton width="5rem" styleClass="mb-2"></p-skeleton>
+                        <p-skeleton height="4rem"></p-skeleton>
+                    </div>
+                    <div class="mb-[1rem] p-[2.45rem] bg-[var(--surface-card)]">
+                        <p-skeleton
+                            width="10rem"
+                            styleClass="mb-2"
+                        ></p-skeleton>
+                        <p-skeleton width="5rem" styleClass="mb-2"></p-skeleton>
+                        <p-skeleton height="4rem"></p-skeleton>
+                    </div>
+                    <div class="p-[2.45rem] bg-[var(--surface-card)]">
+                        <p-skeleton
+                            width="10rem"
+                            styleClass="mb-2"
+                        ></p-skeleton>
+                        <p-skeleton width="5rem" styleClass="mb-2"></p-skeleton>
+                        <p-skeleton height="4rem"></p-skeleton>
+                    </div>
                 </ng-template>
             </section>
         </ng-container>
