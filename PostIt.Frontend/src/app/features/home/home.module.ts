@@ -7,7 +7,7 @@ import { SharedModule } from 'src/app/shared/shared.module';
 import { HomeRoutingModule } from './home-routing.module';
 import { ProfileComponent } from './profile/profile.component';
 import { PostsComponent } from './posts/posts.component';
-import { CreatePostComponent } from './create-post.component';
+import { CreatePostComponent } from '../../shared/components/create-post.component';
 import { UpdatePostComponent } from './update-post.component';
 
 @NgModule({
@@ -16,7 +16,7 @@ import { UpdatePostComponent } from './update-post.component';
         ProfileComponent,
         PostsComponent,
         CreatePostComponent,
-        UpdatePostComponent
+        UpdatePostComponent,
     ],
     imports: [CommonModule, HttpClientModule, HomeRoutingModule, SharedModule],
     exports: [HomeRoutingModule],

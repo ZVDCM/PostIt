@@ -16,7 +16,6 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
-import { PostsHttpService } from './posts-http.service';
 import { IPost } from '../../../core/models/posts.model';
 
 @Injectable({
@@ -35,7 +34,7 @@ export class CreatePostHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService,
+        private _messageService: MessageService
     ) {}
 
     public watchCreatePost$(): Observable<void> {
@@ -60,8 +59,8 @@ export class CreatePostHttpService {
                     )
                 )
             ),
-            catchError((err) =>
-                of(err).pipe(
+            catchError((err) => {
+                return of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
                     tap(() => {
                         this._loading.endLoading();
@@ -89,7 +88,7 @@ export class CreatePostHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user credentials',
+                                    detail: 'Invalid user credentials or verification',
                                 });
                                 break;
                             }
@@ -106,8 +105,8 @@ export class CreatePostHttpService {
                         }
                     }),
                     switchMap(() => this.watchCreatePost$())
-                )
-            ),
+                );
+            }),
             finalize(() => {
                 if (this._progress.isCancelled) {
                     this._progress.isCancelled = null;

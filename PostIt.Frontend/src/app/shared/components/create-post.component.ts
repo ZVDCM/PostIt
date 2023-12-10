@@ -7,15 +7,16 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IUser } from 'src/app/core/state/user/user.model';
-import { LoadingService } from '../../shared/services/loading.service';
+import { LoadingService } from '../services/loading.service';
 import { Store } from '@ngrx/store';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
-import { HomeConstantsService } from '../../shared/constants/home-constants.service';
+import { HomeConstantsService } from '../constants/home-constants.service';
 import { IFormItem } from 'src/app/core/models/form.model';
-import { FormHelperService } from '../../shared/utils/form-helper.service';
+import { FormHelperService } from '../utils/form-helper.service';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CreatePostHttpService } from '../../shared/services/posts/create-post-http.service';
+import { CreatePostHttpService } from '../services/posts/create-post-http.service';
 import { IPost } from '../../core/models/posts.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-create-post',
@@ -173,7 +174,8 @@ export class CreatePostComponent {
         public loading: LoadingService,
         public createPostHttp: CreatePostHttpService,
         public formHelper: FormHelperService,
-        private _store: Store
+        private _store: Store,
+        private _messageService: MessageService
     ) {
         this.user$ = _store.select(selectUser);
         this.initCreatePostForm();

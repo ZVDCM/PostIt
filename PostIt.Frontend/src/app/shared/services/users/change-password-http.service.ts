@@ -35,7 +35,7 @@ export class ChangePasswordHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
     ) {}
 
     public watchChangePassword$(): Observable<void> {
@@ -68,7 +68,6 @@ export class ChangePasswordHttpService {
                         this._progress.isCancelled = false;
                     }),
                     tap((err) => {
-                        console.log(err);
                         switch (err.status) {
                             case 400: {
                                 this._messageService.add({
@@ -90,7 +89,7 @@ export class ChangePasswordHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user credentials',
+                                    detail: 'Invalid user credentials or verification',
                                 });
                                 break;
                             }

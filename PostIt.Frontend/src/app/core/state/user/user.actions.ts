@@ -5,6 +5,7 @@ export const UserActions = createActionGroup({
     source: 'User',
     events: {
         setUser: props<{ user: IUser }>(),
+        verifyUser: emptyProps(),
         removeUser: emptyProps(),
     },
 });

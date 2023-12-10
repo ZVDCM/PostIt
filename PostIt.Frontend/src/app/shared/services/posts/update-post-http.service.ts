@@ -89,7 +89,7 @@ export class UpdatePostHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user credentials',
+                                    detail: 'Invalid user credentials or verification',
                                 });
                                 break;
                             }

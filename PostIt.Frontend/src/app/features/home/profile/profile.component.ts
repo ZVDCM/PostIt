@@ -41,6 +41,7 @@ import { UnlikePostHttpService } from 'src/app/shared/services/posts/likes/unlik
                         </h1>
                     </div>
                     <i
+                        *ngIf="user.isVerified"
                         class="pi pi-verified ml-auto mt-1 text-[var(--primary-color)]"
                         style="font-size: 1.3rem;"
                     ></i>
@@ -53,7 +54,9 @@ import { UnlikePostHttpService } from 'src/app/shared/services/posts/likes/unlik
                 </section>
             </header>
             <section class="min-h-screen flex flex-col gap-[2rem]">
-                <app-create-post (createPost)="createPost($event)" />
+                <app-create-post
+                    (createPost)="createPost($event)"
+                />
                 <div>
                     <ng-container
                         *ngIf="getAllUserPosts$ | async as posts; else empty"

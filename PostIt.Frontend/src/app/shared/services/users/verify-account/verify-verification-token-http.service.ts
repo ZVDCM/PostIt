@@ -1,5 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject, catchError, filter, finalize, map, of, switchMap, takeUntil, tap } from 'rxjs';
+import {
+    Observable,
+    Subject,
+    catchError,
+    filter,
+    finalize,
+    map,
+    of,
+    switchMap,
+    takeUntil,
+    tap,
+} from 'rxjs';
 import { IVerifyVerificationToken } from '../../../../core/models/verify-verification-token.model';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ServerConstantsService } from 'src/app/shared/constants/server-constants.service';
@@ -7,6 +18,9 @@ import { HomeConstantsService } from 'src/app/shared/constants/home-constants.se
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import { ProgressService } from 'src/app/shared/services/progress.service';
 import { MessageService } from 'primeng/api';
+import { Store } from '@ngrx/store';
+import { UserActions } from 'src/app/core/state/user/user.actions';
+import { selectUser } from 'src/app/core/state/user/user.selectors';
 
 @Injectable({
     providedIn: 'root',
@@ -25,9 +39,9 @@ export class VerifyVerificationTokenHttpService {
         private _homeConstants: HomeConstantsService,
         private _loading: LoadingService,
         private _progress: ProgressService,
-        private _messageService: MessageService
+        private _messageService: MessageService,
+        private _store: Store,
     ) {}
-
 
     public watchVerifyVerificationToken$(): Observable<void> {
         return this._verifyVerificationToken$$.asObservable().pipe(
@@ -48,6 +62,8 @@ export class VerifyVerificationTokenHttpService {
                             summary: 'Success',
                             detail: 'Account verification successful',
                         });
+                        this._store.dispatch(UserActions.verifyUser());
+                        this._store.select(selectUser).subscribe(user => console.log(user))
                     })
                 )
             ),
@@ -80,7 +96,7 @@ export class VerifyVerificationTokenHttpService {
                                 this._messageService.add({
                                     severity: 'error',
                                     summary: 'Error',
-                                    detail: 'Invalid user credentials',
+                                    detail: 'Invalid user credentials or verification',
                                 });
                                 break;
                             }

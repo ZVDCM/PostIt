@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Observable, Subject, interval, take, tap } from 'rxjs';
+import { Observable, Subject, catchError, interval, of, take, tap } from 'rxjs';
 import { IFormItem } from 'src/app/core/models/form.model';
 import { IUser } from 'src/app/core/state/user/user.model';
 import { selectUser } from 'src/app/core/state/user/user.selectors';
@@ -76,6 +76,7 @@ import { SendVerificationTokenHttpService } from '../../shared/services/users/ve
                     <div class="w-full mt-auto flex justify-start items-center">
                         <p-splitButton
                             [menuStyle]="{ width: '100%' }"
+                            [style]="{ width: '250px' }"
                             [model]="items"
                             (onClick)="onClickUsername(user)"
                         >
@@ -797,7 +798,6 @@ export class HomeComponent implements AfterViewInit {
         ) {
             return;
         }
-
         this.updateProfileHttp.updateProfile(
             this.profileFormHelper.formGroup.value
         );

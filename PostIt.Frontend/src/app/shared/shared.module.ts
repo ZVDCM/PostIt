@@ -20,7 +20,11 @@ import { FooterComponent } from './components/footer.component';
 import { PostItemComponent } from './components/post-item.component';
 
 @NgModule({
-    declarations: [LoadingComponent, FooterComponent, PostItemComponent],
+    declarations: [
+        LoadingComponent,
+        FooterComponent,
+        PostItemComponent,
+    ],
     imports: [
         CommonModule,
         ReactiveFormsModule,

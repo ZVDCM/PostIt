@@ -11,6 +11,7 @@ import { Store } from '@ngrx/store';
 import { selectAccessToken } from './core/state/access-token/access-token.selectors';
 import { RefreshHttpService } from './shared/services/users/refresh-http.service';
 import { OneShotAuthService } from './shared/services/users/forget-password/one-shot-auth.service';
+import { MessageService } from 'primeng/api';
 
 @Injectable({
     providedIn: 'root',
@@ -19,7 +20,8 @@ export class AuthInterceptor implements HttpInterceptor {
     constructor(
         private _store: Store,
         private _oneShot: OneShotAuthService,
-        private _refreshHttp: RefreshHttpService
+        private _refreshHttp: RefreshHttpService,
+        private _messageService: MessageService
     ) {}
 
     intercept(
@@ -58,8 +60,6 @@ export class AuthInterceptor implements HttpInterceptor {
             catchError((err) =>
                 of(err).pipe(
                     filter((err) => err instanceof HttpErrorResponse),
-                    filter((err) => err.status === 401),
-                    tap((err) => alert(err)),
                     switchMap(() => {
                         return this._refreshHttp
                             .refresh$()

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, catchError, ignoreElements, of, tap } from 'rxjs';
 import { LoadingService } from 'src/app/shared/services/loading.service';
 import {
     IPost,

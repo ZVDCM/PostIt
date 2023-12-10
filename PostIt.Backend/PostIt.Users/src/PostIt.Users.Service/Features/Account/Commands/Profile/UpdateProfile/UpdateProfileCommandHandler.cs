@@ -38,7 +38,7 @@ public sealed class UpdateProfileCommandHandler : ICommandHandler<UpdateProfileC
         User user = result.Value!;
 
         User? userTemp = await _userRepository.GetUserAsync(u => u.Email == request.Email, cancellationToken);
-        if (userTemp is not null) return Result.Failure<User>(UserErrors.UserAlreadyExists);
+        if (userTemp is not null && user.Email != userTemp.Email) return Result.Failure<User>(UserErrors.UserAlreadyExists);
 
         string oldUsername = user.Username;
         string oldEmail = user.Email;
